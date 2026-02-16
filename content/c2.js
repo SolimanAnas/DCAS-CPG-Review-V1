@@ -242,6 +242,7 @@ window.CPG_DATA = {
                     explanation: "In paediatric drowning, hypoxia is the primary cause of arrest. Give 5 initial rescue breaths before starting compressions. Use 15:2 ratio if two rescuers.",
                     kpi: "Initial rescue breaths delivered within 1 minute"
                 }
+                },
             ]
         // ============================================================
         // 2.2 FOREIGN BODY AIRWAY OBSTRUCTION (FBAO)
@@ -566,6 +567,6 @@ window.CPG_DATA = {
                 }
             ]
         }   
-        }
+        
     ]
 };
