@@ -569,4 +569,26 @@ window.CPG_DATA = {
             ],
             quiz: [
                 { q: "What is the recommended initial Tidal Volume (TV) setting?", options: ["10 ml/kg actual weight", "6-8 ml/kg ideal body weight", "500 ml fixed", "10-12 ml/kg"], correct: 1, explanation: "6-8 ml/kg of IBW prevents volutrauma. Lungs do not grow with obesity." },
-                { q: "If a ventilated patient suddenly desaturates and becomes hypotensive, what is the FIRST action?", options: ["Increase PEEP", "
+                { q: "If a ventilated patient suddenly desaturates and becomes hypotensive, what is the FIRST action?", options: ["Increase PEEP", "Suction immediately", "Disconnect vent and bag manually (BVM)", "Check power source"], correct: 2, explanation: "Disconnecting allows you to feel lung compliance (bagging) and rules out ventilator failure. It is the first step in the DOPE protocol." },
+                { q: "What does the 'P' in the DOPE mnemonic stand for?", options: ["PEEP", "Pneumonia", "Pneumothorax", "Position"], correct: 2, explanation: "Pneumothorax (Tension) is a life-threatening cause of deterioration in ventilated patients." },
+                { q: "A 'Low Pressure' alarm usually indicates:", options: ["Secretions", "Bronchospasm", "Circuit disconnection / Cuff leak", "Pneumothorax"], correct: 2, explanation: "Low pressure means the machine is meeting no resistance, usually due to a leak or disconnection." },
+                { q: "For an Asthma patient on a ventilator, how should you adjust the I:E ratio?", options: ["1:1", "1:2", "1:4", "2:1"], correct: 2, explanation: "Asthmatics need more time to exhale to prevent air trapping. A ratio of 1:4 or 1:5 is preferred." }
+            ],
+            critical: [
+                {
+                    id: "crit_2_5_1",
+                    scenario: "You have intubated a trauma patient. En route, the 'High Pressure' alarm sounds constantly, SpO2 drops to 85%, and BP drops to 70/40. Trachea is deviated.",
+                    question: "What is the priority intervention?",
+                    options: [
+                        { t: "Suction the tube", f: "Incorrect. Signs point to tension pneumo." },
+                        { t: "Needle Decompression (Thoracostomy)", f: "Correct. High pressure + shock + deviation = Tension Pneumothorax." },
+                        { t: "Increase PEEP", f: "Dangerous. Will worsen hypotension." }
+                    ],
+                    correct: 1,
+                    explanation: "This is a classic description of Tension Pneumothorax in a ventilated patient (P in DOPE). Immediate decompression is required.",
+                    kpi: "Recognition of Tension Pneumothorax in ventilated patient"
+                }
+            ]
+        }
+    ]
+};
