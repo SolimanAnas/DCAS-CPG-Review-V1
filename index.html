@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Shared stylesheet -->
     <link rel="stylesheet" href="styles.css">
     
     <!-- PWA Manifest and icons -->
@@ -18,7 +17,7 @@
     <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
-        /* Additional style for search bar */
+        /* Search bar with icon */
         .search-container {
             margin-bottom: 24px;
             display: flex;
@@ -29,6 +28,11 @@
             padding: 4px 4px 4px 20px;
             backdrop-filter: blur(10px);
             box-shadow: var(--glass-shadow);
+        }
+        .search-container span {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            color: var(--text-secondary);
         }
         .search-container input {
             flex: 1;
@@ -56,33 +60,37 @@
         .search-container button:active {
             background: #003d80;
         }
+
         /* Hide cards that don't match search */
         .menu-card.filtered-out {
             display: none;
         }
-        /* Special card style for c0 and c-index – lighter, thinner, with distinct left border */
+
+        /* Special card style for c0 and c-index – lighter and more transparent */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.1); /* extra transparent */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 24px;
-            padding: 16px 20px; /* thinner */
+            padding: 16px 20px;
             box-shadow: var(--glass-shadow);
             text-decoration: none;
             color: inherit;
             display: block;
             border-left-width: 6px;
             border-left-style: solid;
-            position: relative;
-            overflow: hidden;
+        }
+        [data-theme="dark"] .menu-card.special-card {
+            background: rgba(0,0,0,0.2);
         }
         .menu-card.special-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
         }
         .menu-card.special-card .card-header {
-            display: none; /* remove status badge */
+            display: none;
         }
         .menu-card.special-card h2 {
             font-size: 1.2rem;
@@ -104,7 +112,8 @@
         .menu-card.special-card[data-chapter="index"] {
             border-left-color: #3498db;
         }
-        /* Progress popup */
+
+        /* Progress popup (unchanged) */
         .progress-popup {
             position: absolute;
             top: 60px;
@@ -140,6 +149,7 @@
             border-top: 1px solid var(--glass-border);
             padding-top: 12px;
         }
+
         /* Footer */
         footer {
             text-align: center;
@@ -166,23 +176,31 @@
             color: inherit;
             text-decoration: underline;
         }
+
         /* Ensure flashcards button text does not wrap */
         .btn-flash {
             white-space: nowrap;
         }
-        /* Adjust for very small screens */
+
+        /* Menu button grid – improved centering on small screens */
+        .menu-sub-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
         @media (max-width: 480px) {
+            .menu-sub-options {
+                grid-template-columns: repeat(2, 1fr); /* two columns, better centering */
+            }
             .btn-flash {
                 font-size: 0.75rem;
                 padding: 8px 10px;
             }
-            .menu-sub-options {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            }
         }
-        /* Offline download button */
+
+        /* Offline download button and progress bar */
         .offline-download {
-            margin-bottom: 24px;
+            margin: 20px 0;
             text-align: center;
         }
         .download-btn {
@@ -207,10 +225,19 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .download-progress {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        progress {
+            width: 100%;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        progress::-webkit-progress-bar {
+            background-color: var(--glass-bg);
+            border-radius: 10px;
+        }
+        progress::-webkit-progress-value {
+            background-color: var(--primary-accent);
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -219,7 +246,7 @@
 <header>
     <div class="header-left">
         <button class="icon-btn" id="homeBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
         <div class="header-text">
             <h1 id="pageTitle">DCAS CPG 2025</h1>
@@ -252,9 +279,7 @@
     <div class="popup-quote" id="popupQuote">✨ Every review sharpens your skills.</div>
 </div>
 
-<main id="mainContent">
-    <!-- Dynamic content will be injected here -->
-</main>
+<main id="mainContent"></main>
 
 <footer>
     <div>Created by Soliman Anas · for study aid only</div>
@@ -318,7 +343,7 @@
             { id: "c0", shortTitle: "2025 Updates", title: "What's New in 2025", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "updates" },
             { id: "c-index", shortTitle: "Index", title: "Full Table of Contents", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "index" },
             
-            // Universal Care (6 sections)
+            // Universal Care
             { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", hasCritical: true, chapterFile: "c1", sectionParam: "c1s1", isFirstInChapter: true, chapterGroup: "universal" },
             { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", hasCritical: true, chapterFile: "c1", sectionParam: "c1s2", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", hasCritical: true, chapterFile: "c1", sectionParam: "c1s3", isFirstInChapter: false, chapterGroup: "universal" },
@@ -339,7 +364,7 @@
             { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
 
-            // Resuscitation (full list)
+            // Resuscitation
             { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", hasCritical: true, isFirstInChapter: true, chapterGroup: "resus" },
             { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
@@ -459,7 +484,6 @@
                 const baseFile = ch.chapterFile || ch.id;
                 const sec = ch.sectionParam ? `&section=${ch.sectionParam}` : '';
                 
-                // Special handling for c0 and c-index
                 if (ch.isSpecial) {
                     let titleText, subtitleText;
                     if (ch.id === 'c0') {
@@ -477,7 +501,6 @@
                     `;
                 }
 
-                // Normal card for other chapters
                 const isChecked = completion[ch.id] || false;
                 const showFlashcardsQuiz = true;
                 const showCritical = ch.hasCritical;
@@ -514,7 +537,7 @@
                 `;
             }).join('');
 
-            // Stats Card (still needed for overall progress bar)
+            // Stats Card
             const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
             const completedCount = Object.values(completion).filter(v => v).length;
             const overallPercent = totalChaps ? Math.round((completedCount / totalChaps) * 100) : 0;
@@ -543,18 +566,19 @@
                 </div>
             `;
 
-            // Combine offline download button + search bar + cards + stats
+            // Download button placed between grid and stats
             const fullHtml = `
-                <div class="offline-download">
-                    <button class="download-btn" id="downloadOfflineBtn">📥 Download All for Offline</button>
-                    <div class="download-progress" id="downloadProgress"></div>
-                </div>
                 <div class="search-container">
+                    <span>🔍</span>
                     <input type="text" id="searchInput" placeholder="Search chapters..." value="${filterText.replace(/"/g, '&quot;')}">
                     <button id="searchClearBtn" ${filterText ? '' : 'style="display:none;"'}>✕</button>
                 </div>
                 <div class="menu-grid" id="menuGrid">
                     ${contentHtml}
+                </div>
+                <div class="offline-download">
+                    <button class="download-btn" id="downloadOfflineBtn">📥 Download All for Offline</button>
+                    <progress id="downloadProgress" value="0" max="100" style="display:none;"></progress>
                 </div>
                 ${statsHtml}
             `;
@@ -580,18 +604,19 @@
                 });
             }
 
-            // Offline download functionality
+            // Offline download with progress bar
             const downloadBtn = document.getElementById('downloadOfflineBtn');
-            const progressDiv = document.getElementById('downloadProgress');
+            const progressBar = document.getElementById('downloadProgress');
 
             async function downloadAllContent() {
                 if (!('caches' in window)) {
-                    progressDiv.innerText = 'Your browser does not support caching.';
+                    alert('Your browser does not support caching.');
                     return;
                 }
 
                 downloadBtn.disabled = true;
-                progressDiv.innerText = 'Starting download...';
+                progressBar.style.display = 'block';
+                progressBar.value = 0;
 
                 const base = window.location.origin + (window.location.pathname.includes('/DCAS-CPG-Review-V1') ? '/DCAS-CPG-Review-V1' : '') + '/';
                 const filesToCache = [
@@ -607,29 +632,30 @@
                     ...CHAPTERS.filter(ch => !ch.isSpecial).map(ch => `/chapters/${ch.chapterFile || ch.id}.html`)
                 ].map(path => path.startsWith('/') ? base + path.slice(1) : base + path);
 
-                // Add special chapter files
                 filesToCache.push(base + 'content/c0.js', base + 'content/c-index.js');
                 filesToCache.push(base + 'chapters/c0.html', base + 'chapters/c-index.html');
 
                 const cache = await caches.open('dcas-cpg-v1');
+                let completed = 0;
+                const total = filesToCache.length;
 
-                let success = 0, failed = 0;
                 for (const url of filesToCache) {
                     try {
-                        progressDiv.innerText = `Downloading ${url.split('/').pop()}...`;
+                        await fetch(url);
                         const response = await fetch(url);
                         if (response.ok) {
                             await cache.put(url, response);
-                            success++;
-                        } else {
-                            failed++;
                         }
                     } catch (err) {
-                        failed++;
+                        // silently ignore
                     }
+                    completed++;
+                    progressBar.value = (completed / total) * 100;
                 }
-                progressDiv.innerText = `Download complete. ${success} files cached, ${failed} failed. You can now use the app offline.`;
+
+                progressBar.value = 100;
                 downloadBtn.disabled = false;
+                setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
             }
 
             downloadBtn.addEventListener('click', downloadAllContent);
