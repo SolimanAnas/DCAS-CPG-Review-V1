@@ -418,6 +418,6 @@ window.CPG_DATA = {
                 }
             ]
              
-        
+        }
     ]
 };
