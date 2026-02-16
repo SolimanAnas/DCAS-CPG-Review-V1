@@ -1,4 +1,4 @@
-/* ========== Chapter 2 – Airway & Breathing (Full with subsections 2.1–2.5) ========== */
+/* ========== Chapter 2 – Airway & Breathing (Full Content 2.1–2.5) ========== */
 window.CPG_DATA = {
     id: "c2",
     title: "Airway Management",
@@ -67,8 +67,6 @@ window.CPG_DATA = {
                 </div>
             `,
             quiz: [
-                // ========== 60 QUIZ QUESTIONS – AIRWAY MANAGEMENT ==========
-                // 1-10: Basic airway assessment & manoeuvres
                 { q: "What is the first step in managing a patient with suspected airway compromise?", options: ["Insert OPA", "Head‑tilt/chin‑lift", "Assess responsiveness and breathing", "Suction the airway"], correct: 2, explanation: "Assessment always precedes intervention. Check for signs of life, breathing, and level of consciousness first." },
                 { q: "Which airway manoeuvre is indicated in a trauma patient with possible c‑spine injury?", options: ["Head‑tilt/chin‑lift", "Jaw thrust", "Neck hyperextension", "Tongue traction"], correct: 1, explanation: "Jaw thrust moves the mandible forward without moving the neck, maintaining spinal alignment." },
                 { q: "How do you size an oropharyngeal airway (OPA)?", options: ["Earlobe to corner of mouth", "Tragus to corner of mouth", "Nostril to tragus", "Incisors to angle of mandible"], correct: 0, explanation: "Measure from the corner of the mouth to the earlobe. This approximates the distance from teeth to pharynx." },
@@ -79,7 +77,6 @@ window.CPG_DATA = {
                 { q: "What is the correct method of OPA insertion in an adult?", options: ["Directly backwards along tongue", "Upside down, rotate 180°", "Laterally then rotate", "With the tip pointing cephalad"], correct: 1, explanation: "Insert OPA upside down, advance until resistance, then rotate 180° to cradle the tongue." },
                 { q: "What is the primary reason for avoiding head‑tilt/chin‑lift in trauma?", options: ["It is ineffective", "It causes tongue obstruction", "It may exacerbate cervical spine injury", "It is painful"], correct: 2, explanation: "Head‑tilt causes cervical spine movement; jaw thrust is preferred." },
                 { q: "What does 'stridor' indicate?", options: ["Lower airway obstruction", "Upper airway obstruction", "Pulmonary oedema", "Bronchospasm"], correct: 1, explanation: "Stridor is a high‑pitched inspiratory sound caused by upper airway narrowing (larynx/trachea)." },
-                // 11-20: OPA, NPA, suction
                 { q: "An OPA is appropriate in which patient?", options: ["Conscious with gag reflex", "Unconscious with no gag reflex", "Conscious and coughing", "Semi‑conscious with intact swallow"], correct: 1, explanation: "OPA is only tolerated in unconscious patients without a gag reflex." },
                 { q: "What is the correct size for an NPA in an average adult?", options: ["28‑30 Fr", "32‑34 Fr", "34‑36 Fr", "36‑40 Fr"], correct: 2, explanation: "Typical adult NPA sizes are 34‑36 Fr (6‑7 mm internal diameter)." },
                 { q: "How do you measure an NPA?", options: ["Corner of mouth to earlobe", "Nostril to tragus", "Nostril to mandible", "Tip of nose to angle of jaw"], correct: 1, explanation: "Measure from the nostril to the tragus of the ear." },
@@ -90,7 +87,6 @@ window.CPG_DATA = {
                 { q: "You attempt to insert an NPA and meet resistance. What should you do?", options: ["Apply more force", "Try the other nostril", "Use a smaller size", "Both B and C"], correct: 3, explanation: "If resistance, stop, try the other nostril or a smaller size. Never force." },
                 { q: "Which patient is most likely to tolerate an OPA?", options: ["GCS 15", "GCS 12", "GCS 8", "GCS 6"], correct: 3, explanation: "OPA requires absent gag reflex; GCS ≤8 usually indicates loss of protective reflexes." },
                 { q: "What is the purpose of the flange on an OPA?", options: ["Prevent over‑insertion", "Anchor to teeth/lips", "Facilitate insertion", "Both A and B"], correct: 3, explanation: "The flange rests against the lips/teeth, preventing the airway from advancing too far." },
-                // 21-30: Supraglottic airways (LT)
                 { q: "What is the preferred supraglottic airway in DCAS?", options: ["LMA", "i‑gel", "Laryngeal tube (LT)", "Combitube"], correct: 2, explanation: "The laryngeal tube (LT) is the supraglottic airway used in DCAS protocols." },
                 { q: "In which patients may EMTs insert an LT airway?", options: ["Respiratory arrest", "Cardiac arrest only", "Severe TBI", "Any unconscious patient"], correct: 1, explanation: "EMTs may only insert supraglottic airways (LT) in cardiac arrest." },
                 { q: "How is correct LT placement confirmed?", options: ["Chest rise", "Bilateral breath sounds", "Waveform capnography", "All of the above"], correct: 3, explanation: "Waveform capnography is mandatory; chest rise and auscultation are also used." },
@@ -101,7 +97,6 @@ window.CPG_DATA = {
                 { q: "What does EtCO₂ waveform confirm?", options: ["Tube position", "Cardiac output", "Patency of airway", "All of the above"], correct: 3, explanation: "Waveform capnography confirms tube position, detects ROSC, and indicates ventilation adequacy." },
                 { q: "After patient movement, what must be reassessed?", options: ["LT cuff pressure", "Tube placement (EtCO₂)", "Ventilation rate", "Oxygen saturation"], correct: 1, explanation: "Reassess tube placement with EtCO₂ after any patient movement (ground to stretcher, etc.)." },
                 { q: "What is the normal EtCO₂ range in a perfusing patient?", options: ["25‑35 mmHg", "35‑45 mmHg", "45‑55 mmHg", "50‑60 mmHg"], correct: 1, explanation: "Normal EtCO₂ is 35‑45 mmHg." },
-                // 31-40: Endotracheal intubation
                 { q: "What is the recommended endotracheal tube size for an adult female?", options: ["6.0‑7.0 mm", "7.0‑8.0 mm", "8.0‑9.0 mm", "9.0‑10.0 mm"], correct: 1, explanation: "Typical adult female ETT size is 7.0‑8.0 mm internal diameter." },
                 { q: "What is the formula for paediatric (uncuffed) ETT size?", options: ["(Age/2)+2", "(Age/4)+4", "(Age/3)+3", "Age+10"], correct: 1, explanation: "Paediatric uncuffed ETT size = (age/4)+4. For cuffed ETT, (age/4)+3." },
                 { q: "At what depth (at teeth) is an ETT typically secured in an adult male?", options: ["19‑21 cm", "21‑23 cm", "23‑25 cm", "25‑27 cm"], correct: 1, explanation: "Adult male depth 21‑23 cm; adult female 20‑22 cm." },
@@ -112,7 +107,6 @@ window.CPG_DATA = {
                 { q: "What is the Broselow tape used for?", options: ["Estimating paediatric weight", "Measuring ETT depth", "Selecting OPA size", "All of the above"], correct: 3, explanation: "Broselow tape estimates weight, ETT size, depth, drug doses, and equipment sizes for paediatric emergencies." },
                 { q: "What should be done if the patient has a suspected basal skull fracture and requires an advanced airway?", options: ["Use NPA", "Use OPA", "Oral intubation (avoid nasal)", "Insert LT"], correct: 2, explanation: "Nasal route is contraindicated; perform orotracheal intubation." },
                 { q: "What is the first sign of ROSC on capnography?", options: ["EtCO₂ <10 mmHg", "EtCO₂ 20‑30 mmHg", "Sudden sustained rise in EtCO₂ (>40 mmHg)", "Loss of waveform"], correct: 2, explanation: "A rapid, sustained increase in EtCO₂ during CPR often indicates ROSC." },
-                // 41-50: Ventilation, CPAP, BiPAP
                 { q: "What is the target SpO₂ for a patient receiving oxygen therapy (standard medical)?", options: ["88‑92%", "94‑98%", "100%", "90‑94%"], correct: 1, explanation: "Target SpO₂ is 94‑98%; avoid hyperoxia (100%) as it may cause vasoconstriction." },
                 { q: "What is the target SpO₂ for a COPD patient?", options: ["88‑92%", "94‑98%", "100%", ">95%"], correct: 0, explanation: "COPD patients require 88‑92% to avoid suppressing hypoxic drive." },
                 { q: "What is the initial CPAP setting for acute pulmonary oedema?", options: ["5 cmH₂O", "10 cmH₂O", "15 cmH₂O", "20 cmH₂O"], correct: 0, explanation: "Start at 5 cmH₂O and titrate up as tolerated." },
@@ -123,7 +117,6 @@ window.CPG_DATA = {
                 { q: "What is the purpose of PEEP (positive end‑expiratory pressure)?", options: ["Increase oxygenation", "Prevent alveolar collapse", "Reduce work of breathing", "All of the above"], correct: 3, explanation: "PEEP improves oxygenation, prevents atelectasis, and may reduce work of breathing." },
                 { q: "Which device is preferred for delivering CPAP in the prehospital setting?", options: ["Flow‑safe CPAP", "BVM with PEEP valve", "Ventilator", "Non‑rebreather mask"], correct: 0, explanation: "Flow‑safe CPAP is the DCAS device for prehospital CPAP." },
                 { q: "When should BiPAP be considered over CPAP?", options: ["Hypoxic patient", "Patient with hypercapnia", "Patient with facial trauma", "Unconscious patient"], correct: 1, explanation: "BiPAP provides inspiratory support and is indicated for hypercapnic respiratory failure (e.g., COPD exacerbation)." },
-                // 51-60: Special populations, complications, KPI
                 { q: "What is the preferred airway management for a patient with a laryngectomy?", options: ["Oral intubation", "Ventilation via stoma", "NPA", "LT"], correct: 1, explanation: "Patients with laryngectomy breathe through a stoma; ventilation must be applied directly to the stoma." },
                 { q: "What is the most common cause of airway obstruction in an unconscious patient?", options: ["Foreign body", "Tongue", "Vomitus", "Laryngospasm"], correct: 1, explanation: "The tongue is the most common cause of airway obstruction in unconsciousness due to loss of muscle tone." },
                 { q: "What is the first intervention for suspected foreign body airway obstruction (FBAO) in a conscious patient?", options: ["Back blows", "Abdominal thrusts", "Chest thrusts", "Encourage coughing"], correct: 3, explanation: "If the patient can cough effectively, encourage coughing. If ineffective, proceed to back blows/chest thrusts." },
@@ -136,7 +129,6 @@ window.CPG_DATA = {
                 { q: "What is the correct tidal volume setting for an adult with normal lungs on a ventilator?", options: ["4‑6 mL/kg IBW", "6‑8 mL/kg IBW", "8‑10 mL/kg IBW", "10‑12 mL/kg IBW"], correct: 1, explanation: "Normal lungs: tidal volume 6‑8 mL/kg ideal body weight." }
             ],
             flashcards: [
-                // ========== 60 FLASHCARDS – AIRWAY MANAGEMENT ==========
                 { category: "Airway Assessment", question: "Signs of airway compromise?", answer: "Noisy breathing (stridor, gurgling, snoring), inability to speak, cyanosis, GCS <8, see‑saw respirations." },
                 { category: "Airway Assessment", question: "Difficult airway predictors?", answer: "Short jaw, limited mouth opening, large tongue, obesity, facial hair, facial trauma, previous neck surgery, tracheal deviation." },
                 { category: "Basic Airway", question: "Head‑tilt/chin‑lift – indication?", answer: "Non‑trauma patient – opens airway by lifting tongue." },
@@ -204,7 +196,12 @@ window.CPG_DATA = {
                     id: "crit1",
                     scenario: "You are called to a nursing home for an 82‑year‑old female found unresponsive in bed. She has a history of dementia and COPD. She has agonal breathing at 4/min, central cyanosis, and a weak carotid pulse at 50 bpm. SpO₂ is unreadable. What is your FIRST airway intervention?",
                     question: "What is the priority action?",
-                    options: ["Insert OPA", "Apply non‑rebreather mask at 15 L/min", "Open airway with head‑tilt/chin‑lift", "Open airway with jaw thrust and begin BVM ventilation"],
+                    options: [
+                        { t: "Insert OPA", f: "Insufficient." },
+                        { t: "Apply non‑rebreather mask at 15 L/min", f: "Patient is not breathing adequately." },
+                        { t: "Open airway with head‑tilt/chin‑lift", f: "Good first step, but needs ventilation." },
+                        { t: "Open airway with jaw thrust and begin BVM ventilation", f: "Correct. Immediate ventilation is required." }
+                    ],
                     correct: 3,
                     explanation: "This patient has respiratory failure with agonal breathing and bradycardia. Immediate BVM ventilation is required. Jaw thrust is preferred due to unknown trauma history and to maintain cervical alignment.",
                     kpi: "BVM ventilation initiated within 1 minute of recognition"
@@ -213,7 +210,12 @@ window.CPG_DATA = {
                     id: "crit2",
                     scenario: "A 45‑year‑old male is found in cardiac arrest. Bystander CPR is in progress. You take over compressions and your partner prepares the LT airway. After insertion, you see EtCO₂ waveform at 8 mmHg and hear gurgling over the epigastrium. Chest rise is minimal. What is the most likely problem?",
                     question: "What should you do next?",
-                    options: ["Increase ventilation rate", "Remove the LT and re‑attempt", "Continue CPR, EtCO₂ is adequate", "Administer epinephrine"],
+                    options: [
+                        { t: "Increase ventilation rate", f: "Will worsen gastric inflation." },
+                        { t: "Remove the LT and re‑attempt", f: "Correct. The airway is misplaced." },
+                        { t: "Continue CPR, EtCO₂ is adequate", f: "Incorrect. EtCO2 < 10 is failure." },
+                        { t: "Administer epinephrine", f: "Drug won't fix the airway." }
+                    ],
                     correct: 1,
                     explanation: "Gurgling over epigastrium and low EtCO₂ (<10 mmHg) with poor chest rise indicates oesophageal placement. Remove LT immediately, ventilate with BVM, and re‑attempt airway insertion.",
                     kpi: "Recognition of misplaced airway and correction within 30 seconds"
@@ -222,7 +224,12 @@ window.CPG_DATA = {
                     id: "crit3",
                     scenario: "A 6‑year‑old child presents with severe respiratory distress, drooling, and tripod positioning. Temperature 39.5°C. There is no history of choking. What is the most likely diagnosis and appropriate airway management?",
                     question: "What is the correct approach?",
-                    options: ["Attempt direct laryngoscopy for foreign body", "Apply CPAP", "Minimal manipulation, supplemental oxygen, rapid transport", "Insert NPA"],
+                    options: [
+                        { t: "Attempt direct laryngoscopy for foreign body", f: "Dangerous. Can cause laryngospasm." },
+                        { t: "Apply CPAP", f: "Contraindicated in upper airway obstruction." },
+                        { t: "Minimal manipulation, supplemental oxygen, rapid transport", f: "Correct. Keep child calm." },
+                        { t: "Insert NPA", f: "Will cause distress/obstruction." }
+                    ],
                     correct: 2,
                     explanation: "This presentation suggests epiglottitis. Any airway manipulation (laryngoscopy, OPA, NPA) may cause complete obstruction. Keep child calm, allow position of comfort, administer high‑flow oxygen, and expedite transport to a paediatric facility.",
                     kpi: "Recognition of epiglottitis and avoidance of airway instrumentation"
@@ -231,7 +238,12 @@ window.CPG_DATA = {
                     id: "crit4",
                     scenario: "A 28‑year‑old male involved in a high‑speed RTC has significant facial trauma, suspected basal skull fracture (raccoon eyes, Battle's sign), and GCS 6. He has snoring respirations and SpO₂ 82% on 15 L O₂ via NRB. Jaw thrust is ineffective. What is the most appropriate airway intervention?",
                     question: "How should you secure the airway?",
-                    options: ["Insert NPA", "Insert OPA", "Attempt orotracheal intubation", "Insert LT"],
+                    options: [
+                        { t: "Insert NPA", f: "Contraindicated in basal skull fracture." },
+                        { t: "Insert OPA", f: "May not be sufficient." },
+                        { t: "Attempt orotracheal intubation", f: "Correct. Definitive airway needed." },
+                        { t: "Insert LT", f: "Contraindicated if gag reflex present (though GCS 6 suggests otherwise, intubation is preferred in trauma if skilled)." }
+                    ],
                     correct: 2,
                     explanation: "NPA is contraindicated in basal skull fracture. OPA may be used if gag reflex is absent. Given GCS 6 and failed jaw thrust, orotracheal intubation is indicated. C‑spine immobilisation must be maintained during intubation.",
                     kpi: "Successful intubation on first attempt in difficult airway"
@@ -240,7 +252,12 @@ window.CPG_DATA = {
                     id: "crit5",
                     scenario: "You are called to a 3‑year‑old child who was found face‑down in a swimming pool. Bystander removed him from water, he is apnoeic and pulseless. What is the sequence of airway and breathing interventions?",
                     question: "What is the correct initial approach?",
-                    options: ["Start chest compressions immediately", "Give 2 initial ventilations, then start CPR 30:2", "Give 5 initial rescue breaths, then start CPR 15:2", "Suction airway for 20 seconds then ventilate"],
+                    options: [
+                        { t: "Start chest compressions immediately", f: "Incorrect. Hypoxic arrest needs breaths." },
+                        { t: "Give 2 initial ventilations, then start CPR 30:2", f: "Old protocol." },
+                        { t: "Give 5 initial rescue breaths, then start CPR 15:2", f: "Correct. Paediatric drowning protocol." },
+                        { t: "Suction airway for 20 seconds then ventilate", f: "Delay in ventilation." }
+                    ],
                     correct: 2,
                     explanation: "In paediatric drowning, hypoxia is the primary cause of arrest. Give 5 initial rescue breaths before starting compressions. Use 15:2 ratio if two rescuers.",
                     kpi: "Initial rescue breaths delivered within 1 minute"
@@ -552,26 +569,4 @@ window.CPG_DATA = {
             ],
             quiz: [
                 { q: "What is the recommended initial Tidal Volume (TV) setting?", options: ["10 ml/kg actual weight", "6-8 ml/kg ideal body weight", "500 ml fixed", "10-12 ml/kg"], correct: 1, explanation: "6-8 ml/kg of IBW prevents volutrauma. Lungs do not grow with obesity." },
-                { q: "If a ventilated patient suddenly desaturates and becomes hypotensive, what is the FIRST action?", options: ["Increase PEEP", "Suction immediately", "Disconnect vent and bag manually (BVM)", "Check power source"], correct: 2, explanation: "Disconnecting allows you to feel lung compliance (bagging) and rules out ventilator failure. It is the first step in the DOPE protocol." },
-                { q: "What does the 'P' in the DOPE mnemonic stand for?", options: ["PEEP", "Pneumonia", "Pneumothorax", "Position"], correct: 2, explanation: "Pneumothorax (Tension) is a life-threatening cause of deterioration in ventilated patients." },
-                { q: "A 'Low Pressure' alarm usually indicates:", options: ["Secretions", "Bronchospasm", "Circuit disconnection / Cuff leak", "Pneumothorax"], correct: 2, explanation: "Low pressure means the machine is meeting no resistance, usually due to a leak or disconnection." },
-                { q: "For an Asthma patient on a ventilator, how should you adjust the I:E ratio?", options: ["1:1", "1:2", "1:4", "2:1"], correct: 2, explanation: "Asthmatics need more time to exhale to prevent air trapping. A ratio of 1:4 or 1:5 is preferred." }
-            ],
-            critical: [
-                {
-                    id: "crit_2_5_1",
-                    scenario: "You have intubated a trauma patient. En route, the 'High Pressure' alarm sounds constantly, SpO2 drops to 85%, and BP drops to 70/40. Trachea is deviated.",
-                    question: "What is the priority intervention?",
-                    options: [
-                        { t: "Suction the tube", f: "Incorrect. Signs point to tension pneumo." },
-                        { t: "Needle Decompression (Thoracostomy)", f: "Correct. High pressure + shock + deviation = Tension Pneumothorax." },
-                        { t: "Increase PEEP", f: "Dangerous. Will worsen hypotension." }
-                    ],
-                    correct: 1,
-                    explanation: "This is a classic description of Tension Pneumothorax in a ventilated patient (P in DOPE). Immediate decompression is required.",
-                    kpi: "Recognition of Tension Pneumothorax in ventilated patient"
-                }
-            ]
-        }
-    ]
-};
+                { q: "If a ventilated patient suddenly desaturates and becomes hypotensive, what is the FIRST action?", options: ["Increase PEEP", "
