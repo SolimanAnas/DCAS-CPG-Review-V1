@@ -47,7 +47,7 @@
             color: var(--text-secondary);
             opacity: 0.7;
         }
-        /* Redesigned clear button */
+        /* Clear button */
         .search-container button {
             background: transparent;
             border: none;
@@ -77,7 +77,7 @@
             display: none;
         }
 
-        /* Special card style for c0 and c-index – normal glass background */
+        /* Special card style for c0 and c-index */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -120,7 +120,7 @@
             border-left-color: #3498db;
         }
 
-        /* Progress popup (unchanged) */
+        /* Progress popup */
         .progress-popup {
             position: absolute;
             top: 60px;
@@ -189,22 +189,25 @@
             white-space: nowrap;
         }
 
-        /* Button container – flexbox with centering for better small‑screen alignment */
+        /* Button container – flex with equal width buttons */
         .menu-sub-options {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             margin-top: 16px;
         }
         .btn-action {
-            flex: 0 1 auto;
-            min-width: 100px; /* consistent width */
+            flex: 1 1 0%; /* equal width */
+            min-width: 80px; /* prevent too small */
+            text-align: center;
+            padding: 10px 8px;
+            font-size: 0.85rem;
         }
         @media (max-width: 480px) {
             .btn-flash {
                 font-size: 0.75rem;
-                padding: 8px 10px;
+                padding: 8px 4px;
             }
         }
 
@@ -248,6 +251,34 @@
         progress::-webkit-progress-value {
             background-color: var(--primary-accent);
             border-radius: 10px;
+        }
+
+        /* Floating scroll-to-bottom button */
+        .scroll-to-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.2s, background 0.2s;
+            z-index: 999;
+        }
+        .scroll-to-bottom:hover {
+            transform: scale(1.1);
+            background: var(--toggle-active);
+        }
+        .scroll-to-bottom:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -296,6 +327,9 @@
     <div><a href="about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
 </footer>
 
+<!-- Floating scroll-to-bottom button -->
+<button class="scroll-to-bottom" id="scrollToBottomBtn" title="Go to progress dashboard">↓</button>
+
 <script>
     (function(){
         "use strict";
@@ -339,6 +373,15 @@
         
         progressToggle.addEventListener('click', togglePopup);
         document.addEventListener('click', hidePopup);
+
+        // ---------- SCROLL TO BOTTOM ----------
+        const scrollBtn = document.getElementById('scrollToBottomBtn');
+        scrollBtn.addEventListener('click', () => {
+            const statsCard = document.getElementById('statsCard');
+            if (statsCard) {
+                statsCard.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
 
         // ---------- ENCOURAGEMENT ----------
         const ENCOURAGEMENTS = [
@@ -512,9 +555,7 @@
                 }
 
                 const isChecked = completion[ch.id] || false;
-                const showFlashcardsQuiz = true;
-                const showCritical = ch.hasCritical;
-
+                // Always show 4 buttons for all non-special cards
                 return `
                     <div class="menu-card" data-chapter="${ch.chapterGroup || 'none'}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
                         <div class="card-header">
@@ -535,13 +576,9 @@
                         
                         <div class="menu-sub-options">
                             <a href="chapters/${baseFile}.html?view=summary${sec}" class="btn-action btn-summary">📘 Summary</a>
-                            ${showFlashcardsQuiz ? `
-                                <a href="chapters/${baseFile}.html?view=flashcards${sec}" class="btn-action btn-flash">⚡ Flashcards</a>
-                                <a href="chapters/${baseFile}.html?view=quiz${sec}" class="btn-action btn-quiz">📝 Quiz</a>
-                            ` : ''}
-                            ${showCritical ? `
-                                <a href="chapters/${baseFile}.html?view=critical${sec}" class="btn-action btn-scenario">🚑 Scenario</a>
-                            ` : ''}
+                            <a href="chapters/${baseFile}.html?view=flashcards${sec}" class="btn-action btn-flash">⚡ Flashcards</a>
+                            <a href="chapters/${baseFile}.html?view=quiz${sec}" class="btn-action btn-quiz">📝 Quiz</a>
+                            <a href="chapters/${baseFile}.html?view=critical${sec}" class="btn-action btn-scenario">🚑 Scenario</a>
                         </div>
                     </div>
                 `;
