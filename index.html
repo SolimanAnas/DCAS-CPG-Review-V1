@@ -77,7 +77,7 @@
             display: none;
         }
 
-        /* Special card style for c0 and c-index – now with normal glass background */
+        /* Special card style for c0 and c-index – normal glass background */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -189,16 +189,19 @@
             white-space: nowrap;
         }
 
-        /* Menu button grid – improved centering on small screens */
+        /* Button container – flexbox with centering for better small‑screen alignment */
         .menu-sub-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .btn-action {
+            flex: 0 1 auto;
+            min-width: 100px; /* consistent width */
         }
         @media (max-width: 480px) {
-            .menu-sub-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
             .btn-flash {
                 font-size: 0.75rem;
                 padding: 8px 10px;
