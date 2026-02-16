@@ -8,6 +8,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- PWA Manifest and icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    <link rel="apple-touch-icon" href="icons/icon.png">
+    
     <style>
         .about-card {
             background: var(--glass-bg);
@@ -108,6 +114,13 @@
     </div>
     <div class="header-right">
         <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
+        <div class="stats-badge" id="liveStatsBadge">
+            <span>📊 <span id="statsAttempts">0</span></span>
+            <div class="stats-divider"></div>
+            <span>🎯 <span id="statsCritical">0%</span></span>
+        </div>
+        <a href="chapters/c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+        <a href="about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
 </header>
 
@@ -129,7 +142,7 @@
         </div>
         
         <h3>Author</h3>
-        <p>Created by <strong>Soliman Anas Soliman</strong><br>Emergency Medical Technician</p>
+        <p>Created by <strong>Soliman Anas Soliman</strong><br>EMT, RN, MSN, MBA, Graphic Designer and Junior Web Developer</p>
         
         <h3>Features</h3>
         <ul>
@@ -199,7 +212,30 @@
             e.preventDefault();
             window.location.href = 'index.html';
         });
+
+        // Stats badge update
+        function loadStats() {
+            try {
+                const data = localStorage.getItem('dcas_cpg_stats');
+                const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
+                const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
+                document.getElementById('statsAttempts').innerText = stats.totalAttempts || 0;
+                document.getElementById('statsCritical').innerText = `${critAcc}%`;
+            } catch(e) {}
+        }
+        loadStats();
     })();
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('PWA Ready!', reg))
+                .catch(err => console.log('PWA Failed', err));
+        });
+    }
 </script>
 </body>
 </html>
