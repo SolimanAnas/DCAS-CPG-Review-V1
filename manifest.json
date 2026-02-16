@@ -1,0 +1,17 @@
+{
+  "name": "DCAS CPG 2025 Review",
+  "short_name": "DCAS 2025",
+  "description": "Clinical Practice Guidelines Review Platform",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f2027",
+  "theme_color": "#0056b3",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
