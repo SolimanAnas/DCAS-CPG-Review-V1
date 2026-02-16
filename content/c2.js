@@ -67,8 +67,6 @@ window.CPG_DATA = {
                 </div>
             `,
             quiz: [
-                // 60 quiz questions (unchanged) – too long to list here, but they exist.
-                // We'll keep them as they were.
                 { q: "What is the first step in managing a patient with suspected airway compromise?", options: ["Insert OPA", "Head‑tilt/chin‑lift", "Assess responsiveness and breathing", "Suction the airway"], correct: 2, explanation: "Assessment always precedes intervention. Check for signs of life, breathing, and level of consciousness first." },
                 { q: "Which airway manoeuvre is indicated in a trauma patient with possible c‑spine injury?", options: ["Head‑tilt/chin‑lift", "Jaw thrust", "Neck hyperextension", "Tongue traction"], correct: 1, explanation: "Jaw thrust moves the mandible forward without moving the neck, maintaining spinal alignment." },
                 { q: "How do you size an oropharyngeal airway (OPA)?", options: ["Earlobe to corner of mouth", "Tragus to corner of mouth", "Nostril to tragus", "Incisors to angle of mandible"], correct: 0, explanation: "Measure from the corner of the mouth to the earlobe. This approximates the distance from teeth to pharynx." },
