@@ -243,6 +243,181 @@ window.CPG_DATA = {
                     kpi: "Initial rescue breaths delivered within 1 minute"
                 }
             ]
-        }
+        // ============================================================
+        // 2.2 FOREIGN BODY AIRWAY OBSTRUCTION (FBAO)
+        // ============================================================
+        {
+            id: "c2s2",
+            shortTitle: "2.2 FBAO",
+            summary: `
+                <div class="sum-card">
+                    <h3 style="color:var(--accent-airway);">🍖 2.2 Foreign Body Airway Obstruction</h3>
+                    
+                    <h4>1. Assessment of Severity</h4>
+                    <ul>
+                        <li><strong>Mild Obstruction (Effective Cough):</strong> Patient can speak, cry, or cough effectively. loud noise.</li>
+                        <li><strong>Severe Obstruction (Ineffective Cough):</strong> Patient cannot speak, breath sounds are quiet/silent, cyanosis, conscious but distressed.</li>
+                    </ul>
+
+                    <h4>2. Management - Conscious Adult</h4>
+                    <ul>
+                        <li><strong>Mild:</strong> Encourage coughing. Do NOT intervene physically. Monitor.</li>
+                        <li><strong>Severe:</strong> 
+                            <ol>
+                                <li>Give <strong>5 Back Blows</strong> (between shoulder blades).</li>
+                                <li>If unsuccessful, give <strong>5 Chest Thrusts</strong> (sternal compression, similar to CPR but sharper/slower).</li>
+                                <li><strong>Note:</strong> DCAS Protocol prioritises Chest Thrusts over Abdominal Thrusts (Heimlich) to reduce organ injury risk.</li>
+                                <li>Repeat 5 Back Blows : 5 Chest Thrusts.</li>
+                            </ol>
+                        </li>
+                    </ul>
+
+                    <h4>3. Management - Unconscious Adult</h4>
+                    <ul>
+                        <li><strong>Start CPR immediately</strong> (30 compressions : 2 breaths).</li>
+                        <li>Do not check for a pulse.</li>
+                        <li><strong>Visual Check:</strong> Before each ventilation attempt, look in the mouth. Only remove a foreign body if it is <strong>solid and visible</strong>. Do not perform blind finger sweeps.</li>
+                        <li>Continue CPR until recovery or handover.</li>
+                    </ul>
+
+                    <h4>4. Special Groups (Paediatric/Infant)</h4>
+                    <ul>
+                        <li><strong>Infant (<1 year):</strong> 5 Back Blows (head down) : 5 Chest Thrusts (two fingers). <strong>NO abdominal thrusts.</strong></li>
+                        <li><strong>Child (>1 year):</strong> 5 Back Blows : 5 Chest Thrusts.</li>
+                    </ul>
+                </div>
+            `,
+            flashcards: [
+                { category: "Assessment", question: "Sign of severe airway obstruction?", answer: "Silent cough, inability to speak/breathe, cyanosis." },
+                { category: "Assessment", question: "Action for Mild Obstruction?", answer: "Encourage coughing. Continuous observation." },
+                { category: "Adult", question: "Conscious Adult Sequence?", answer: "5 Back Blows : 5 Chest Thrusts." },
+                { category: "Adult", question: "Are Abdominal Thrusts recommended?", answer: "No. DCAS prefers Chest Thrusts." },
+                { category: "Unconscious", question: "First action if patient becomes unconscious?", answer: "Start CPR immediately (Compressions)." },
+                { category: "Unconscious", question: "When to check for object during CPR?", answer: "Before every ventilation attempt." },
+                { category: "Technique", question: "Blind finger sweeps?", answer: "Contraindicated. Only remove visible solid objects." },
+                { category: "Infant", question: "Infant FBAO technique?", answer: "5 Back Blows (gravity assist) : 5 Chest Thrusts." },
+                { category: "Complications", question: "Risk of abdominal thrusts?", answer: "Internal organ injury (liver/spleen rupture)." },
+                { category: "Post-Resus", question: "Post-clearance care?", answer: "Transport for assessment (risk of airway oedema/trauma)." }
+            ],
+            quiz: [
+                { q: "What is the primary intervention for a conscious adult with severe FBAO after back blows fail?", options: ["Abdominal Thrusts", "Chest Thrusts", "Immediate CPR", "Blind Finger Sweep"], correct: 1, explanation: "DCAS CPG recommends 5 Chest Thrusts if back blows fail, avoiding abdominal thrusts." },
+                { q: "You are managing a choking victim who suddenly becomes unresponsive. What is your immediate action?", options: ["Check for a pulse", "Administer 2 rescue breaths", "Start Chest Compressions", "Perform a blind finger sweep"], correct: 2, explanation: "If an FBAO patient becomes unconscious, start CPR immediately with compressions. Do not check for a pulse." },
+                { q: "Which of the following indicates a MILD airway obstruction?", options: ["Silent chest", "Inability to speak", "Loud, effective cough", "Central cyanosis"], correct: 2, explanation: "A loud, effective cough indicates air is still moving. Encourage coughing." },
+                { q: "Why are blind finger sweeps contraindicated?", options: ["They cause vomiting", "They may push the object deeper", "They cause bradycardia", "They require sterile gloves"], correct: 1, explanation: "Blind sweeps risk pushing the foreign body further into the airway, worsening the obstruction." },
+                { q: "For an infant (<1 year) with severe FBAO, what is the correct ratio of blows/thrusts?", options: ["5 Back : 5 Abdominal", "5 Back : 5 Chest", "3 Back : 3 Chest", "Continuous Back Blows"], correct: 1, explanation: "5 Back Blows followed by 5 Chest Thrusts. Abdominal thrusts are unsafe for infants." }
+            ],
+            critical: [
+                {
+                    id: "crit_2_2_1",
+                    scenario: "A 50-year-old male is choking at a restaurant. He is conscious but cannot speak or cough effectively. He is clutching his throat (universal sign). You have performed 5 back blows without success.",
+                    question: "What is your next specific intervention?",
+                    options: [
+                        { t: "Heimlich Maneuver (Abdominal Thrusts)", f: "Incorrect. DCAS protocol prefers Chest Thrusts." },
+                        { t: "5 Chest Thrusts", f: "Correct. Perform 5 chest thrusts (sternal compressions) standing behind the patient." },
+                        { t: "Start CPR", f: "Incorrect. Patient is still conscious." }
+                    ],
+                    correct: 1,
+                    explanation: "Follow the cycle: 5 Back Blows -> 5 Chest Thrusts. Chest thrusts generate airway pressure with less risk of visceral injury than abdominal thrusts.",
+                    kpi: "Correct FBAO Cycle (5:5)"
+                },
+                {
+                    id: "crit_2_2_2",
+                    scenario: "While treating a choking infant, the infant becomes limp and unresponsive.",
+                    question: "What is the priority action?",
+                    options: [
+                        { t: "Continue back blows", f: "Incorrect. Patient is now unconscious." },
+                        { t: "Place on firm surface and start CPR (30:2) or (15:2)", f: "Correct. Initiate CPR. Look in mouth before breaths." },
+                        { t: "Intubate immediately", f: "Incorrect. Basic CPR and visualization come first." }
+                    ],
+                    correct: 1,
+                    explanation: "Unconsciousness mandates immediate CPR. The chest compressions may help dislodge the object. Check airway before ventilation.",
+                    kpi: "Transition to CPR upon unconsciousness"
+                }
+            ]
+        },
+
+        // ============================================================
+        // 2.3 ASTHMA
+        // ============================================================
+        {
+            id: "c2s3",
+            shortTitle: "2.3 Asthma",
+            summary: `
+                <div class="sum-card">
+                    <h3 style="color:var(--accent-airway);">🫁 2.3 Asthma Management</h3>
+                    
+                    <h4>1. Assessment & Severity</h4>
+                    <ul>
+                        <li><strong>Moderate:</strong> Speaking in phrases, SpO₂ >92%, moderate wheeze.</li>
+                        <li><strong>Severe:</strong> Speaking in words, SpO₂ <92%, HR >110, RR >25, accessory muscle use.</li>
+                        <li><strong>Life-Threatening:</strong> Silent chest, cyanosis, poor respiratory effort, confusion/exhaustion, SpO₂ <92% despite O₂.</li>
+                    </ul>
+
+                    <h4>2. Pharmacological Management</h4>
+                    <ul>
+                        <li><strong>Salbutamol (Ventolin):</strong> 5 mg Nebulized (repeat back-to-back).</li>
+                        <li><strong>Ipratropium Bromide (Atrovent):</strong> 500 mcg Nebulized (repeat x3).</li>
+                        <li><strong>Hydrocortisone:</strong> 100 mg IV/IM (slow push).</li>
+                        <li><strong>Magnesium Sulfate:</strong> 2 g IV infusion over 20 mins (for severe/life-threatening).</li>
+                        <li><strong>Adrenaline (Epinephrine) 1:1000:</strong> 500 mcg IM (0.5 mL) if life-threatening/anaphylactic component or no response to nebs.</li>
+                    </ul>
+
+                    <h4>3. Ventilation Strategy</h4>
+                    <ul>
+                        <li><strong>Oxygen:</strong> Titrate to 94-98%.</li>
+                        <li><strong>BVM:</strong> If assisting, allow prolonged expiratory phase (to prevent air trapping/stacking).</li>
+                        <li><strong>CPAP:</strong> Use with caution. Only if exhausting and alert.</li>
+                    </ul>
+                </div>
+            `,
+            flashcards: [
+                { category: "Drugs", question: "Salbutamol Dose (Adult)?", answer: "5 mg Nebulized." },
+                { category: "Drugs", question: "Ipratropium Dose (Adult)?", answer: "500 mcg Nebulized." },
+                { category: "Drugs", question: "Hydrocortisone Dose?", answer: "100 mg IV/IM." },
+                { category: "Drugs", question: "Adrenaline Dose for Life-Threatening Asthma?", answer: "500 mcg (0.5mg) IM (1:1000)." },
+                { category: "Drugs", question: "Magnesium Sulfate Dose?", answer: "2 g IV over 20 minutes." },
+                { category: "Assessment", question: "Sign of Life-Threatening Asthma?", answer: "Silent chest, confusion, exhaustion, bradycardia." },
+                { category: "Ventilation", question: "Key BVM consideration in asthma?", answer: "Allow prolonged expiration to prevent breath stacking." },
+                { category: "Pathophysiology", question: "Why 'Silent Chest' is bad?", answer: "Indicates minimal air movement (severe obstruction)." },
+                { category: "Target", question: "SpO2 Target?", answer: "94-98%." },
+                { category: "Paediatric", question: "Salbutamol Dose (<5 years)?", answer: "2.5 mg Nebulized." }
+            ],
+            quiz: [
+                { q: "What is the dose of IM Adrenaline for a patient with life-threatening asthma failing nebulizer therapy?", options: ["1 mg 1:10,000", "500 mcg 1:1,000", "300 mcg 1:1,000", "100 mcg 1:10,000"], correct: 1, explanation: "Adult dose is 500 mcg (0.5 mL) of 1:1000 IM. This provides potent bronchodilation." },
+                { q: "Which clinical sign indicates 'Life-Threatening' asthma rather than just 'Severe'?", options: ["Respiratory rate 30", "Silent chest", "Loud expiratory wheeze", "Tachycardia 120"], correct: 1, explanation: "A silent chest implies air movement is so poor that wheezing cannot be generated. It is a pre-arrest sign." },
+                { q: "What is the correct administration rate for IV Magnesium Sulfate in asthma?", options: ["Rapid bolus", "Over 2-5 minutes", "Over 20 minutes", "Over 1 hour"], correct: 2, explanation: "Magnesium Sulfate 2g should be infused over 20 minutes to avoid hypotension and arrhythmias." },
+                { q: "When ventilating an asthmatic patient with a BVM, you should:", options: ["Ventilate rapidly to clear CO2", "Use high PEEP", "Allow prolonged expiratory time", "Hyperventilate"], correct: 2, explanation: "Asthmatics trap air. Rapid ventilation causes 'breath stacking' (auto-PEEP), leading to barotrauma and cardiac arrest. Allow time to exhale." },
+                { q: "Hydrocortisone is classified as a:", options: ["Beta-agonist", "Anticholinergic", "Corticosteroid", "Muscle relaxant"], correct: 2, explanation: "It is a corticosteroid used to reduce airway inflammation (onset takes hours, so give early)." }
+            ],
+            critical: [
+                {
+                    id: "crit_2_3_1",
+                    scenario: "A 22-year-old male with asthma presents with confusion, 'silent chest' on auscultation, and SpO2 85%. He is too exhausted to hold the nebulizer mask. HR 140, dropping to 100.",
+                    question: "What is the immediate priority intervention?",
+                    options: [
+                        { t: "Set up IV Magnesium", f: "Too slow. Patient is peri-arrest." },
+                        { t: "Administer IM Adrenaline 500mcg and assist ventilation", f: "Correct. IM Adrenaline is the fastest bronchodilator for life-threats. BVM support is needed." },
+                        { t: "Wait for hydrocortisone to work", f: "Incorrect. Steroids take hours." }
+                    ],
+                    correct: 1,
+                    explanation: "Confusion and silent chest indicate imminent arrest. IM Adrenaline is indicated immediately while preparing for BVM ventilation.",
+                    kpi: "Recognition of Silent Chest & IM Adrenaline use"
+                },
+                {
+                    id: "crit_2_3_2",
+                    scenario: "You are ventilating an asthmatic patient who has arrested. You notice the BVM is becoming hard to squeeze and BP is dropping.",
+                    question: "What is the likely cause and solution?",
+                    options: [
+                        { t: "Equipment failure; change BVM", f: "Unlikely." },
+                        { t: "Breath stacking (Air trapping); disconnect BVM to allow exhalation", f: "Correct. Allow trapped air to escape (apnea period)." },
+                        { t: "Pneumothorax; ignore it", f: "Incorrect." }
+                    ],
+                    correct: 1,
+                    explanation: "Dynamic hyperinflation (gas trapping) increases intrathoracic pressure, reducing venous return. Disconnecting the bag allows passive exhalation and restores circulation.",
+                    kpi: "Management of breath stacking in arrest"
+                }
+            ]
+             
+        
     ]
 };
