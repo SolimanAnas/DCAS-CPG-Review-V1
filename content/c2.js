@@ -4,9 +4,6 @@ window.CPG_DATA = {
     title: "Airway Management",
     shortTitle: "2.0 Airway & Breathing",
     sections: [
-        // ============================================================
-        // 2.1 AIRWAY MANAGEMENT (unchanged – 60 questions, 60 flashcards, 5 critical)
-        // ============================================================
         {
             id: "c2s1",
             shortTitle: "2.1 Airway Management",
@@ -193,7 +190,7 @@ window.CPG_DATA = {
                 { category: "Documentation", question: "Airway KPI #2?", answer: "Administer oxygen to all patients with SpO₂ <92% (when appropriate)." }
             ],
             critical: [
-                // 5 critical scenarios (unchanged)
+            
                 {
                     id: "crit1",
                     scenario: "You are called to a nursing home for an 82‑year‑old female found unresponsive in bed. She has a history of dementia and COPD. She has agonal breathing at 4/min, central cyanosis, and a weak carotid pulse at 50 bpm. SpO₂ is unreadable. What is your FIRST airway intervention?",
