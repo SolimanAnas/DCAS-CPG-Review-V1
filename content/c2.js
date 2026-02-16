@@ -1,9 +1,12 @@
-/* ========== Chapter 2.1 – Airway Management (60 Q, 60 FC, Summary, Critical) ========== */
+/* ========== Chapter 2 – Airway & Breathing (Full with subsections 2.1–2.5) ========== */
 window.CPG_DATA = {
     id: "c2",
     title: "Airway Management",
-    shortTitle: "2.1 Airway & Breathing",
+    shortTitle: "2.0 Airway & Breathing",
     sections: [
+        // ============================================================
+        // 2.1 AIRWAY MANAGEMENT (Core)
+        // ============================================================
         {
             id: "c2s1",
             shortTitle: "2.1 Airway Management",
@@ -242,8 +245,9 @@ window.CPG_DATA = {
                     explanation: "In paediatric drowning, hypoxia is the primary cause of arrest. Give 5 initial rescue breaths before starting compressions. Use 15:2 ratio if two rescuers.",
                     kpi: "Initial rescue breaths delivered within 1 minute"
                 }
-                },
             ]
+        },
+
         // ============================================================
         // 2.2 FOREIGN BODY AIRWAY OBSTRUCTION (FBAO)
         // ============================================================
@@ -418,7 +422,9 @@ window.CPG_DATA = {
                     kpi: "Management of breath stacking in arrest"
                 }
             ]
-          // ============================================================
+        },
+
+        // ============================================================
         // 2.4 COPD
         // ============================================================
         {
@@ -566,7 +572,6 @@ window.CPG_DATA = {
                     kpi: "Recognition of Tension Pneumothorax in ventilated patient"
                 }
             ]
-        }   
-        
+        }
     ]
 };
