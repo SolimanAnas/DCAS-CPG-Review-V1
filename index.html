@@ -9,13 +9,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Shared stylesheet (contains all themes and components) -->
+    <!-- Shared stylesheet -->
     <link rel="stylesheet" href="styles.css">
     
     <!-- PWA Manifest and icons -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0056b3">
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
         /* Additional style for search bar */
@@ -60,51 +60,87 @@
         .menu-card.filtered-out {
             display: none;
         }
-        /* Special card style for c0 and c-index */
+        /* Special card style for c0 and c-index – lighter, thinner, with distinct left border */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            padding: 20px;
+            padding: 16px 20px; /* thinner */
             box-shadow: var(--glass-shadow);
             text-decoration: none;
             color: inherit;
             display: block;
+            border-left-width: 6px;
+            border-left-style: solid;
+            position: relative;
+            overflow: hidden;
         }
         .menu-card.special-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
         }
         .menu-card.special-card .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .menu-card.special-card .status-badge {
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            background: rgba(0,0,0,0.06);
-            padding: 4px 10px;
-            border-radius: 6px;
+            display: none; /* remove status badge */
         }
         .menu-card.special-card h2 {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin: 0 0 4px 0;
+            margin: 0 0 2px 0;
+            line-height: 1.2;
         }
         .menu-card.special-card p {
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin: 0;
+            line-height: 1.3;
         }
-        /* Footer visibility */
+        /* Distinct left border colors */
+        .menu-card.special-card[data-chapter="updates"] {
+            border-left-color: #f39c12;
+        }
+        .menu-card.special-card[data-chapter="index"] {
+            border-left-color: #3498db;
+        }
+        /* Progress popup */
+        .progress-popup {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--glass-shadow);
+            z-index: 1001;
+            min-width: 250px;
+            display: none;
+            color: var(--text-primary);
+        }
+        .progress-popup.show {
+            display: block;
+        }
+        .progress-popup .popup-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary-accent);
+        }
+        .progress-popup .popup-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .progress-popup .popup-quote {
+            margin-top: 16px;
+            font-style: italic;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--glass-border);
+            padding-top: 12px;
+        }
+        /* Footer */
         footer {
             text-align: center;
             padding: 30px 20px;
@@ -130,6 +166,52 @@
             color: inherit;
             text-decoration: underline;
         }
+        /* Ensure flashcards button text does not wrap */
+        .btn-flash {
+            white-space: nowrap;
+        }
+        /* Adjust for very small screens */
+        @media (max-width: 480px) {
+            .btn-flash {
+                font-size: 0.75rem;
+                padding: 8px 10px;
+            }
+            .menu-sub-options {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+        }
+        /* Offline download button */
+        .offline-download {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .download-btn {
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .download-progress {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -146,17 +228,33 @@
     </div>
     <div class="header-right" id="headerShortcuts">
         <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
-        <div class="stats-badge" id="liveStatsBadge">
-            <span>📊 <span id="statsAttempts">0</span></span>
-            <div class="stats-divider"></div>
-            <span>🎯 <span id="statsCritical">0%</span></span>
-        </div>
+        <button class="icon-btn" id="progressToggle" title="Progress">📊</button>
         <a href="chapters/c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
         <a href="about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
 </header>
 
-<main id="mainContent"></main>
+<!-- Progress popup -->
+<div class="progress-popup" id="progressPopup">
+    <div class="popup-title">📊 Your Progress</div>
+    <div class="popup-item">
+        <span>Chapters Done:</span>
+        <span id="popupChaptersDone">0/0</span>
+    </div>
+    <div class="popup-item">
+        <span>Total Attempts:</span>
+        <span id="popupAttempts">0</span>
+    </div>
+    <div class="popup-item">
+        <span>Critical Accuracy:</span>
+        <span id="popupCritical">0%</span>
+    </div>
+    <div class="popup-quote" id="popupQuote">✨ Every review sharpens your skills.</div>
+</div>
+
+<main id="mainContent">
+    <!-- Dynamic content will be injected here -->
+</main>
 
 <footer>
     <div>Created by Soliman Anas · for study aid only</div>
@@ -189,6 +287,24 @@
         themeBtn.addEventListener('click', nextTheme);
         initTheme();
 
+        // ---------- PROGRESS POPUP ----------
+        const progressToggle = document.getElementById('progressToggle');
+        const progressPopup = document.getElementById('progressPopup');
+        
+        function togglePopup(e) {
+            e.stopPropagation();
+            progressPopup.classList.toggle('show');
+        }
+        
+        function hidePopup(e) {
+            if (!progressPopup.contains(e.target) && e.target !== progressToggle) {
+                progressPopup.classList.remove('show');
+            }
+        }
+        
+        progressToggle.addEventListener('click', togglePopup);
+        document.addEventListener('click', hidePopup);
+
         // ---------- ENCOURAGEMENT ----------
         const ENCOURAGEMENTS = [
             "Every review sharpens your skills.", "Progress, not perfection.", "Small steps lead to mastery.",
@@ -199,10 +315,10 @@
         // ---------- COMPLETE CHAPTER LIST (ALL CPG 2025) ----------
         const CHAPTERS = [
             // Special chapters (c0 and c-index)
-            { id: "c0", shortTitle: "2025 Updates", title: "What's New in 2025", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true },
-            { id: "c-index", shortTitle: "Index", title: "Full Table of Contents", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true },
+            { id: "c0", shortTitle: "2025 Updates", title: "What's New in 2025", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "updates" },
+            { id: "c-index", shortTitle: "Index", title: "Full Table of Contents", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "index" },
             
-            // Universal Care (6 sections – all buttons enabled)
+            // Universal Care (6 sections)
             { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", hasCritical: true, chapterFile: "c1", sectionParam: "c1s1", isFirstInChapter: true, chapterGroup: "universal" },
             { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", hasCritical: true, chapterFile: "c1", sectionParam: "c1s2", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", hasCritical: true, chapterFile: "c1", sectionParam: "c1s3", isFirstInChapter: false, chapterGroup: "universal" },
@@ -210,7 +326,7 @@
             { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", hasCritical: true, chapterFile: "c1", sectionParam: "c1s5", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", hasCritical: true, chapterFile: "c1", sectionParam: "c1s6", isFirstInChapter: false, chapterGroup: "universal" },
 
-            // Airway & Breathing (Corrected to point to c2.html + section IDs)
+            // Airway & Breathing
             { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", hasCritical: true, chapterFile: "c2", sectionParam: "c2s1", isFirstInChapter: true, chapterGroup: "airway" },
             { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", hasCritical: true, chapterFile: "c2", sectionParam: "c2s2", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", hasCritical: true, chapterFile: "c2", sectionParam: "c2s3", isFirstInChapter: false, chapterGroup: "airway" },
@@ -223,7 +339,7 @@
             { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
 
-            // Resuscitation
+            // Resuscitation (full list)
             { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", hasCritical: true, isFirstInChapter: true, chapterGroup: "resus" },
             { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
@@ -288,7 +404,7 @@
             // Major Incident Triage
             { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", hasCritical: true, isFirstInChapter: true, chapterGroup: "mci" },
 
-            // Scope & Medications (no critical scenarios)
+            // Scope & Medications
             { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", hasCritical: false, isFirstInChapter: true, chapterGroup: "scope" },
             { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", hasCritical: false, isFirstInChapter: false, chapterGroup: "scope" }
         ];
@@ -305,11 +421,23 @@
             try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
         }
 
-        function updateStatsBadge() {
+        function updateProgressPopup() {
             const stats = loadStorage(STATS_KEY, { totalAttempts: 0, critical: { total: 0, correct: 0 } });
             const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
-            document.getElementById('statsAttempts').innerText = stats.totalAttempts || 0;
-            document.getElementById('statsCritical').innerText = `${critAcc}%`;
+            const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
+            const completion = loadStorage(COMPLETION_KEY, {});
+            const completedCount = Object.values(completion).filter(v => v).length;
+            const popupChapters = document.getElementById('popupChaptersDone');
+            const popupAttempts = document.getElementById('popupAttempts');
+            const popupCritical = document.getElementById('popupCritical');
+            const popupQuote = document.getElementById('popupQuote');
+            if (popupChapters) popupChapters.innerText = `${completedCount}/${totalChaps}`;
+            if (popupAttempts) popupAttempts.innerText = stats.totalAttempts || 0;
+            if (popupCritical) popupCritical.innerText = `${critAcc}%`;
+            if (popupQuote) {
+                const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+                popupQuote.innerText = `✨ ${quote}`;
+            }
         }
 
         window.app = window.app || {};
@@ -332,22 +460,26 @@
                 const sec = ch.sectionParam ? `&section=${ch.sectionParam}` : '';
                 
                 // Special handling for c0 and c-index
-                if (ch.id === 'c0' || ch.id === 'c-index') {
-                    // Clickable special card
+                if (ch.isSpecial) {
+                    let titleText, subtitleText;
+                    if (ch.id === 'c0') {
+                        titleText = "What's New";
+                        subtitleText = "2025 Updates";
+                    } else {
+                        titleText = "Index";
+                        subtitleText = "Full Table of Contents";
+                    }
                     return `
-                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.chapterGroup || 'none'}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
-                            <div class="card-header">
-                                <span class="status-badge">${ch.id.toUpperCase()}</span>
-                            </div>
-                            <h2>${ch.shortTitle}</h2>
-                            <p>${ch.title}</p>
+                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
+                            <h2>${titleText}</h2>
+                            <p>${subtitleText}</p>
                         </a>
                     `;
                 }
 
                 // Normal card for other chapters
                 const isChecked = completion[ch.id] || false;
-                const showFlashcardsQuiz = true; // all non-special have these
+                const showFlashcardsQuiz = true;
                 const showCritical = ch.hasCritical;
 
                 return `
@@ -382,7 +514,7 @@
                 `;
             }).join('');
 
-            // Stats Card
+            // Stats Card (still needed for overall progress bar)
             const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
             const completedCount = Object.values(completion).filter(v => v).length;
             const overallPercent = totalChaps ? Math.round((completedCount / totalChaps) * 100) : 0;
@@ -411,8 +543,12 @@
                 </div>
             `;
 
-            // Combine search bar + cards + stats
+            // Combine offline download button + search bar + cards + stats
             const fullHtml = `
+                <div class="offline-download">
+                    <button class="download-btn" id="downloadOfflineBtn">📥 Download All for Offline</button>
+                    <div class="download-progress" id="downloadProgress"></div>
+                </div>
                 <div class="search-container">
                     <input type="text" id="searchInput" placeholder="Search chapters..." value="${filterText.replace(/"/g, '&quot;')}">
                     <button id="searchClearBtn" ${filterText ? '' : 'style="display:none;"'}>✕</button>
@@ -424,7 +560,7 @@
             `;
 
             document.getElementById('mainContent').innerHTML = fullHtml;
-            updateStatsBadge();
+            updateProgressPopup();
 
             // Attach search listener
             const searchInput = document.getElementById('searchInput');
@@ -444,13 +580,65 @@
                 });
             }
 
-            // If filterText was provided, apply filter after rendering
+            // Offline download functionality
+            const downloadBtn = document.getElementById('downloadOfflineBtn');
+            const progressDiv = document.getElementById('downloadProgress');
+
+            async function downloadAllContent() {
+                if (!('caches' in window)) {
+                    progressDiv.innerText = 'Your browser does not support caching.';
+                    return;
+                }
+
+                downloadBtn.disabled = true;
+                progressDiv.innerText = 'Starting download...';
+
+                const base = window.location.origin + (window.location.pathname.includes('/DCAS-CPG-Review-V1') ? '/DCAS-CPG-Review-V1' : '') + '/';
+                const filesToCache = [
+                    '/',
+                    '/index.html',
+                    '/about.html',
+                    '/styles.css',
+                    '/app.js',
+                    '/manifest.json',
+                    '/icons/icon.png',
+                    '/images/image-01.png',
+                    ...CHAPTERS.filter(ch => !ch.isSpecial).map(ch => `/content/${ch.chapterFile || ch.id}.js`),
+                    ...CHAPTERS.filter(ch => !ch.isSpecial).map(ch => `/chapters/${ch.chapterFile || ch.id}.html`)
+                ].map(path => path.startsWith('/') ? base + path.slice(1) : base + path);
+
+                // Add special chapter files
+                filesToCache.push(base + 'content/c0.js', base + 'content/c-index.js');
+                filesToCache.push(base + 'chapters/c0.html', base + 'chapters/c-index.html');
+
+                const cache = await caches.open('dcas-cpg-v1');
+
+                let success = 0, failed = 0;
+                for (const url of filesToCache) {
+                    try {
+                        progressDiv.innerText = `Downloading ${url.split('/').pop()}...`;
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            await cache.put(url, response);
+                            success++;
+                        } else {
+                            failed++;
+                        }
+                    } catch (err) {
+                        failed++;
+                    }
+                }
+                progressDiv.innerText = `Download complete. ${success} files cached, ${failed} failed. You can now use the app offline.`;
+                downloadBtn.disabled = false;
+            }
+
+            downloadBtn.addEventListener('click', downloadAllContent);
+
             if (filterText) {
                 filterCards(filterText);
             }
         }
 
-        // Filter function
         function filterCards(text) {
             const cards = document.querySelectorAll('.menu-card');
             const lowerText = text.toLowerCase().trim();
