@@ -417,7 +417,155 @@ window.CPG_DATA = {
                     kpi: "Management of breath stacking in arrest"
                 }
             ]
-             
+          // ============================================================
+        // 2.4 COPD
+        // ============================================================
+        {
+            id: "c2s4",
+            shortTitle: "2.4 COPD",
+            summary: `
+                <div class="sum-card">
+                    <h3 style="color:var(--accent-airway);">🚬 2.4 COPD Exacerbation</h3>
+                    
+                    <h4>1. Assessment (The 'Blue Bloater' vs 'Pink Puffer')</h4>
+                    <ul>
+                        <li><strong>History:</strong> Smoking, home O2, previous ICU admits.</li>
+                        <li><strong>Signs:</strong> Pursed-lip breathing, barrel chest, wheeze/crackles, CO2 retention (drowsiness).</li>
+                    </ul>
+
+                    <h4>2. Oxygen Therapy (Critical)</h4>
+                    <ul>
+                        <li><strong>Target SpO₂:</strong> 88-92%.</li>
+                        <li><strong>Caution:</strong> High O₂ can suppress hypoxic drive and cause CO₂ narcosis (respiratory failure).</li>
+                        <li>Use Venturi mask if available for precise delivery, or nasal cannula.</li>
+                    </ul>
+
+                    <h4>3. Pharmacological Management</h4>
+                    <ul>
+                        <li><strong>Salbutamol:</strong> 5 mg Nebulized.</li>
+                        <li><strong>Ipratropium Bromide:</strong> 500 mcg Nebulized.</li>
+                        <li><strong>Hydrocortisone:</strong> 100 mg IV.</li>
+                        <li>Note: Use medical air to drive nebs if available/protocol allows, otherwise limit O₂ duration.</li>
+                    </ul>
+
+                    <h4>4. CPAP / BiPAP</h4>
+                    <ul>
+                        <li><strong>BiPAP (Bilevel):</strong> Preferred for COPD with hypercapnia (high CO₂). Helps unload respiratory muscles.</li>
+                        <li><strong>CPAP:</strong> Alternative if BiPAP unavailable. PEEP usually 5-10 cmH₂O.</li>
+                        <li><strong>Indications:</strong> Moderate-severe distress, tachypnoea, accessory muscle use, not improving with nebs.</li>
+                    </ul>
+                </div>
+            `,
+            flashcards: [
+                { category: "Oxygen", question: "COPD SpO2 Target?", answer: "88-92%." },
+                { category: "Pathophysiology", question: "Risk of high O2 in COPD?", answer: "Suppression of hypoxic drive (CO2 narcosis)." },
+                { category: "Drugs", question: "Standard Nebulizers for COPD?", answer: "Salbutamol & Ipratropium." },
+                { category: "Ventilation", question: "Preferred NIV mode for COPD?", answer: "BiPAP (supports ventilation & oxygenation)." },
+                { category: "Signs", question: "Sign of CO2 retention?", answer: "Drowsiness, confusion, bounding pulse, tremor." },
+                { category: "Drugs", question: "Steroid dose for COPD?", answer: "Hydrocortisone 100mg IV." },
+                { category: "Assessment", question: "What is 'Shark Fin' EtCO2 waveform?", answer: "Indicates bronchospasm/obstruction (Asthma/COPD)." },
+                { category: "Management", question: "Driving gas for nebulizers?", answer: "Air is preferred if prolonged; O2 limited to avoiding hyperoxia." },
+                { category: "History", question: "Key history question?", answer: "Previous intubations or ICU admissions?" },
+                { category: "Exclusion", question: "Contraindication to CPAP/BiPAP?", answer: "GCS < 13 (inability to protect airway), Vomiting, Pneumothorax." }
+            ],
+            quiz: [
+                { q: "What is the target SpO2 for a patient with a confirmed history of COPD?", options: ["94-98%", "88-92%", "100%", "92-96%"], correct: 1, explanation: "88-92% is the target to safely maintain oxygenation without suppressing the hypoxic respiratory drive." },
+                { q: "Which non-invasive ventilation mode is preferred for COPD exacerbations?", options: ["CPAP", "BiPAP", "High Flow Nasal Cannula", "BVM"], correct: 1, explanation: "BiPAP provides Inspiratory support (IPAP) to help blow off CO2 and Expiratory pressure (EPAP/PEEP) to keep airways open." },
+                { q: "A COPD patient on high-flow oxygen becomes drowsy and confused. What is the likely cause?", options: ["Stroke", "Hypoglycemia", "CO2 Narcosis / Hypercapnia", "Improvement in condition"], correct: 2, explanation: "High oxygen levels can reduce the drive to breathe in COPD retainers, leading to CO2 build-up and drowsiness." },
+                { q: "Ipratropium Bromide is an:", options: ["Anticholinergic", "Beta-agonist", "Steroid", "Antibiotic"], correct: 0, explanation: "Atrovent (Ipratropium) is an anticholinergic bronchodilator that dries secretions and dilates airways." },
+                { q: "Which EtCO2 waveform shape suggests bronchospasm (COPD/Asthma)?", options: ["Square box", "Shark Fin", "Flat line", "Rounded"], correct: 1, explanation: "The 'Shark Fin' appearance indicates prolonged expiratory phase due to airway obstruction." }
+            ],
+            critical: [
+                {
+                    id: "crit_2_4_1",
+                    scenario: "A 70-year-old male with COPD is extremely short of breath. RR 36, SpO2 82% on room air. He is alert but exhausted. You hear tight wheezes. Nebulizers have been started.",
+                    question: "The patient is not improving. What is the next best intervention?",
+                    options: [
+                        { t: "Intubate immediately", f: "Too aggressive. Try NIV first." },
+                        { t: "Start BiPAP (or CPAP)", f: "Correct. NIV is the gold standard to avoid intubation in COPD." },
+                        { t: "Increase O2 to 15L NRB", f: "Risk of hypercapnic failure." }
+                    ],
+                    correct: 1,
+                    explanation: "Non-Invasive Ventilation (BiPAP/CPAP) supports the tiring respiratory muscles and improves gas exchange, often preventing the need for intubation.",
+                    kpi: "Early utilisation of CPAP/BiPAP in COPD"
+                }
+            ]
+        },
+
+        // ============================================================
+        // 2.5 INVASIVE VENTILATION
+        // ============================================================
+        {
+            id: "c2s5",
+            shortTitle: "2.5 Invasive Vent",
+            summary: `
+                <div class="sum-card">
+                    <h3 style="color:var(--accent-airway);">🔌 2.5 Invasive Mechanical Ventilation</h3>
+                    <p><strong>Note:</strong> This section applies to Paramedics managing intubated patients.</p>
+
+                    <h4>1. Indications</h4>
+                    <ul>
+                        <li>Post-intubation management.</li>
+                        <li>GCS < 8 (inability to protect airway).</li>
+                        <li>Respiratory failure refractory to NIV.</li>
+                    </ul>
+
+                    <h4>2. Initial Ventilator Settings (Adult)</h4>
+                    <ul>
+                        <li><strong>Mode:</strong> SIMV or AC (Volume Control).</li>
+                        <li><strong>Tidal Volume (TV):</strong> 6-8 mL/kg of <em>Ideal Body Weight</em>.</li>
+                        <li><strong>Rate (f):</strong> 10-12 bpm (higher for acidosis/head injury, lower for asthma).</li>
+                        <li><strong>PEEP:</strong> 5 cmH₂O (higher if hypoxic/pulmonary edema).</li>
+                        <li><strong>FiO₂:</strong> 1.0 (100%) initially, then titrate to SpO₂ 94-98%.</li>
+                        <li><strong>I:E Ratio:</strong> 1:2 (standard). Adjust to 1:4 for Asthma/COPD.</li>
+                    </ul>
+
+                    <h4>3. Monitoring & D.O.P.E Mnemonic</h4>
+                    <p>If patient deteriorates (desaturation, hypotension, high pressure alarm):</p>
+                    <div class="highlight-box">
+                        <strong>D</strong> - Dislodgement (Tube moved?)<br>
+                        <strong>O</strong> - Obstruction (Secretions/kink?)<br>
+                        <strong>P</strong> - Pneumothorax (Decompression needed?)<br>
+                        <strong>E</strong> - Equipment (Ventilator/Oxygen failure?)
+                    </div>
+                    <p><strong>Action:</strong> Disconnect ventilator, bag manually with 100% O₂, assess chest.</p>
+                </div>
+            `,
+            flashcards: [
+                { category: "Settings", question: "Standard Tidal Volume?", answer: "6-8 mL/kg Ideal Body Weight." },
+                { category: "Settings", question: "Standard Respiratory Rate?", answer: "10-12 bpm." },
+                { category: "Settings", question: "Initial PEEP setting?", answer: "5 cmH₂O." },
+                { category: "Settings", question: "I:E Ratio for Asthma?", answer: "1:4 (prolonged expiration)." },
+                { category: "Troubleshooting", question: "DOPE: D?", answer: "Dislodgement." },
+                { category: "Troubleshooting", question: "DOPE: O?", answer: "Obstruction." },
+                { category: "Troubleshooting", question: "DOPE: P?", answer: "Pneumothorax." },
+                { category: "Troubleshooting", question: "DOPE: E?", answer: "Equipment Failure." },
+                { category: "Alarms", question: "Cause of High Pressure Alarm?", answer: "Kink, secretions, pneumothorax, coughing." },
+                { category: "Alarms", question: "Cause of Low Pressure Alarm?", answer: "Disconnection, cuff leak." }
+            ],
+            quiz: [
+                { q: "What is the recommended initial Tidal Volume (TV) setting?", options: ["10 ml/kg actual weight", "6-8 ml/kg ideal body weight", "500 ml fixed", "10-12 ml/kg"], correct: 1, explanation: "6-8 ml/kg of IBW prevents volutrauma. Lungs do not grow with obesity." },
+                { q: "If a ventilated patient suddenly desaturates and becomes hypotensive, what is the FIRST action?", options: ["Increase PEEP", "Suction immediately", "Disconnect vent and bag manually (BVM)", "Check power source"], correct: 2, explanation: "Disconnecting allows you to feel lung compliance (bagging) and rules out ventilator failure. It is the first step in the DOPE protocol." },
+                { q: "What does the 'P' in the DOPE mnemonic stand for?", options: ["PEEP", "Pneumonia", "Pneumothorax", "Position"], correct: 2, explanation: "Pneumothorax (Tension) is a life-threatening cause of deterioration in ventilated patients." },
+                { q: "A 'Low Pressure' alarm usually indicates:", options: ["Secretions", "Bronchospasm", "Circuit disconnection / Cuff leak", "Pneumothorax"], correct: 2, explanation: "Low pressure means the machine is meeting no resistance, usually due to a leak or disconnection." },
+                { q: "For an Asthma patient on a ventilator, how should you adjust the I:E ratio?", options: ["1:1", "1:2", "1:4", "2:1"], correct: 2, explanation: "Asthmatics need more time to exhale to prevent air trapping. A ratio of 1:4 or 1:5 is preferred." }
+            ],
+            critical: [
+                {
+                    id: "crit_2_5_1",
+                    scenario: "You have intubated a trauma patient. En route, the 'High Pressure' alarm sounds constantly, SpO2 drops to 85%, and BP drops to 70/40. Trachea is deviated.",
+                    question: "What is the priority intervention?",
+                    options: [
+                        { t: "Suction the tube", f: "Incorrect. Signs point to tension pneumo." },
+                        { t: "Needle Decompression (Thoracostomy)", f: "Correct. High pressure + shock + deviation = Tension Pneumothorax." },
+                        { t: "Increase PEEP", f: "Dangerous. Will worsen hypotension." }
+                    ],
+                    correct: 1,
+                    explanation: "This is a classic description of Tension Pneumothorax in a ventilated patient (P in DOPE). Immediate decompression is required.",
+                    kpi: "Recognition of Tension Pneumothorax in ventilated patient"
+                }
+            ]
+        }   
         }
     ]
 };
