@@ -47,18 +47,29 @@
             color: var(--text-secondary);
             opacity: 0.7;
         }
+        /* Redesigned clear button */
         .search-container button {
-            background: var(--primary-accent);
+            background: transparent;
             border: none;
-            border-radius: 40px;
-            padding: 10px 24px;
-            color: white;
-            font-weight: 600;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            margin-right: 4px;
+            padding: 0;
+        }
+        .search-container button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
         }
         .search-container button:active {
-            background: #003d80;
+            transform: scale(0.95);
         }
 
         /* Hide cards that don't match search */
@@ -66,13 +77,12 @@
             display: none;
         }
 
-        /* Special card style for c0 and c-index – lighter and more transparent */
+        /* Special card style for c0 and c-index – now with normal glass background */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            background: rgba(255,255,255,0.1); /* extra transparent */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: 24px;
             padding: 16px 20px;
             box-shadow: var(--glass-shadow);
@@ -81,9 +91,6 @@
             display: block;
             border-left-width: 6px;
             border-left-style: solid;
-        }
-        [data-theme="dark"] .menu-card.special-card {
-            background: rgba(0,0,0,0.2);
         }
         .menu-card.special-card:hover {
             transform: translateY(-4px);
@@ -190,7 +197,7 @@
         }
         @media (max-width: 480px) {
             .menu-sub-options {
-                grid-template-columns: repeat(2, 1fr); /* two columns, better centering */
+                grid-template-columns: repeat(2, 1fr);
             }
             .btn-flash {
                 font-size: 0.75rem;
@@ -592,7 +599,7 @@
             if (searchInput) {
                 searchInput.addEventListener('input', function(e) {
                     const val = e.target.value;
-                    if (clearBtn) clearBtn.style.display = val ? 'block' : 'none';
+                    if (clearBtn) clearBtn.style.display = val ? 'inline-flex' : 'none';
                     filterCards(val);
                 });
             }
@@ -641,7 +648,6 @@
 
                 for (const url of filesToCache) {
                     try {
-                        await fetch(url);
                         const response = await fetch(url);
                         if (response.ok) {
                             await cache.put(url, response);
