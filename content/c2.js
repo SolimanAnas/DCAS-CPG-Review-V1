@@ -71,20 +71,98 @@ window.CPG_DATA = {
                 { category: "Complications", question: "Risk of abdominal thrusts?", answer: "Internal organ injury (liver/spleen rupture)." },
                 { category: "Post-Resus", question: "Post-clearance care?", answer: "Transport for assessment (risk of airway oedema/trauma)." }
             ],
-            quiz: [
-                // original 5 quiz questions
-                { q: "What is the primary intervention for a conscious adult with severe FBAO after back blows fail?", options: ["Abdominal Thrusts", "Chest Thrusts", "Immediate CPR", "Blind Finger Sweep"], correct: 1, explanation: "DCAS CPG recommends 5 Chest Thrusts if back blows fail, avoiding abdominal thrusts." },
-                { q: "You are managing a choking victim who suddenly becomes unresponsive. What is your immediate action?", options: ["Check for a pulse", "Administer 2 rescue breaths", "Start Chest Compressions", "Perform a blind finger sweep"], correct: 2, explanation: "If an FBAO patient becomes unconscious, start CPR immediately with compressions. Do not check for a pulse." },
-                { q: "Which of the following indicates a MILD airway obstruction?", options: ["Silent chest", "Inability to speak", "Loud, effective cough", "Central cyanosis"], correct: 2, explanation: "A loud, effective cough indicates air is still moving. Encourage coughing." },
-                { q: "Why are blind finger sweeps contraindicated?", options: ["They cause vomiting", "They may push the object deeper", "They cause bradycardia", "They require sterile gloves"], correct: 1, explanation: "Blind sweeps risk pushing the foreign body further into the airway, worsening the obstruction." },
-                { q: "For an infant (<1 year) with severe FBAO, what is the correct ratio of blows/thrusts?", options: ["5 Back : 5 Abdominal", "5 Back : 5 Chest", "3 Back : 3 Chest", "Continuous Back Blows"], correct: 1, explanation: "5 Back Blows followed by 5 Chest Thrusts. Abdominal thrusts are unsafe for infants." },
-                // new 5 quiz questions
-                { q: "A conscious patient with FBAO has a weak, ineffective cough and is becoming cyanotic. What should you do?", options: ["Encourage coughing", "Begin with back blows", "Start CPR", "Perform abdominal thrusts"], correct: 1, explanation: "Severe obstruction requires immediate intervention with back blows." },
-                { q: "During CPR for an unresponsive FBAO victim, when do you check the mouth for a foreign object?", options: ["Before starting compressions", "After every 30 compressions", "Before giving rescue breaths", "After 2 minutes of CPR"], correct: 2, explanation: "Before each ventilation attempt, look in the mouth to remove any visible object." },
-                { q: "What is the preferred technique for an infant with severe FBAO?", options: ["5 back blows, then 5 chest thrusts", "5 back blows, then 5 abdominal thrusts", "Chest compressions only", "Finger sweep immediately"], correct: 0, explanation: "Infants receive 5 back blows followed by 5 chest thrusts. Abdominal thrusts are not used." },
-                { q: "Which of the following is a sign of mild FBAO?", options: ["Cyanosis", "Inability to speak", "Effective coughing", "Silent chest"], correct: 2, explanation: "Effective coughing indicates good air movement and mild obstruction." },
-                { q: "After successful removal of a foreign body, why is transport still recommended?", options: ["To check for underlying infection", "For assessment of airway oedema or trauma", "To administer antibiotics", "To complete paperwork"], correct: 1, explanation: "Even after clearance, there may be airway swelling or injury that requires evaluation." }
-            ],
+           quiz: [
+    {
+        q: "A 30‑year‑old asthmatic speaks in words only, has a respiratory rate of 28, heart rate 120, and SpO₂ 91% on room air. How would you classify this exacerbation?",
+        options: ["Mild", "Moderate", "Severe", "Life‑threatening"],
+        correct: 2,
+        explanation: "Severe asthma is defined by: speaking in words (not sentences), respiratory rate >25, heart rate >110, and SpO₂ <92%. This patient meets all these criteria."
+    },
+    {
+        q: "Which clinical sign indicates life‑threatening asthma?",
+        options: [
+            "Expiratory wheezing",
+            "Accessory muscle use",
+            "Silent chest on auscultation",
+            "Tachycardia >120"
+        ],
+        correct: 2,
+        explanation: "A silent chest is an ominous sign – it indicates minimal air movement due to severe bronchospasm and exhaustion. It is a pre‑arrest sign and requires immediate aggressive intervention (e.g., IM adrenaline, assisted ventilation)."
+    },
+    {
+        q: "What is the correct dose of nebulised salbutamol for an adult with acute severe asthma?",
+        options: ["2.5 mg", "5 mg", "7.5 mg", "10 mg"],
+        correct: 1,
+        explanation: "The standard adult dose is 5 mg nebulised salbutamol. It can be repeated back‑to‑back if necessary (continuous nebulisation in severe cases)."
+    },
+    {
+        q: "In a patient with life‑threatening asthma who is not improving with nebulised therapy, what is the next pharmacological intervention?",
+        options: [
+            "IV magnesium sulfate 2 g over 20 minutes",
+            "IV hydrocortisone 200 mg",
+            "IM adrenaline 500 mcg (1:1000)",
+            "IV aminophylline"
+        ],
+        correct: 2,
+        explanation: "IM adrenaline (500 mcg, 0.5 mL of 1:1000) is indicated in life‑threatening asthma, especially when there is doubt about anaphylaxis or no response to nebulisers. It provides rapid bronchodilation and circulatory support."
+    },
+    {
+        q: "What is the recommended dose and administration rate for IV magnesium sulfate in severe asthma?",
+        options: [
+            "2 g IV bolus over 1–2 minutes",
+            "2 g IV infusion over 20 minutes",
+            "4 g IV over 10 minutes",
+            "1 g IV over 5 minutes"
+        ],
+        correct: 1,
+        explanation: "Magnesium sulfate 2 g should be diluted in 100 mL normal saline and infused over 20 minutes to avoid hypotension and arrhythmias. It is not a first‑line drug but may help in severe cases."
+    },
+    {
+        q: "When ventilating an asthmatic patient with a bag‑valve‑mask, what is the most important consideration?",
+        options: [
+            "Ventilate rapidly to lower CO₂",
+            "Use high PEEP to keep airways open",
+            "Allow a prolonged expiratory time",
+            "Hyperventilate to compensate for acidosis"
+        ],
+        correct: 2,
+        explanation: "Asthmatics have prolonged expiration due to airway narrowing. Rapid ventilation leads to breath‑stacking (air trapping) and auto‑PEEP, which can cause hypotension and barotrauma. Allow enough time for exhalation – a rate of 6–8 breaths/min is often appropriate."
+    },
+    {
+        q: "What is the role of corticosteroids (e.g., hydrocortisone) in acute asthma?",
+        options: [
+            "Immediate bronchodilation",
+            "Reduction of airway inflammation (onset hours)",
+            "Relief of anxiety",
+            "Prevention of infection"
+        ],
+        correct: 1,
+        explanation: "Corticosteroids reduce airway inflammation, but their onset of action is 4–6 hours. They should be given early in moderate‑severe exacerbations to prevent deterioration and reduce relapse."
+    },
+    {
+        q: "A 5‑year‑old child with acute asthma is in moderate respiratory distress. What is the correct dose of nebulised salbutamol?",
+        options: ["1.25 mg", "2.5 mg", "5 mg", "7.5 mg"],
+        correct: 1,
+        explanation: "For children under 5 years, the usual dose is 2.5 mg nebulised salbutamol. Children over 5 years receive the adult dose (5 mg)."
+    },
+    {
+        q: "What is the target oxygen saturation for a patient with acute asthma?",
+        options: ["88–92%", "94–98%", "97–100%", "90–94%"],
+        correct: 1,
+        explanation: "Target SpO₂ is 94–98% for most patients. Avoid hyperoxia (100%) as it may cause vasoconstriction and doesn't improve outcomes."
+    },
+    {
+        q: "Which of the following is a contraindication to using CPAP in an asthmatic patient?",
+        options: [
+            "SpO₂ 90% on 15 L O₂",
+            "Accessory muscle use",
+            "Exhaustion",
+            "Unconsciousness"
+        ],
+        correct: 3,
+        explanation: "CPAP requires a conscious, cooperative patient who can protect their airway. Unconsciousness is an absolute contraindication – these patients need intubation and mechanical ventilation."
+    }
+],
             critical: [
                 {
                     id: "crit_2_2_1",
