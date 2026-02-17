@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index (with improved search UI) ========== */
+/* ========== c-index.js – Full CPG Index with Dynamic Filter ========== */
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -127,12 +127,12 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // ----- IMPROVED SEARCH BAR (icon inside, clear button inside) -----
+    // ----- SEARCH BAR (icon inside, clear button inside) -----
     html += `
         <div class="index-search-wrapper" style="display: flex; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; padding: 4px 4px 4px 16px; margin-bottom: 24px; backdrop-filter: blur(10px); box-shadow: var(--glass-shadow);">
             <span style="font-size: 1.2rem; color: var(--text-secondary); margin-right: 8px;">🔍</span>
             <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex: 1; background: transparent; border: none; padding: 12px 0; font-size: 1rem; color: var(--text-primary); outline: none;">
-            <button id="indexSearchClearBtn" style="display: none; background: transparent; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; margin-right: 4px;">✕</button>
+            <button id="indexSearchClearBtn" style="display: none; background: transparent; border: none; width: 32px; height: 32px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; margin-right: 4px;">✕</button>
         </div>
         <div id="indexTableContainer">
     `;
@@ -159,5 +159,90 @@ function generateIndexHTML() {
 
     html += `</div>`; // close indexTableContainer
     html += `</div>`; // close sum-card
+
+    // ----- Add search filter script -----
+    html += `
+    <style>
+        .index-table tr.filtered-out {
+            display: none !important;
+        }
+        .index-table mark {
+            background: #ffeb3b;
+            color: #000;
+            padding: 2px 0;
+            border-radius: 2px;
+        }
+    </style>
+    <script>
+        (function() {
+            function initIndexSearch() {
+                const input = document.getElementById('indexSearchInput');
+                const clearBtn = document.getElementById('indexSearchClearBtn');
+                const container = document.getElementById('indexTableContainer');
+                if (!input || !container) return;
+
+                // Get all rows
+                const rows = container.querySelectorAll('.index-table tr');
+                const links = container.querySelectorAll('.index-topic-link');
+
+                // Store original text for each link
+                links.forEach(link => {
+                    if (!link.getAttribute('data-original')) {
+                        link.setAttribute('data-original', link.textContent);
+                    }
+                });
+
+                function filterRows(text) {
+                    const lowerText = text.toLowerCase().trim();
+
+                    rows.forEach(row => {
+                        const link = row.querySelector('.index-topic-link');
+                        if (!link) return;
+
+                        const originalText = link.getAttribute('data-original') || link.textContent;
+                        const rowText = originalText.toLowerCase();
+
+                        if (rowText.includes(lowerText)) {
+                            row.classList.remove('filtered-out');
+                            if (lowerText) {
+                                const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                                link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                            } else {
+                                link.innerHTML = originalText;
+                            }
+                        } else {
+                            row.classList.add('filtered-out');
+                            link.innerHTML = originalText;
+                        }
+                    });
+                }
+
+                // Event listener for input
+                input.addEventListener('input', function(e) {
+                    const val = e.target.value;
+                    clearBtn.style.display = val ? 'flex' : 'none';
+                    filterRows(val);
+                });
+
+                // Clear button
+                clearBtn.addEventListener('click', function() {
+                    input.value = '';
+                    clearBtn.style.display = 'none';
+                    filterRows('');
+                });
+
+                // Initial state
+                filterRows('');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initIndexSearch);
+            } else {
+                setTimeout(initIndexSearch, 100);
+            }
+        })();
+    </script>
+    `;
+
     return html;
 }
