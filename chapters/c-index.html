@@ -15,26 +15,21 @@
     <link rel="apple-touch-icon" href="../icon.png">
 
     <style>
-        /* ---------- THEME CONFIGURATION ---------- */
+        /* ========== THEME CONFIGURATION ========== */
         :root {
-            /* --- LIGHT THEME --- */
             --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #b8e1ff 50%, #f0f9ff 100%);
             --glass-bg: rgba(255, 255, 255, 0.9);
             --glass-border: rgba(255, 255, 255, 0.8);
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            
             --text-primary: #1a2a3a;
             --text-secondary: #475569;
             --header-text: #0056b3;
-            
             --toggle-bg: #cbd5e1;
             --toggle-active: #0056b3;
-            
             --btn-grad-sum: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
             --btn-grad-flash: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
             --btn-grad-quiz: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
             --btn-grad-scen: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
-            
             --border-sum: #ffedd5; --text-sum: #9a3412;
             --border-flash: #dbeafe; --text-flash: #1e40af;
             --border-quiz: #dcfce7; --text-quiz: #166534;
@@ -42,22 +37,18 @@
         }
 
         [data-theme="dark"] {
-            /* --- DARK THEME --- */
             --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             --glass-bg: rgba(255, 255, 255, 0.75);
             --glass-border: rgba(255, 255, 255, 0.6);
             --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
-            
             --text-primary: #1a2a3a;
             --text-secondary: #334155;
             --header-text: #ffffff;
-            
             --toggle-bg: #374151;
             --toggle-active: #2dd4bf;
         }
 
         [data-theme="sepia"] {
-            /* --- SEPIA THEME --- */
             --bg-gradient: linear-gradient(135deg, #f4e4c1 0%, #e5d3b3 50%, #d6c2a3 100%);
             --glass-bg: rgba(255, 248, 235, 0.9);
             --glass-border: rgba(210, 180, 140, 0.6);
@@ -70,7 +61,6 @@
         }
 
         [data-theme="forest"] {
-            /* --- FOREST THEME --- */
             --bg-gradient: linear-gradient(135deg, #1e4b3e 0%, #2d6a4f 50%, #40916c 100%);
             --glass-bg: rgba(220, 237, 193, 0.85);
             --glass-border: rgba(162, 191, 132, 0.7);
@@ -110,7 +100,7 @@
             transition: background 0.5s ease;
         }
 
-        /* ---------- HEADER ---------- */
+        /* ========== HEADER ========== */
         header {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
@@ -159,7 +149,7 @@
         }
         .stats-divider { width: 1px; height: 14px; background: currentColor; opacity: 0.4; }
 
-        /* ---------- MAIN CONTENT ---------- */
+        /* ========== MAIN CONTENT ========== */
         main {
             flex: 1; padding: 24px 20px;
             max-width: 800px; margin: 0 auto; width: 100%;
@@ -208,26 +198,8 @@
             text-decoration: underline;
             color: var(--accent-universal);
         }
-        .cpg-badge {
-            background: var(--glass-bg);
-            padding: 4px 8px; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 700;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
 
-        .btn-action {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 12px 24px; border-radius: 12px;
-            font-size: 0.9rem; font-weight: 600; text-decoration: none;
-            transition: all 0.2s; border: none; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-top: 30px;
-        }
-        .btn-action:active { transform: translateY(1px); box-shadow: none; }
-        .btn-summary { background: var(--btn-grad-sum); color: var(--text-sum); border: 1px solid var(--border-sum); }
-
-        /* Search bar */
+        /* Search bar with icon */
         .search-container {
             margin-bottom: 24px;
             display: flex;
@@ -238,6 +210,11 @@
             padding: 4px 4px 4px 20px;
             backdrop-filter: blur(10px);
             box-shadow: var(--glass-shadow);
+        }
+        .search-container span {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            color: var(--text-secondary);
         }
         .search-container input {
             flex: 1;
@@ -253,23 +230,40 @@
             opacity: 0.7;
         }
         .search-container button {
-            background: var(--primary-accent);
+            background: transparent;
             border: none;
-            border-radius: 40px;
-            padding: 10px 24px;
-            color: white;
-            font-weight: 600;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            margin-right: 4px;
+            padding: 0;
+        }
+        .search-container button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
         }
         .search-container button:active {
-            background: #003d80;
+            transform: scale(0.95);
         }
         .index-table tr.filtered-out {
             display: none;
         }
+        /* Highlight search matches */
+        .index-table tr mark {
+            background: #ffeb3b;
+            color: #000;
+            padding: 2px 0;
+            border-radius: 2px;
+        }
 
-        /* ---------- FOOTER – FIXED VISIBILITY ---------- */
+        /* ========== FOOTER ========== */
         footer {
             text-align: center;
             padding: 30px 20px;
@@ -309,6 +303,205 @@
             color: #4a3c2c;
         }
 
+        /* ========== FLOATING BUTTONS ========== */
+        .float-btn {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(61, 100, 115, 0.7);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.2s, background 0.2s, opacity 0.2s;
+            z-index: 999;
+            backdrop-filter: blur(2px);
+            opacity: 0.8;
+        }
+        .float-btn:hover {
+            transform: scale(1.1);
+            background: var(--toggle-active);
+            opacity: 1;
+        }
+        .float-btn:active {
+            transform: scale(0.95);
+        }
+        .float-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #scrollToBottomBtn {
+            bottom: 20px;
+            right: 15px;
+        }
+        #scrollToTopBtn {
+            bottom: 70px;
+            right: 15px;
+        }
+
+        /* ========== DRAWER STYLES ========== */
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .notification-drawer {
+            position: fixed;
+            top: -450px;
+            left: 0;
+            width: 100%;
+            background: rgba(20, 30, 40, 0.4);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            z-index: 2001;
+            padding: 25px 20px 35px;
+            border-radius: 0 0 30px 30px;
+            transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .notification-drawer.open {
+            top: 0;
+        }
+
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            justify-content: center;
+        }
+        .toggle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .toggle-btn {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .toggle-btn.active {
+            background: var(--primary-accent);
+            border-color: var(--primary-accent);
+            color: white;
+            box-shadow: 0 0 15px var(--primary-accent);
+        }
+        .toggle-btn:active {
+            transform: scale(0.92);
+        }
+        .toggle-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 8px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .drawer-stats {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stat-num {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-text {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .close-drawer-btn {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.5;
+            margin-top: -10px;
+        }
+
+        /* Two‑line trigger */
+        .drawer-trigger {
+            position: absolute;
+            left: 50%;
+            bottom: -35px;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 0 0 30px 30px;
+            animation: floatDown 3s ease-in-out infinite;
+        }
+        .trigger-line {
+            height: 3px;
+            background: var(--primary-accent);
+            border-radius: 3px;
+            margin: 3px 0;
+            box-shadow: 0 0 8px var(--primary-accent);
+        }
+        .trigger-line.top {
+            width: 30px;
+        }
+        .trigger-line.bottom {
+            width: 20px;
+        }
+        @keyframes floatDown {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(6px); }
+        }
+
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
         }
@@ -317,29 +510,95 @@
             .header-text h1 { font-size: 1rem; }
             .header-text p { display: none; }
             .index-table td { padding: 10px 4px; }
-            .cpg-badge { font-size: 0.6rem; }
         }
     </style>
 </head>
 <body>
 
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- Super Glassy Notification Drawer -->
+<div class="notification-drawer" id="notificationDrawer">
+    <div class="toggles-grid">
+        <!-- Theme toggles -->
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleDark">🌑</button>
+            <div class="toggle-label">Dark</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleLight">☀️</button>
+            <div class="toggle-label">Light</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleSepia">📜</button>
+            <div class="toggle-label">Sepia</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleForest">🌲</button>
+            <div class="toggle-label">Forest</div>
+        </div>
+        <!-- Shortcuts -->
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsIndex">📋</button>
+            <div class="toggle-label">Index</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsAbout">ℹ️</button>
+            <div class="toggle-label">About</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsJumpDown">⬇️</button>
+            <div class="toggle-label">Bottom</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsReload">🔄</button>
+            <div class="toggle-label">Reload</div>
+        </div>
+    </div>
+
+    <!-- Mini stats -->
+    <div class="drawer-stats">
+        <div class="stat-item">
+            <span class="stat-num" id="drawerDone">0/0</span>
+            <span class="stat-text">Chapters</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="drawerAttempts">0</span>
+            <span class="stat-text">Attempts</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="drawerAcc">0%</span>
+            <span class="stat-text">Accuracy</span>
+        </div>
+    </div>
+
+    <!-- Close handle (up arrow) -->
+    <div class="close-drawer-btn" id="closeDrawerBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+    </div>
+</div>
+
 <header>
     <div class="header-left">
         <button class="icon-btn" id="homeBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
         <div class="header-text">
             <h1 id="pageTitle">DCAS CPG Index</h1>
             <p id="pageSubtitle">Complete Guideline List</p>
         </div>
     </div>
+
+    <!-- Drawer trigger (two lines) -->
+    <div class="drawer-trigger" id="drawerTrigger">
+        <div class="trigger-line top"></div>
+        <div class="trigger-line bottom"></div>
+    </div>
+
     <div class="header-right">
         <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
-        <div class="stats-badge" id="liveStatsBadge">
-            <span>📊 <span id="statsAttempts">0</span></span>
-            <div class="stats-divider"></div>
-            <span>🎯 <span id="statsCritical">0%</span></span>
-        </div>
+        <button class="icon-btn" id="progressToggle" title="Progress">📊</button>
         <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
         <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
@@ -354,49 +613,158 @@
     <div><a href="../about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
 </footer>
 
+<!-- Floating buttons -->
+<button class="float-btn hidden" id="scrollToTopBtn" title="Go to top">↑</button>
+<button class="float-btn" id="scrollToBottomBtn" title="Go to bottom">↓</button>
+
 <!-- Load content data first, then app.js to render it -->
 <script src="../content/c-index.js"></script>
 <script src="../app.js"></script>
 
 <script>
     (function() {
+        "use strict";
+
+        // ---------- THEME SYSTEM ----------
         const themeBtn = document.getElementById('themeToggle');
         const html = document.documentElement;
         const themes = ['dark', 'light', 'sepia', 'forest'];
-        
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'dark';
-            html.setAttribute('data-theme', saved);
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            // Update active class on drawer buttons
+            document.querySelectorAll('.toggle-btn[id^="toggle"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`toggle${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
+            if (activeBtn) activeBtn.classList.add('active');
         }
 
         function nextTheme() {
             const current = html.getAttribute('data-theme') || 'dark';
             const currentIndex = themes.indexOf(current);
             const nextIndex = (currentIndex + 1) % themes.length;
-            const next = themes[nextIndex];
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
+            setTheme(themes[nextIndex]);
         }
 
-        if (themeBtn) {
-            themeBtn.addEventListener('click', nextTheme);
-        }
-        initTheme();
+        themeBtn.addEventListener('click', nextTheme);
 
-        document.getElementById('homeBtn').addEventListener('click', () => {
-            window.location.href = '../index.html';
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        // Add click handlers for drawer theme buttons
+        document.getElementById('toggleDark').addEventListener('click', () => setTheme('dark'));
+        document.getElementById('toggleLight').addEventListener('click', () => setTheme('light'));
+        document.getElementById('toggleSepia').addEventListener('click', () => setTheme('sepia'));
+        document.getElementById('toggleForest').addEventListener('click', () => setTheme('forest'));
+
+        // ---------- DRAWER CONTROLS ----------
+        const drawer = document.getElementById('notificationDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        const trigger = document.getElementById('drawerTrigger');
+        const closeBtn = document.getElementById('closeDrawerBtn');
+
+        function openDrawer() {
+            drawer.classList.add('open');
+            overlay.classList.add('active');
+        }
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        trigger.addEventListener('click', openDrawer);
+        closeBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+
+        // Drawer shortcut buttons
+        document.getElementById('qsIndex').addEventListener('click', () => {
+            window.location.href = 'c-index.html?view=summary';
+        });
+        document.getElementById('qsAbout').addEventListener('click', () => {
+            window.location.href = '../about.html';
+        });
+        document.getElementById('qsJumpDown').addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            closeDrawer();
+        });
+        document.getElementById('qsReload').addEventListener('click', () => {
+            window.location.reload();
         });
 
-        function loadStats() {
+        // ---------- SCROLL BUTTONS ----------
+        const scrollTopBtn = document.getElementById('scrollToTopBtn');
+        const scrollBottomBtn = document.getElementById('scrollToBottomBtn');
+
+        function updateFloatButtons() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            scrollTopBtn.classList.toggle('hidden', scrollY <= 200);
+            scrollBottomBtn.classList.toggle('hidden', documentHeight - (scrollY + windowHeight) <= 100);
+        }
+        window.addEventListener('scroll', updateFloatButtons);
+        window.addEventListener('resize', updateFloatButtons);
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        scrollBottomBtn.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        // ---------- UPDATE DRAWER STATS ----------
+        function updateDrawerStats() {
             try {
                 const data = localStorage.getItem('dcas_cpg_stats');
                 const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
                 const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
-                document.getElementById('statsAttempts').innerText = stats.totalAttempts || 0;
-                document.getElementById('statsCritical').innerText = `${critAcc}%`;
+
+                document.getElementById('drawerAttempts').innerText = stats.totalAttempts || 0;
+                document.getElementById('drawerAcc').innerText = `${critAcc}%`;
+                // We can't get total chapters here easily, so leave as ?/66
             } catch(e) {}
         }
-        loadStats();
+
+        updateDrawerStats();
+
+        // ---------- HOME BUTTON ----------
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+
+        // ---------- PROGRESS POPUP ----------
+        const progressToggle = document.getElementById('progressToggle');
+        const statsPopup = document.createElement('div');
+        statsPopup.className = 'progress-popup';
+        statsPopup.id = 'tempStatsPopup';
+        statsPopup.innerHTML = `
+            <div class="popup-title">📊 Quick Stats</div>
+            <div class="popup-item"><span>Chapters:</span><span id="popupChaps">?/66</span></div>
+            <div class="popup-item"><span>Attempts:</span><span id="popupAtt">0</span></div>
+            <div class="popup-item"><span>Accuracy:</span><span id="popupAcc">0%</span></div>
+        `;
+        document.body.appendChild(statsPopup);
+
+        function toggleStatsPopup(e) {
+            e.stopPropagation();
+            const rect = progressToggle.getBoundingClientRect();
+            statsPopup.style.top = rect.bottom + 10 + 'px';
+            statsPopup.style.right = (window.innerWidth - rect.right) + 'px';
+            statsPopup.classList.toggle('show');
+        }
+        progressToggle.addEventListener('click', toggleStatsPopup);
+        document.addEventListener('click', (e) => {
+            if (!statsPopup.contains(e.target) && e.target !== progressToggle) {
+                statsPopup.classList.remove('show');
+            }
+        });
+
+        // ---------- SEARCH HIGHLIGHT (fallback if app.js doesn't do it) ----------
+        // The actual search and highlight is handled by the embedded script in c-index.js.
+        // We'll rely on that.
     })();
 </script>
 
