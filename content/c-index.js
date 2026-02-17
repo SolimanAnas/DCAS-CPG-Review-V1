@@ -127,7 +127,7 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // Search bar with icon
+    // Search bar with icon – the functionality will be provided by app.js
     html += `
         <div class="search-container" style="margin-bottom:24px;">
             <span>🔍</span>
@@ -158,61 +158,6 @@ function generateIndexHTML() {
     }
 
     html += `</div>`; // close indexTableContainer
-
-    // Self‑contained search script
-    html += `
-        <script>
-            (function() {
-                function initIndexSearch() {
-                    const input = document.getElementById('indexSearchInput');
-                    const clearBtn = document.getElementById('indexSearchClearBtn');
-                    const container = document.getElementById('indexTableContainer');
-                    if (!input || !container) return;
-                    
-                    const rows = container.querySelectorAll('.index-table tr');
-                    
-                    function filterRows(text) {
-                        const lowerText = text.toLowerCase().trim();
-                        rows.forEach(row => {
-                            const rowText = row.textContent.toLowerCase();
-                            if (rowText.includes(lowerText)) {
-                                row.classList.remove('filtered-out');
-                                // Highlight matching text
-                                const link = row.querySelector('a');
-                                if (link) {
-                                    const regex = new RegExp('(' + lowerText + ')', 'gi');
-                                    link.innerHTML = link.textContent.replace(regex, '<mark>$1</mark>');
-                                }
-                            } else {
-                                row.classList.add('filtered-out');
-                                // Restore original text (remove highlights)
-                                const link = row.querySelector('a');
-                                if (link) {
-                                    link.innerHTML = link.textContent;
-                                }
-                            }
-                        });
-                    }
-
-                    input.addEventListener('input', function(e) {
-                        const val = e.target.value;
-                        if (clearBtn) clearBtn.style.display = val ? 'inline-block' : 'none';
-                        filterRows(val);
-                    });
-
-                    if (clearBtn) {
-                        clearBtn.addEventListener('click', function() {
-                            input.value = '';
-                            clearBtn.style.display = 'none';
-                            filterRows('');
-                        });
-                    }
-                }
-                setTimeout(initIndexSearch, 100);
-            })();
-        </script>
-    `;
-
     html += `</div>`; // close sum-card
     return html;
 }
