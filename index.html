@@ -17,8 +17,7 @@
     <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
-        /* ========== EXISTING STYLES (kept intact) ========== */
-        /* Search bar with icon */
+        /* ========== EXISTING STYLES ========== */
         .search-container {
             margin-bottom: 24px;
             display: flex;
@@ -72,12 +71,12 @@
             transform: scale(0.95);
         }
 
-        /* Hide cards that don't match search (normal cards only) */
+        /* 🔒 FIXED: Force hide with !important */
         .menu-card.filtered-out {
-            display: none;
+            display: none !important;
         }
 
-        /* Special card style for c0 and c-index – always visible */
+        /* Special card style for c0 and c-index */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -196,7 +195,7 @@
             color: #4a3c2c;
         }
 
-        /* Button container – default: flex with equal width buttons, wrap */
+        /* Button container */
         .menu-sub-options {
             display: flex;
             flex-wrap: wrap;
@@ -230,7 +229,7 @@
             }
         }
 
-        /* Offline download button and progress bar */
+        /* Offline download */
         .offline-download {
             margin: 20px 0;
             text-align: center;
@@ -313,7 +312,7 @@
             right: 15px;
         }
 
-        /* ========== SUPER GLASSY DRAWER STYLES ========== */
+        /* ========== DRAWER STYLES ========== */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -435,7 +434,7 @@
             margin-top: -10px;
         }
 
-        /* Two‑line trigger (chevron) */
+        /* Two‑line trigger */
         .drawer-trigger {
             position: absolute;
             left: 50%;
@@ -461,10 +460,10 @@
             box-shadow: 0 0 8px var(--primary-accent);
         }
         .trigger-line.top {
-            width: 30px; /* longer */
+            width: 30px;
         }
         .trigger-line.bottom {
-            width: 20px; /* shorter */
+            width: 20px;
         }
         @keyframes floatDown {
             0%, 100% { transform: translateX(-50%) translateY(0); }
@@ -532,7 +531,7 @@
         </div>
     </div>
 
-    <!-- Close handle (up arrow) -->
+    <!-- Close handle -->
     <div class="close-drawer-btn" id="closeDrawerBtn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
     </div>
@@ -549,7 +548,7 @@
         </div>
     </div>
 
-    <!-- Drawer trigger (two lines) -->
+    <!-- Drawer trigger -->
     <div class="drawer-trigger" id="drawerTrigger">
         <div class="trigger-line top"></div>
         <div class="trigger-line bottom"></div>
@@ -563,7 +562,7 @@
     </div>
 </header>
 
-<!-- Progress popup (existing) -->
+<!-- Progress popup -->
 <div class="progress-popup" id="progressPopup">
     <div class="popup-title">📊 Your Progress</div>
     <div class="popup-item">
@@ -625,8 +624,11 @@
         const savedTheme = localStorage.getItem('theme') || 'dark';
         setTheme(savedTheme);
 
-        // Make setTheme globally available for drawer buttons (they use onclick)
-        window.setTheme = setTheme;
+        // ---------- FIX #1: Add event listeners to drawer theme buttons ----------
+        document.getElementById('toggleDark').addEventListener('click', () => setTheme('dark'));
+        document.getElementById('toggleLight').addEventListener('click', () => setTheme('light'));
+        document.getElementById('toggleSepia').addEventListener('click', () => setTheme('sepia'));
+        document.getElementById('toggleForest').addEventListener('click', () => setTheme('forest'));
 
         // ---------- DRAWER CONTROLS ----------
         const drawer = document.getElementById('notificationDrawer');
@@ -716,34 +718,25 @@
             "Review. Refine. Remember.", "Your dedication matters.", "Keep pushing forward."
         ];
 
-        // ---------- COMPLETE CHAPTER LIST (ALL CPG 2025) ----------
+        // ---------- COMPLETE CHAPTER LIST ----------
         const CHAPTERS = [
-            // Special chapters (c0 and c-index)
             { id: "c0", shortTitle: "2025 Updates", title: "What's New in 2025", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "updates" },
             { id: "c-index", shortTitle: "Index", title: "Full Table of Contents", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "index" },
-            
-            // Universal Care
             { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", hasCritical: true, chapterFile: "c1", sectionParam: "c1s1", isFirstInChapter: true, chapterGroup: "universal" },
             { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", hasCritical: true, chapterFile: "c1", sectionParam: "c1s2", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", hasCritical: true, chapterFile: "c1", sectionParam: "c1s3", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s4", shortTitle: "1.4 Functional Needs", title: "Functional Needs", hasCritical: true, chapterFile: "c1", sectionParam: "c1s4", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", hasCritical: true, chapterFile: "c1", sectionParam: "c1s5", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", hasCritical: true, chapterFile: "c1", sectionParam: "c1s6", isFirstInChapter: false, chapterGroup: "universal" },
-
-            // Airway & Breathing
             { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", hasCritical: true, chapterFile: "c2", sectionParam: "c2s1", isFirstInChapter: true, chapterGroup: "airway" },
             { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", hasCritical: true, chapterFile: "c2", sectionParam: "c2s2", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", hasCritical: true, chapterFile: "c2", sectionParam: "c2s3", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s4", shortTitle: "2.4 COPD", title: "COPD", hasCritical: true, chapterFile: "c2", sectionParam: "c2s4", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", hasCritical: true, chapterFile: "c2", sectionParam: "c2s5", isFirstInChapter: false, chapterGroup: "airway" },
-
-            // Cardiovascular
             { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", hasCritical: true, isFirstInChapter: true, chapterGroup: "cardio" },
             { id: "c3-2", shortTitle: "3.2 Adult Bradycardia", title: "Adult Bradycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
-
-            // Resuscitation
             { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", hasCritical: true, isFirstInChapter: true, chapterGroup: "resus" },
             { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
@@ -753,12 +746,8 @@
             { id: "c4-7", shortTitle: "4.7 Post-ROSC", title: "Post Cardiac Arrest Care (ROSC)", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-8", shortTitle: "4.8 Starting/Stopping CPR", title: "Starting, Stopping and Transferring CPR", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-9", shortTitle: "4.9 Verification of Death", title: "Verification of Death", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
-
-            // Neurological
             { id: "c5-1", shortTitle: "5.1 Stroke", title: "Stroke", hasCritical: true, isFirstInChapter: true, chapterGroup: "neuro" },
             { id: "c5-2", shortTitle: "5.2 Seizures", title: "Seizures", hasCritical: true, isFirstInChapter: false, chapterGroup: "neuro" },
-
-            // General Medical
             { id: "c6-1", shortTitle: "6.1 Abdominal Pain", title: "Abdominal Pain", hasCritical: true, isFirstInChapter: true, chapterGroup: "medical" },
             { id: "c6-2", shortTitle: "6.2 Abnormal Behavior", title: "Abnormal Behavior", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-3", shortTitle: "6.3 Adrenal Insufficiency", title: "Adrenal Insufficiency", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
@@ -773,16 +762,12 @@
             { id: "c6-12", shortTitle: "6.12 Pain Management", title: "Pain Management", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-13", shortTitle: "6.13 Sickle Cell Crisis", title: "Sickle Cell Crisis", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-14", shortTitle: "6.14 Alcohol Intoxication", title: "Suspected Alcohol Intoxication", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
-
-            // Trauma
             { id: "c7-1", shortTitle: "7.1 General Trauma", title: "General Trauma Management", hasCritical: true, isFirstInChapter: true, chapterGroup: "trauma" },
             { id: "c7-2", shortTitle: "7.2 Burns", title: "Burns", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-3", shortTitle: "7.3 Crush Injuries", title: "Crush Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-4", shortTitle: "7.4 Limb Injuries", title: "Limb Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
-
-            // Environmental
             { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", hasCritical: true, isFirstInChapter: true, chapterGroup: "environmental" },
             { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-3", shortTitle: "8.3 Beta‑Blocker Overdose", title: "Beta‑Blocker Overdose", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
@@ -793,22 +778,14 @@
             { id: "c8-8", shortTitle: "8.8 Envenomation", title: "Envenomation", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-9", shortTitle: "8.9 Hypothermia", title: "Hypothermia / Cold Exposure", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-10", shortTitle: "8.10 Hyperthermia", title: "Hyperthermia / Heat Exposure", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
-
-            // Pediatric
             { id: "c9-1", shortTitle: "9.1 Croup", title: "Croup", hasCritical: true, isFirstInChapter: true, chapterGroup: "pediatric" },
             { id: "c9-2", shortTitle: "9.2 Pediatric Bradycardia", title: "Pediatric Bradycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "pediatric" },
             { id: "c9-3", shortTitle: "9.3 Pediatric Tachycardia", title: "Pediatric Tachycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "pediatric" },
-
-            // Obstetrics
             { id: "c10-1", shortTitle: "10.1 Childbirth", title: "Childbirth", hasCritical: true, isFirstInChapter: true, chapterGroup: "obstetric" },
             { id: "c10-2", shortTitle: "10.2 Post Partum Hemorrhage", title: "Post Partum Hemorrhage", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
             { id: "c10-3", shortTitle: "10.3 PV Hemorrhage", title: "PV Hemorrhage in Pregnancy", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
             { id: "c10-4", shortTitle: "10.4 Eclampsia", title: "Eclampsia / Pre‑eclampsia", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
-
-            // Major Incident Triage
             { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", hasCritical: true, isFirstInChapter: true, chapterGroup: "mci" },
-
-            // Scope & Medications
             { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", hasCritical: false, isFirstInChapter: true, chapterGroup: "scope" },
             { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", hasCritical: false, isFirstInChapter: false, chapterGroup: "scope" }
         ];
@@ -833,17 +810,10 @@
             const completedCount = Object.values(completion).filter(v => v).length;
             const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
 
-            // Update popup
-            const popupChapters = document.getElementById('popupChaptersDone');
-            const popupAttempts = document.getElementById('popupAttempts');
-            const popupCritical = document.getElementById('popupCritical');
-            const popupQuote = document.getElementById('popupQuote');
-            if (popupChapters) popupChapters.innerText = `${completedCount}/${totalChaps}`;
-            if (popupAttempts) popupAttempts.innerText = stats.totalAttempts || 0;
-            if (popupCritical) popupCritical.innerText = `${critAcc}%`;
-            if (popupQuote) popupQuote.innerText = `✨ ${quote}`;
-
-            // Update drawer stats
+            document.getElementById('popupChaptersDone').innerText = `${completedCount}/${totalChaps}`;
+            document.getElementById('popupAttempts').innerText = stats.totalAttempts || 0;
+            document.getElementById('popupCritical').innerText = `${critAcc}%`;
+            document.getElementById('popupQuote').innerText = `✨ ${quote}`;
             document.getElementById('drawerDone').innerText = `${completedCount}/${totalChaps}`;
             document.getElementById('drawerAttempts').innerText = stats.totalAttempts || 0;
             document.getElementById('drawerAcc').innerText = `${critAcc}%`;
@@ -877,9 +847,8 @@
                         titleText = "Index";
                         subtitleText = "Full Table of Contents";
                     }
-                    // Special cards have no data-search attribute
                     return `
-                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;">
+                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
                             <h2>${titleText}</h2>
                             <p>${subtitleText}</p>
                         </a>
@@ -980,7 +949,7 @@
                 });
             }
 
-            // Offline download
+            // Offline download (keep existing)
             const downloadBtn = document.getElementById('downloadOfflineBtn');
             const progressBar = document.getElementById('downloadProgress');
             async function downloadAllContent() {
@@ -1020,8 +989,9 @@
             if (filterText) filterCards(filterText);
         }
 
+        // ---------- 🔒 FIX #2: Remove :not(.special-card) – filter ALL cards ----------
         function filterCards(text) {
-            const cards = document.querySelectorAll('.menu-card:not(.special-card)');
+            const cards = document.querySelectorAll('.menu-card'); // now includes special cards
             const lowerText = text.toLowerCase().trim();
             cards.forEach(card => {
                 const searchData = card.dataset.search || '';
@@ -1039,7 +1009,6 @@
         if(homeBtn) homeBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
         if(indexBtn) indexBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'chapters/c-index.html?view=summary'; });
 
-        // Initial render
         renderMenu();
         updateFloatButtons();
         updateAllProgress();
