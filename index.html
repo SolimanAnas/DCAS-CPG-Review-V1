@@ -313,7 +313,7 @@
             right: 15px;
         }
 
-        /* ========== NEW SUPER GLASSY DRAWER STYLES ========== */
+        /* ========== SUPER GLASSY DRAWER STYLES ========== */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -435,7 +435,7 @@
             margin-top: -10px;
         }
 
-        /* Trigger chevron inside header */
+        /* Two‑line trigger (chevron) */
         .drawer-trigger {
             position: absolute;
             left: 50%;
@@ -444,25 +444,29 @@
             width: 60px;
             height: 35px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 999;
             background: rgba(255, 255, 255, 0.01);
             border-radius: 0 0 30px 30px;
-            animation: floatArrow 3s ease-in-out infinite;
+            animation: floatDown 3s ease-in-out infinite;
         }
-        .trigger-chevron {
-            width: 24px;
-            height: 24px;
-            border-right: 4px solid var(--primary-accent);
-            border-bottom: 4px solid var(--primary-accent);
-            transform: rotate(45deg);
-            margin-top: -10px;
-            border-radius: 2px;
-            filter: drop-shadow(0 0 5px var(--primary-accent));
+        .trigger-line {
+            height: 3px;
+            background: var(--primary-accent);
+            border-radius: 3px;
+            margin: 3px 0;
+            box-shadow: 0 0 8px var(--primary-accent);
         }
-        @keyframes floatArrow {
+        .trigger-line.top {
+            width: 30px; /* longer */
+        }
+        .trigger-line.bottom {
+            width: 20px; /* shorter */
+        }
+        @keyframes floatDown {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(6px); }
         }
@@ -478,36 +482,36 @@
     <div class="toggles-grid">
         <!-- Theme toggles -->
         <div class="toggle-item">
-            <button class="toggle-btn" id="toggleDark" onclick="setTheme('dark')">🌑</button>
+            <button class="toggle-btn" id="toggleDark">🌑</button>
             <div class="toggle-label">Dark</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" id="toggleLight" onclick="setTheme('light')">☀️</button>
+            <button class="toggle-btn" id="toggleLight">☀️</button>
             <div class="toggle-label">Light</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" id="toggleSepia" onclick="setTheme('sepia')">📜</button>
+            <button class="toggle-btn" id="toggleSepia">📜</button>
             <div class="toggle-label">Sepia</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" id="toggleForest" onclick="setTheme('forest')">🌲</button>
+            <button class="toggle-btn" id="toggleForest">🌲</button>
             <div class="toggle-label">Forest</div>
         </div>
         <!-- Shortcuts -->
         <div class="toggle-item">
-            <button class="toggle-btn" onclick="window.location.href='chapters/c-index.html?view=summary'">📋</button>
+            <button class="toggle-btn" id="qsIndex">📋</button>
             <div class="toggle-label">Index</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" onclick="window.location.href='about.html'">ℹ️</button>
+            <button class="toggle-btn" id="qsAbout">ℹ️</button>
             <div class="toggle-label">About</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" onclick="scrollToBottom()">⬇️</button>
+            <button class="toggle-btn" id="qsJumpDown">⬇️</button>
             <div class="toggle-label">Bottom</div>
         </div>
         <div class="toggle-item">
-            <button class="toggle-btn" onclick="window.location.reload()">🔄</button>
+            <button class="toggle-btn" id="qsReload">🔄</button>
             <div class="toggle-label">Reload</div>
         </div>
     </div>
@@ -545,9 +549,10 @@
         </div>
     </div>
 
-    <!-- Drawer trigger (chevron) -->
+    <!-- Drawer trigger (two lines) -->
     <div class="drawer-trigger" id="drawerTrigger">
-        <div class="trigger-chevron"></div>
+        <div class="trigger-line top"></div>
+        <div class="trigger-line bottom"></div>
     </div>
 
     <div class="header-right" id="headerShortcuts">
@@ -591,15 +596,11 @@
     (function(){
         "use strict";
 
-        // ---------- EXISTING THEME SYSTEM ----------
+        // ---------- THEME SYSTEM ----------
         const themeBtn = document.getElementById('themeToggle');
         const html = document.documentElement;
         const themes = ['dark', 'light', 'sepia', 'forest'];
-        
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'dark';
-            html.setAttribute('data-theme', saved);
-        }
+
         function setTheme(theme) {
             html.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
@@ -610,14 +611,22 @@
             const activeBtn = document.getElementById(`toggle${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
             if (activeBtn) activeBtn.classList.add('active');
         }
+
         function nextTheme() {
             const current = html.getAttribute('data-theme') || 'dark';
             const currentIndex = themes.indexOf(current);
             const nextIndex = (currentIndex + 1) % themes.length;
             setTheme(themes[nextIndex]);
         }
+
         themeBtn.addEventListener('click', nextTheme);
-        initTheme();
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        // Make setTheme globally available for drawer buttons (they use onclick)
+        window.setTheme = setTheme;
 
         // ---------- DRAWER CONTROLS ----------
         const drawer = document.getElementById('notificationDrawer');
@@ -637,8 +646,14 @@
         closeBtn.addEventListener('click', closeDrawer);
         overlay.addEventListener('click', closeDrawer);
 
-        // Scroll to bottom function for drawer button
-        window.scrollToBottom = function() {
+        // Drawer shortcut buttons
+        document.getElementById('qsIndex').addEventListener('click', () => {
+            window.location.href = 'chapters/c-index.html?view=summary';
+        });
+        document.getElementById('qsAbout').addEventListener('click', () => {
+            window.location.href = 'about.html';
+        });
+        document.getElementById('qsJumpDown').addEventListener('click', () => {
             const stats = document.getElementById('statsCard');
             if (stats) {
                 stats.scrollIntoView({ behavior: 'smooth' });
@@ -646,12 +661,15 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
             closeDrawer();
-        };
+        });
+        document.getElementById('qsReload').addEventListener('click', () => {
+            window.location.reload();
+        });
 
         // ---------- PROGRESS POPUP ----------
         const progressToggle = document.getElementById('progressToggle');
         const progressPopup = document.getElementById('progressPopup');
-        
+
         function togglePopup(e) {
             e.stopPropagation();
             progressPopup.classList.toggle('show');
@@ -1025,7 +1043,6 @@
         renderMenu();
         updateFloatButtons();
         updateAllProgress();
-        setTheme(localStorage.getItem('theme') || 'dark');
     })();
 </script>
 
