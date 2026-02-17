@@ -1,710 +1,208 @@
-/* ========== app.js – DCAS CPG 2025 (FULL, MODERN, with INDEX SEARCH) ========== */
-(function(){
-"use strict";
+/* ========== c-index.js – Full CPG Index with Search ========== */
+window.CPG_DATA = {
+    id: "c-index",
+    title: "DCAS CPG Index",
+    shortTitle: "📋 Full Index",
+    sections: [
+        {
+            id: "c-index-main",
+            shortTitle: "Complete Index",
+            summary: generateIndexHTML(),
+            quiz: [],
+            flashcards: [],
+            critical: []
+        }
+    ]
+};
 
-// ---------- STORAGE ----------  
-const storage = (function() {  
-    const KEY = 'dcas_cpg_stats';  
-    const defaultStats = { totalAttempts: 0, chapters: {}, critical: { total: 0, correct: 0 } };  
-    function load() {  
-        try {  
-            const data = localStorage.getItem(KEY);  
-            return data ? JSON.parse(data) : defaultStats;  
-        } catch(e) { return defaultStats; }  
-    }  
-    function save(stats) {  
-        try { localStorage.setItem(KEY, JSON.stringify(stats)); } catch(e) {}  
-    }  
-    return { load, save };  
-})();  
+function generateIndexHTML() {
+    // ---------- Complete CPG list (must match main index) ----------
+    const CHAPTERS = [
+        // Universal Care
+        { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", chapterFile: "c1", sectionParam: "c1s1", chapterGroup: "universal" },
+        { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", chapterFile: "c1", sectionParam: "c1s2", chapterGroup: "universal" },
+        { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", chapterFile: "c1", sectionParam: "c1s3", chapterGroup: "universal" },
+        { id: "c1s4", shortTitle: "1.4 Functional Needs", title: "Functional Needs", chapterFile: "c1", sectionParam: "c1s4", chapterGroup: "universal" },
+        { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
+        { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
 
-// ---------- CHAPTER DATA ----------  
-const chapterData = window.CPG_DATA;  
-const isChapterMissing = !chapterData;  
+        // Airway & Breathing
+        { id: "c2", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", chapterGroup: "airway" },
+        { id: "c2-2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2-2", chapterGroup: "airway" },
+        { id: "c2-3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2-3", chapterGroup: "airway" },
+        { id: "c2-4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2-4", chapterGroup: "airway" },
+        { id: "c2-5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", chapterFile: "c2-5", chapterGroup: "airway" },
 
-const dom = {  
-    main: document.getElementById('mainContent'),  
-    homeBtn: document.getElementById('homeBtn'),  
-    pageTitle: document.getElementById('pageTitle'),  
-    pageSubtitle: document.getElementById('pageSubtitle')  
-};  
+        // Cardiovascular
+        { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", chapterFile: "c3-1", chapterGroup: "cardio" },
+        { id: "c3-2", shortTitle: "3.2 Adult Bradycardia", title: "Adult Bradycardia", chapterFile: "c3-2", chapterGroup: "cardio" },
+        { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", chapterFile: "c3-3", chapterGroup: "cardio" },
+        { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", chapterFile: "c3-4", chapterGroup: "cardio" },
 
-// ---------- STATE ----------  
-const state = {  
-    sections: chapterData ? (chapterData.sections || null) : null,  
-    activeSectionId: null,  
-    activeSection: null,  
-    quizData: [],  
-    mistakes: [],  
-    qIndex: 0,  
-    score: 0,  
-    flashData: [],  
-    fIndex: 0,  
-    criticalData: [],  
-    criticalIndex: 0,  
-    criticalScore: 0,  
-    stats: storage.load()  
-};  
+        // Resuscitation
+        { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", chapterFile: "c4-1", chapterGroup: "resus" },
+        { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", chapterFile: "c4-2", chapterGroup: "resus" },
+        { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", chapterFile: "c4-3", chapterGroup: "resus" },
+        { id: "c4-4", shortTitle: "4.4 Pediatric Cardiac Arrest", title: "Pediatric Cardiac Arrest", chapterFile: "c4-4", chapterGroup: "resus" },
+        { id: "c4-5", shortTitle: "4.5 Trauma Cardiac Arrest", title: "Cardiac Arrest in Trauma", chapterFile: "c4-5", chapterGroup: "resus" },
+        { id: "c4-6", shortTitle: "4.6 Newborn Resuscitation", title: "Newborn (<4 weeks) and Pre‑term Infant Resuscitation", chapterFile: "c4-6", chapterGroup: "resus" },
+        { id: "c4-7", shortTitle: "4.7 Post-ROSC", title: "Post Cardiac Arrest Care (ROSC)", chapterFile: "c4-7", chapterGroup: "resus" },
+        { id: "c4-8", shortTitle: "4.8 Starting/Stopping CPR", title: "Starting, Stopping and Transferring CPR", chapterFile: "c4-8", chapterGroup: "resus" },
+        { id: "c4-9", shortTitle: "4.9 Verification of Death", title: "Verification of Death", chapterFile: "c4-9", chapterGroup: "resus" },
 
-// ---------- UTILITIES ----------  
-const utils = {  
-    shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),  
-    safeScrollTop: () => {  
-        window.scrollTo(0,0);  
-        document.body.scrollTop = 0;  
-        document.documentElement.scrollTop = 0;  
-        setTimeout(() => window.scrollTo(0,0), 20);  
-    },  
-    escapeHTML: (str) => str.replace(/[&<>"]/g, (c) => {  
-        if(c === '&') return '&amp;';  
-        if(c === '<') return '&lt;';  
-        if(c === '>') return '&gt;';  
-        if(c === '"') return '&quot;';  
-        return c;  
-    }),  
-    getSection: (id) => {  
-        if (!state.sections) return null;  
-        return state.sections.find(s => s.id === id);  
-    },  
-    getSectionIndex: (id) => {  
-        if (!state.sections) return -1;  
-        return state.sections.findIndex(s => s.id === id);  
-    },  
-    getQueryParam: (param) => {  
-        const urlParams = new URLSearchParams(window.location.search);  
-        return urlParams.get(param);  
-    },  
-    setQueryParam: (param, value) => {  
-        const url = new URL(window.location.href);  
-        url.searchParams.set(param, value);  
-        window.history.pushState({}, '', url);  
-    },  
-    replaceQueryParam: (param, value) => {  
-        const url = new URL(window.location.href);  
-        url.searchParams.set(param, value);  
-        window.history.replaceState({}, '', url);  
-    }  
-};  
+        // Neurological
+        { id: "c5-1", shortTitle: "5.1 Stroke", title: "Stroke", chapterFile: "c5-1", chapterGroup: "neuro" },
+        { id: "c5-2", shortTitle: "5.2 Seizures", title: "Seizures", chapterFile: "c5-2", chapterGroup: "neuro" },
 
-// ---------- HEADER ----------  
-function updateHeader(title, subtitle = '', showBack = true) {  
-    if (dom.pageTitle) dom.pageTitle.innerText = title || 'DCAS CPG 2025';  
-    if (dom.pageSubtitle) dom.pageSubtitle.innerText = subtitle || '';  
-    if (dom.homeBtn) dom.homeBtn.style.display = showBack ? 'block' : 'none';  
-}  
+        // General Medical
+        { id: "c6-1", shortTitle: "6.1 Abdominal Pain", title: "Abdominal Pain", chapterFile: "c6-1", chapterGroup: "medical" },
+        { id: "c6-2", shortTitle: "6.2 Abnormal Behavior", title: "Abnormal Behavior", chapterFile: "c6-2", chapterGroup: "medical" },
+        { id: "c6-3", shortTitle: "6.3 Adrenal Insufficiency", title: "Adrenal Insufficiency", chapterFile: "c6-3", chapterGroup: "medical" },
+        { id: "c6-4", shortTitle: "6.4 Anaphylaxis", title: "Anaphylaxis / Allergic Reaction", chapterFile: "c6-4", chapterGroup: "medical" },
+        { id: "c6-5", shortTitle: "6.5 Altered Mental Status", title: "Altered Mental Status", chapterFile: "c6-5", chapterGroup: "medical" },
+        { id: "c6-6", shortTitle: "6.6 Epistaxis", title: "Epistaxis", chapterFile: "c6-6", chapterGroup: "medical" },
+        { id: "c6-7", shortTitle: "6.7 Fever and Sepsis", title: "Fever and Sepsis", chapterFile: "c6-7", chapterGroup: "medical" },
+        { id: "c6-8", shortTitle: "6.8 Hypoglycemia", title: "Hypoglycemia", chapterFile: "c6-8", chapterGroup: "medical" },
+        { id: "c6-9", shortTitle: "6.9 Hyperglycemia", title: "Hyperglycemia", chapterFile: "c6-9", chapterGroup: "medical" },
+        { id: "c6-10", shortTitle: "6.10 Nausea and Vomiting", title: "Nausea and Vomiting", chapterFile: "c6-10", chapterGroup: "medical" },
+        { id: "c6-11", shortTitle: "6.11 Non‑Traumatic Shock", title: "Non‑Traumatic Shock", chapterFile: "c6-11", chapterGroup: "medical" },
+        { id: "c6-12", shortTitle: "6.12 Pain Management", title: "Pain Management", chapterFile: "c6-12", chapterGroup: "medical" },
+        { id: "c6-13", shortTitle: "6.13 Sickle Cell Crisis", title: "Sickle Cell Crisis", chapterFile: "c6-13", chapterGroup: "medical" },
+        { id: "c6-14", shortTitle: "6.14 Alcohol Intoxication", title: "Suspected Alcohol Intoxication", chapterFile: "c6-14", chapterGroup: "medical" },
 
-// ---------- RENDER COMING SOON – VIEW‑SPECIFIC ----------  
-function renderComingSoon() {
-    const view = utils.getQueryParam('view') || 'summary';
-    let title = 'Coming Soon', subtitle = '', message = '', icon = '🚧';
-    switch(view) {
-        case 'critical':
-            title = 'Critical Scenarios';
-            subtitle = 'Coming Soon';
-            message = 'High‑acuity decision‑making cases are being developed for this chapter.';
-            icon = '🚨';
-            break;
-        case 'flashcards':
-            title = 'Flashcards';
-            subtitle = 'Coming Soon';
-            message = 'Interactive flashcards for this chapter are under construction.';
-            icon = '📇';
-            break;
-        case 'quiz':
-            title = 'Quiz';
-            subtitle = 'Coming Soon';
-            message = 'Practice questions for this chapter are being prepared.';
-            icon = '📋';
-            break;
-        default:
-            title = 'Coming Soon';
-            subtitle = 'Stay tuned.....';
-            message = 'This CPG chapter is under construction.';
-            icon = '🚧';
+        // Trauma
+        { id: "c7-1", shortTitle: "7.1 General Trauma", title: "General Trauma Management", chapterFile: "c7-1", chapterGroup: "trauma" },
+        { id: "c7-2", shortTitle: "7.2 Burns", title: "Burns", chapterFile: "c7-2", chapterGroup: "trauma" },
+        { id: "c7-3", shortTitle: "7.3 Crush Injuries", title: "Crush Injuries", chapterFile: "c7-3", chapterGroup: "trauma" },
+        { id: "c7-4", shortTitle: "7.4 Limb Injuries", title: "Limb Injuries", chapterFile: "c7-4", chapterGroup: "trauma" },
+        { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", chapterFile: "c7-5", chapterGroup: "trauma" },
+        { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", chapterFile: "c7-6", chapterGroup: "trauma" },
+
+        // Environmental
+        { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", chapterFile: "c8-1", chapterGroup: "environmental" },
+        { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", chapterFile: "c8-2", chapterGroup: "environmental" },
+        { id: "c8-3", shortTitle: "8.3 Beta‑Blocker Overdose", title: "Beta‑Blocker Overdose", chapterFile: "c8-3", chapterGroup: "environmental" },
+        { id: "c8-4", shortTitle: "8.4 CCB Overdose", title: "Calcium Channel Blocker Overdose", chapterFile: "c8-4", chapterGroup: "environmental" },
+        { id: "c8-5", shortTitle: "8.5 Organophosphate", title: "Organophosphate Poisoning", chapterFile: "c8-5", chapterGroup: "environmental" },
+        { id: "c8-6", shortTitle: "8.6 Diving Emergencies", title: "Diving (SCUBA) Emergencies", chapterFile: "c8-6", chapterGroup: "environmental" },
+        { id: "c8-7", shortTitle: "8.7 Drowning", title: "Drowning / Near Drowning", chapterFile: "c8-7", chapterGroup: "environmental" },
+        { id: "c8-8", shortTitle: "8.8 Envenomation", title: "Envenomation", chapterFile: "c8-8", chapterGroup: "environmental" },
+        { id: "c8-9", shortTitle: "8.9 Hypothermia", title: "Hypothermia / Cold Exposure", chapterFile: "c8-9", chapterGroup: "environmental" },
+        { id: "c8-10", shortTitle: "8.10 Hyperthermia", title: "Hyperthermia / Heat Exposure", chapterFile: "c8-10", chapterGroup: "environmental" },
+
+        // Pediatric
+        { id: "c9-1", shortTitle: "9.1 Croup", title: "Croup", chapterFile: "c9-1", chapterGroup: "pediatric" },
+        { id: "c9-2", shortTitle: "9.2 Pediatric Bradycardia", title: "Pediatric Bradycardia", chapterFile: "c9-2", chapterGroup: "pediatric" },
+        { id: "c9-3", shortTitle: "9.3 Pediatric Tachycardia", title: "Pediatric Tachycardia", chapterFile: "c9-3", chapterGroup: "pediatric" },
+
+        // Obstetrics
+        { id: "c10-1", shortTitle: "10.1 Childbirth", title: "Childbirth", chapterFile: "c10-1", chapterGroup: "obstetric" },
+        { id: "c10-2", shortTitle: "10.2 Post Partum Hemorrhage", title: "Post Partum Hemorrhage", chapterFile: "c10-2", chapterGroup: "obstetric" },
+        { id: "c10-3", shortTitle: "10.3 PV Hemorrhage", title: "PV Hemorrhage in Pregnancy", chapterFile: "c10-3", chapterGroup: "obstetric" },
+        { id: "c10-4", shortTitle: "10.4 Eclampsia", title: "Eclampsia / Pre‑eclampsia", chapterFile: "c10-4", chapterGroup: "obstetric" },
+
+        // Major Incident Triage
+        { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", chapterFile: "c11-1", chapterGroup: "mci" },
+
+        // Scope & Medications
+        { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", chapterFile: "s1", chapterGroup: "scope" },
+        { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", chapterFile: "m1-38", chapterGroup: "scope" }
+    ];
+
+    // Group chapters by category
+    const categories = {
+        "universal": { name: "🛡️ Universal Care", color: "var(--accent-universal)" },
+        "airway": { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" },
+        "cardio": { name: "❤️ Cardiovascular", color: "var(--accent-cardio)" },
+        "resus": { name: "🔄 Resuscitation", color: "var(--accent-resus)" },
+        "neuro": { name: "🧠 Neurological", color: "var(--accent-neuro)" },
+        "medical": { name: "📋 General Medical", color: "var(--accent-medical)" },
+        "trauma": { name: "🩻 Trauma", color: "var(--accent-trauma)" },
+        "environmental": { name: "🌡️ Environmental", color: "var(--accent-environmental)" },
+        "pediatric": { name: "👶 Pediatric", color: "var(--accent-pediatric)" },
+        "obstetric": { name: "🤰 Obstetrics & Gynecology", color: "var(--accent-obstetric)" },
+        "mci": { name: "🚨 Major Incident Triage", color: "var(--accent-mci)" },
+        "scope": { name: "📘 Scope & Medications", color: "var(--accent-scope)" }
+    };
+
+    let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
+
+    // Search bar
+    html += `
+        <div class="search-container" style="margin-bottom:24px;">
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="width:100%; padding:12px; border-radius:40px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+            <button id="indexSearchClearBtn" style="display:none; margin-left:8px; padding:8px 16px; border-radius:40px; background:var(--primary-accent); color:white; border:none;">✕</button>
+        </div>
+        <div id="indexTableContainer">
+    `;
+
+    for (let group in categories) {
+        const groupChapters = CHAPTERS.filter(ch => ch.chapterGroup === group);
+        if (groupChapters.length === 0) continue;
+
+        html += `<h4 style="color: ${categories[group].color};">${categories[group].name}</h4>`;
+        html += `<table class="index-table">`;
+
+        groupChapters.forEach(ch => {
+            const baseFile = ch.chapterFile || ch.id;
+            const sectionParam = ch.sectionParam ? `&section=${ch.sectionParam}` : '';
+            const link = `${baseFile}.html?view=summary${sectionParam}`;
+            html += `
+                <tr>
+                    <td><a href="${link}" style="display: block; padding: 8px 0;">${ch.shortTitle}</a></td>
+                </tr>
+            `;
+        });
+        html += `</table>`;
     }
-    const html = `<div class="coming-soon-card" style="text-align:center; background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 60px; padding: 40px 20px; box-shadow: var(--glass-shadow);">   <div style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; background: linear-gradient(145deg, #0a3b4e, #1e6f8f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 15px; line-height: 1.2; font-family: Georgia, serif;">${icon} ${title}</div>   <div style="font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.5rem, 5vw, 2.2rem); font-style: italic; font-weight: 600; color: #0a3b4e; text-shadow: 0 2px 5px rgba(255,255,255,0.7); border-top: 3px solid rgba(0,86,179,0.3); border-bottom: 3px solid rgba(0,86,179,0.3); display: inline-block; padding: 10px 30px; margin-top: 10px; letter-spacing: 2px;">${subtitle}</div>   <div style="font-size: clamp(1rem, 4vw, 1.4rem); font-weight: 500; color: #1a3a4a; background: rgba(255,255,255,0.5); padding: 12px 20px; border-radius: 50px; display: inline-block; margin-top: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">   ${message}   </div>   <div style="margin-top: 40px;">   <button class="control-btn" data-action="backHome" style="padding: 12px 30px; border-radius: 40px; font-weight: 700; font-size: clamp(0.9rem, 4vw, 1.1rem); color: white; background: linear-gradient(to bottom, #00b4db, #0083b0); box-shadow: 0 8px 20px rgba(0, 131, 176, 0.5); border: none; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;">← Back to Chapters</button>   </div>   </div>`;
-    dom.main.innerHTML = html;
-    updateHeader(title, subtitle, true);
-    utils.safeScrollTop();
-}
 
-// ---------- RENDER SECTION TABS ----------  
-function renderSectionTabs(activeId) {  
-    if (!state.sections || state.sections.length <= 1) return '';  
-    return `  
-        <div class="section-tabs">  
-            ${state.sections.map(s => `  
-                <button class="section-tab ${s.id === activeId ? 'active-tab' : ''}"   
-                        data-section-id="${s.id}">  
-                    ${s.shortTitle}  
-                </button>  
-            `).join('')}  
-        </div>  
-    `;  
-}  
+    html += `</div>`; // close indexTableContainer
 
-// ---------- SECTION NAVIGATION BUTTONS (Previous / Next) ----------  
-function renderSectionNavigation() {  
-    if (!state.sections || state.sections.length <= 1) return '';  
-    const currentIdx = utils.getSectionIndex(state.activeSectionId);  
-    const prevSection = currentIdx > 0 ? state.sections[currentIdx - 1] : null;  
-    const nextSection = currentIdx < state.sections.length - 1 ? state.sections[currentIdx + 1] : null;  
-      
-    return `  
-        <div class="section-nav-row">  
-            ${prevSection ?   
-                `<button class="section-nav-btn" data-section-nav="prev" data-section-id="${prevSection.id}">  
-                    ◀ Previous Section (${prevSection.shortTitle})  
-                </button>` :   
-                `<button class="section-nav-btn" disabled>◀ Previous Section</button>`  
-            }  
-            ${nextSection ?   
-                `<button class="section-nav-btn" data-section-nav="next" data-section-id="${nextSection.id}">  
-                    Next Section (${nextSection.shortTitle}) ▶  
-                </button>` :   
-                `<button class="section-nav-btn" disabled>Next Section ▶</button>`  
-            }  
-        </div>  
-    `;  
-}  
+    // ✨ REMOVED the duplicate "Back to Chapters" button ✨
 
-// ---------- SWITCH SECTION ----------  
-function switchSection(sectionId, updateUrl = true) {  
-    const section = utils.getSection(sectionId);  
-    if (!section) return false;  
-      
-    state.activeSectionId = sectionId;  
-    state.activeSection = section;  
-      
-    // Reset per-section state  
-    state.quizData = [];  
-    state.mistakes = [];  
-    state.qIndex = 0;  
-    state.score = 0;  
-    state.flashData = section.flashcards || [];  
-    state.fIndex = 0;  
-    state.criticalData = section.critical || [];  
-    state.criticalIndex = 0;  
-    state.criticalScore = 0;  
+    // Self‑contained search script
+    html += `
+        <script>
+            (function() {
+                function initIndexSearch() {
+                    const input = document.getElementById('indexSearchInput');
+                    const clearBtn = document.getElementById('indexSearchClearBtn');
+                    const container = document.getElementById('indexTableContainer');
+                    if (!input || !container) return;
+                    
+                    const rows = container.querySelectorAll('.index-table tr');
+                    
+                    function filterRows(text) {
+                        const lowerText = text.toLowerCase().trim();
+                        rows.forEach(row => {
+                            const rowText = row.textContent.toLowerCase();
+                            if (rowText.includes(lowerText)) {
+                                row.classList.remove('filtered-out');
+                            } else {
+                                row.classList.add('filtered-out');
+                            }
+                        });
+                    }
 
-    if (updateUrl) {  
-        const url = new URL(window.location.href);  
-        url.searchParams.set('section', sectionId);  
-        window.history.pushState({}, '', url);  
-    }  
+                    input.addEventListener('input', function(e) {
+                        const val = e.target.value;
+                        if (clearBtn) clearBtn.style.display = val ? 'inline-block' : 'none';
+                        filterRows(val);
+                    });
 
-    const currentView = utils.getQueryParam('view') || 'summary';  
-    if (currentView === 'summary') render.summary();  
-    else if (currentView === 'flashcards') render.flashcards();  
-    else if (currentView === 'quiz') render.quizSetup();  
-    else if (currentView === 'critical') render.criticalGame();  
-    else render.summary();  
-      
-    return true;  
-}  
-
-// ---------- RENDER FUNCTIONS ----------  
-const render = {  
-    summary: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const section = state.activeSection;  
-        if (!section) {   
-            console.error('No active section');  
-            return;  
-        }  
-        const tabs = renderSectionTabs(section.id);  
-        const nav = renderSectionNavigation();  
-        
-        // 🔥 FIX: Only show "Back to Chapters" button if NOT the index page
-        const showBackButton = !(chapterData && chapterData.id === 'c-index');
-        
-        const html = `  
-            <div class="section active">  
-                ${tabs}  
-                ${section.summary || '<div class="sum-card">No summary available.</div>'}  
-                ${nav}  
-                ${showBackButton ? `
-                    <div class="nav-row">  
-                        <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-                    </div>
-                ` : ''}  
-            </div>  
-        `;  
-        dom.main.innerHTML = html;  
-        updateHeader(section.shortTitle, 'Summary', true);  
-        utils.safeScrollTop();
-
-        // Initialize index search if this is the index chapter
-        if (chapterData && chapterData.id === 'c-index') {
-            initIndexSearch();
-        }
-    },  
-
-    flashcards: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const section = state.activeSection;  
-        if (!section) {   
-            console.error('No active section');  
-            return;  
-        }  
-        if (!state.flashData.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No flashcards available.</div>';  
-            return;  
-        }  
-        state.fIndex = 0;  
-        this._renderFlashcard();  
-        updateHeader(section.shortTitle, 'Flashcards', true);  
-    },  
-
-    _renderFlashcard: function() {  
-        if (!state.flashData.length) return;  
-        const card = state.flashData[state.fIndex];  
-        const tabs = renderSectionTabs(state.activeSectionId);  
-        const nav = renderSectionNavigation();  
-        const html = `  
-            ${tabs}  
-            <div class="fc-progress">Card ${state.fIndex+1} of ${state.flashData.length}</div>  
-            <div class="scene" id="cardScene">  
-                <div class="card" id="flashcard">  
-                    <div class="card__face card__face--front">  
-                        <span class="category-badge">${utils.escapeHTML(card.category || '')}</span>  
-                        ${card.image ? `<div style="margin-bottom:15px;">  
-                            <img src="${card.image}" alt="ECG" style="max-width:100%; max-height:150px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">  
-                        </div>` : ''}  
-                        <div style="white-space: pre-wrap; font-size:1.3rem;">${utils.escapeHTML(card.question)}</div>  
-                        <div style="font-size:0.8rem; color:#888; margin-top:20px;">Tap to flip</div>  
-                    </div>  
-                    <div class="card__face card__face--back">  
-                        <div style="white-space: pre-wrap;">${(card.answer || '').replace(/\n/g, '<br>')}</div>  
-                    </div>  
-                </div>  
-            </div>  
-            <div class="nav-row">  
-                <button class="control-btn" data-flash="prev">◀ Previous</button>  
-                <button class="control-btn" data-flash="next">Next ▶</button>  
-            </div>  
-            ${nav}  
-            <div class="nav-row" style="margin-top:10px;">  
-                <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-            </div>  
-        `;  
-        dom.main.innerHTML = html;  
-        const cardEl = document.getElementById('flashcard');  
-        const scene = document.getElementById('cardScene');  
-        if (scene) {  
-            scene.addEventListener('click', function flipHandler(e) {  
-                if (e.target.closest('.control-btn')) return;  
-                cardEl.classList.toggle('is-flipped');  
-            }, { passive: true });  
-        }  
-        utils.safeScrollTop();  
-    },  
-
-    quizSetup: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const section = state.activeSection;  
-        if (!section) {   
-            console.error('No active section');  
-            return;  
-        }  
-        if (!section.quiz || !section.quiz.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No quiz questions available.</div>';  
-            return;  
-        }  
-        const totalQuestions = section.quiz.length;
-        const tabs = renderSectionTabs(section.id);  
-        const nav = renderSectionNavigation();  
-        
-        // Only show size buttons that are <= totalQuestions
-        const possibleSizes = [10, 20, 30];
-        const sizeButtons = possibleSizes
-            .filter(size => size <= totalQuestions)
-            .map(size => `<button class="setup-btn" data-quiz-size="${size}">${size} Questions <span>→</span></button>`)
-            .join('');
-        
-        // Always include "All" button
-        const allButton = `<button class="setup-btn challenge" data-quiz-size="${totalQuestions}">All (${totalQuestions}) <span>→</span></button>`;
-        
-        const buttonsHtml = sizeButtons + allButton;
-        
-        const html = `  
-            ${tabs}  
-            <div class="quiz-setup-container">  
-                <h2 style="color:var(--primary-accent);">Quiz: ${section.shortTitle}</h2>  
-                <p style="color:var(--text-secondary);">Select number of questions</p>  
-                <div class="setup-grid">  
-                    ${buttonsHtml}
-                </div>  
-                ${nav}  
-                <div class="nav-row">  
-                    <button class="control-btn" data-action="backHome">Cancel</button>  
-                </div>  
-            </div>  
-        `;  
-        dom.main.innerHTML = html;  
-        updateHeader('Quiz Setup', section.shortTitle, true);  
-        utils.safeScrollTop();  
-    },  
-
-    quizGame: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        if (!state.quizData.length) {  
-            render.quizSetup();  
-            return;  
-        }  
-        const q = state.quizData[state.qIndex];  
-        const progress = `Q ${state.qIndex+1}/${state.quizData.length}`;  
-        // Handle both string and object options
-        const optionsHtml = q.options.map((opt, idx) => {
-            const optText = typeof opt === 'string' ? opt : opt.t;
-            return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
-        }).join('');  
-        const tabs = renderSectionTabs(state.activeSectionId);  
-        const nav = renderSectionNavigation();  
-        const html = `  
-            ${tabs}  
-            <div class="quiz-container">  
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">  
-                    <span class="fc-progress">${progress}</span>  
-                    <span class="stats-badge" style="background:var(--glass-bg); color:var(--text-primary);">  
-                        Score: <strong>${state.score}</strong>  
-                    </span>  
-                </div>  
-                ${q.image ? `<div style="text-align:center; margin-bottom:20px;">  
-                    <img src="${q.image}" alt="ECG" style="max-width:100%; max-height:200px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">  
-                </div>` : ''}  
-                <div style="font-size:1.15rem; font-weight:600; margin-bottom:20px; color:var(--text-primary);">${utils.escapeHTML(q.q)}</div>  
-                <div class="quiz-options" id="quizOptionsContainer">${optionsHtml}</div>  
-                <div class="quiz-feedback" id="quizFeedback" style="display:none;"></div>  
-                <button class="control-btn" id="nextQuizBtn" style="width:100%; margin-top:25px; display:none;">Next Question</button>  
-            </div>  
-            ${nav}  
-        `;  
-        dom.main.innerHTML = html;  
-        utils.safeScrollTop();  
-    },  
-
-    criticalGame: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const section = state.activeSection;  
-        if (!section) {   
-            console.error('No active section');  
-            return;  
-        }  
-        if (!state.criticalData || !state.criticalData.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No critical scenarios available.</div>';  
-            return;  
-        }  
-        state.criticalIndex = 0;  
-        state.criticalScore = 0;  
-        this._renderCriticalQuestion();  
-        updateHeader('Critical Scenarios', section.shortTitle, true);  
-    },  
-
-    _renderCriticalQuestion: function() {  
-        const q = state.criticalData[state.criticalIndex];  
-        // Handle both string and object options
-        const optionsHtml = q.options.map((opt, idx) => {
-            const optText = typeof opt === 'string' ? opt : opt.t;
-            return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
-        }).join('');  
-        const tabs = renderSectionTabs(state.activeSectionId);  
-        const nav = renderSectionNavigation();  
-        const html = `  
-            ${tabs}  
-            <div class="critical-card">  
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">  
-                    <span class="fc-progress">Scenario ${state.criticalIndex+1}/${state.criticalData.length}</span>  
-                    <span class="stats-badge" style="background:var(--glass-bg); color:var(--text-primary);">  
-                        Score: <strong>${state.criticalScore}</strong>  
-                    </span>  
-                </div>  
-                <div style="background: var(--btn-grad-scen); padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid var(--border-scen);">  
-                    <strong style="color:var(--text-scen);">🚨 Scenario</strong>  
-                    <p style="margin-top:8px; color:var(--text-primary);">${utils.escapeHTML(q.scenario)}</p>  
-                </div>  
-                <div style="font-weight:600; margin-bottom:15px;">${utils.escapeHTML(q.question)}</div>  
-                <div class="quiz-options" id="criticalOptionsContainer">${optionsHtml}</div>  
-                <div class="critical-feedback" id="criticalFeedback" style="display:none;"></div>  
-                <button class="control-btn" id="nextCriticalBtn" style="width:100%; margin-top:25px; display:none;">Next Scenario</button>  
-            </div>  
-            ${nav}  
-        `;  
-        dom.main.innerHTML = html;  
-        utils.safeScrollTop();  
-    },  
-
-    stats: function() {  
-        const s = state.stats;  
-        let chapStatsHtml = '';  
-        for (let chId in s.chapters) {  
-            const ch = s.chapters[chId];  
-            const avg = ch.totalMax ? Math.round((ch.totalScore / ch.totalMax) * 100) : 0;  
-            chapStatsHtml += `  
-                <div class="stat-row">  
-                    <span class="stat-label">Chapter ${chId}</span>  
-                    <span class="stat-value">${avg}% (${ch.attempts} attempts)</span>  
-                </div>  
-            `;  
-        }  
-        const critAcc = s.critical.total ? Math.round((s.critical.correct / s.critical.total) * 100) : 0;  
-        const html = `  
-            <div class="stats-card">  
-                <h2 style="color:var(--primary-accent);">📊 Your Performance</h2>  
-                <div class="progress-header">  
-                    <span class="progress-title">Overall Progress</span>  
-                    <span style="font-weight:700;">${Math.round((Object.keys(s.chapters).length / (Object.keys(CHAPTERS||{}).length || 1)) * 100)}%</span>  
-                </div>  
-                <div class="progress-container">  
-                    <div class="progress-bar" style="width: ${Math.round((Object.keys(s.chapters).length / (Object.keys(CHAPTERS||{}).length || 1)) * 100)}%;"></div>  
-                </div>  
-                <div class="stats-grid">  
-                    <div class="stat-box">  
-                        <span class="stat-label">Total Attempts</span>  
-                        <span class="stat-value">${s.totalAttempts}</span>  
-                    </div>  
-                    <div class="stat-box">  
-                        <span class="stat-label">Critical Acc</span>  
-                        <span class="stat-value">${critAcc}%</span>  
-                    </div>  
-                </div>  
-                ${chapStatsHtml || '<p style="margin-top:10px;">No chapter data yet.</p>'}  
-                <div class="encouragement">💡 Keep up the great work!</div>  
-                <div class="nav-row">  
-                    <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-                </div>  
-            </div>  
-        `;  
-        dom.main.innerHTML = html;  
-        updateHeader('Statistics', '', true);  
-        utils.safeScrollTop();  
-    },  
-
-    reviewMistakes: function() {  
-        if (!state.mistakes.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No mistakes to review.</div>';  
-            return;  
-        }  
-        let items = state.mistakes.map(m => `  
-            <div class="mistake-item">  
-                <div class="mistake-question">❓ ${utils.escapeHTML(m.question)}</div>  
-                <div class="mistake-answer">✅ Correct: ${utils.escapeHTML(m.correctAnswer)}</div>  
-                <div class="mistake-rationale">📘 ${utils.escapeHTML(m.rationale)}</div>  
-            </div>  
-        `).join('');  
-        const html = `<div class="sum-card"><h3>📝 Mistakes Review</h3>${items}<div class="nav-row"><button class="control-btn" data-action="backHome">← Back</button></div></div>`;  
-        dom.main.innerHTML = html;  
-        updateHeader('Mistakes', '', true);  
-        utils.safeScrollTop();  
-    }  
-};  
-
-// ---------- INDEX SEARCH INIT (for c-index) ----------
-function initIndexSearch() {
-    // Only run on the index page
-    if (!chapterData || chapterData.id !== 'c-index') return;
-    
-    setTimeout(() => {
-        const input = document.getElementById('indexSearchInput');
-        const clearBtn = document.getElementById('indexSearchClearBtn');
-        const container = document.getElementById('indexTableContainer');
-        if (!input || !container) return;
-        
-        const rows = container.querySelectorAll('.index-table tr');
-        
-        function filterRows(text) {
-            const lowerText = text.toLowerCase().trim();
-            rows.forEach(row => {
-                const rowText = row.textContent.toLowerCase();
-                if (rowText.includes(lowerText)) {
-                    row.classList.remove('filtered-out');
-                } else {
-                    row.classList.add('filtered-out');
+                    if (clearBtn) {
+                        clearBtn.addEventListener('click', function() {
+                            input.value = '';
+                            clearBtn.style.display = 'none';
+                            filterRows('');
+                        });
+                    }
                 }
-            });
-        }
+                setTimeout(initIndexSearch, 100);
+            })();
+        </script>
+    `;
 
-        // Remove old handlers to avoid duplicates
-        input.removeEventListener('input', input._handler);
-        clearBtn?.removeEventListener('click', clearBtn._handler);
-
-        input._handler = function(e) {
-            const val = e.target.value;
-            if (clearBtn) clearBtn.style.display = val ? 'inline-block' : 'none';
-            filterRows(val);
-        };
-        input.addEventListener('input', input._handler);
-
-        if (clearBtn) {
-            clearBtn._handler = function() {
-                input.value = '';
-                clearBtn.style.display = 'none';
-                filterRows('');
-            };
-            clearBtn.addEventListener('click', clearBtn._handler);
-        }
-    }, 200);
-}
-
-// ---------- QUIZ ENGINE ----------  
-const quizEngine = {  
-    init: function(size) {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const section = state.activeSection;  
-        if (!section || !section.quiz) return;  
-        state.quizData = utils.shuffle(section.quiz).slice(0, size);  
-        state.qIndex = 0;  
-        state.score = 0;  
-        state.stats.totalAttempts = (state.stats.totalAttempts || 0) + 1;  
-        storage.save(state.stats);  
-        render.quizGame();  
-    },  
-    handleAnswer: function(selectedIdx, btn) {  
-        const q = state.quizData[state.qIndex];  
-        const isCorrect = selectedIdx === q.correct;  
-        if (isCorrect) {  
-            state.score++;  
-        } else {  
-            // Extract correct answer text (could be string or object)
-            const correctAnswer = typeof q.options[q.correct] === 'string' 
-                ? q.options[q.correct] 
-                : q.options[q.correct].t;
-            state.mistakes.push({  
-                question: q.q,  
-                correctAnswer: correctAnswer,  
-                rationale: q.explanation  
-            });  
-        }  
-        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);  
-        btn.classList.add(isCorrect ? 'correct' : 'wrong');  
-        if (!isCorrect) {  
-            const correctBtn = document.querySelectorAll('.option-btn')[q.correct];  
-            if (correctBtn) correctBtn.classList.add('correct');  
-        }  
-        const fb = document.getElementById('quizFeedback');  
-        if (fb) {  
-            fb.style.display = 'block';  
-            fb.innerHTML = `<strong style="color:${isCorrect?'#155724':'#721c24'};">${isCorrect?'✅ Correct':'❌ Incorrect'}</strong>  
-                            <p style="margin-top:8px;">${q.explanation}</p>`;  
-        }  
-        const nextBtn = document.getElementById('nextQuizBtn');  
-        if (nextBtn) nextBtn.style.display = 'block';  
-        const scoreEl = document.getElementById('currentScore');  
-        if (scoreEl) scoreEl.innerText = state.score;  
-    },  
-    next: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        state.qIndex++;  
-        if (state.qIndex < state.quizData.length) {  
-            render.quizGame();  
-        } else {  
-            const chapterId = chapterData.id || 'c0';  
-            if (!state.stats.chapters[chapterId]) {  
-                state.stats.chapters[chapterId] = { attempts: 0, totalScore: 0, totalMax: 0 };  
-            }  
-            const chap = state.stats.chapters[chapterId];  
-            chap.attempts += 1;  
-            chap.totalScore += state.score;  
-            chap.totalMax += state.quizData.length;  
-            storage.save(state.stats);  
-            const percentage = Math.round((state.score / state.quizData.length) * 100);  
-            let msg = 'Keep studying!';  
-            if (percentage >= 80) msg = 'Excellent!';  
-            else if (percentage >= 60) msg = 'Good effort.';  
-            const reviewBtn = state.mistakes.length ?   
-                `<button class="control-btn" data-action="reviewMistakes" style="margin-top:15px;">📝 Review ${state.mistakes.length} Mistakes</button>` : '';  
-            const html = `  
-                <div class="quiz-setup-container" style="text-align:center;">  
-                    <h2 style="color:var(--primary-accent);">Quiz Complete!</h2>  
-                    <div style="font-size:3.5rem; font-weight:bold; color:var(--primary-accent); margin:20px 0;">${percentage}%</div>  
-                    <p style="color:var(--text-secondary);">${msg}</p>  
-                    ${reviewBtn}  
-                    <div class="nav-row">  
-                        <button class="control-btn" data-action="backHome">← Home</button>  
-                    </div>  
-                </div>  
-            `;  
-            dom.main.innerHTML = html;  
-            utils.safeScrollTop();  
-        }  
-    }  
-};  
-
-// ---------- CRITICAL ENGINE ----------  
-const criticalEngine = {  
-    handleAnswer: function(selectedIdx, btn) {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        const q = state.criticalData[state.criticalIndex];  
-        const isCorrect = selectedIdx === q.correct;  
-        if (isCorrect) {  
-            state.criticalScore++;  
-            state.stats.critical.correct = (state.stats.critical.correct || 0) + 1;  
-        }  
-        state.stats.critical.total = (state.stats.critical.total || 0) + 1;  
-        storage.save(state.stats);  
-
-        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);  
-        btn.classList.add(isCorrect ? 'correct' : 'wrong');  
-        if (!isCorrect) {  
-            const correctBtn = document.querySelectorAll('.option-btn')[q.correct];  
-            if (correctBtn) correctBtn.classList.add('correct');  
-        }  
-        const fb = document.getElementById('criticalFeedback');  
-        if (fb) {  
-            fb.style.display = 'block';  
-            fb.innerHTML = `<strong style="color:${isCorrect?'#155724':'#721c24'};">${isCorrect?'✅ Correct':'❌ Incorrect'}</strong>  
-                            <p style="margin-top:8px;">${q.explanation}</p>  
-                            ${q.kpi ? `<div class="highlight-box" style="margin-top:10px;">🎯 KPI: ${q.kpi}</div>` : ''}`;  
-        }  
-        const nextBtn = document.getElementById('nextCriticalBtn');  
-        if (nextBtn) nextBtn.style.display = 'block';  
-    },  
-    next: function() {  
-        if (isChapterMissing) { renderComingSoon(); return; }  
-        state.criticalIndex++;  
-        if (state.criticalIndex < state.criticalData.length) {  
-            render._renderCriticalQuestion();  
-        } else {  
-            const accuracy = Math.round((state.criticalScore / state.criticalData.length) * 100);  
-            const html = `  
-                <div class="quiz-setup-container" style="text-align:center;">  
-                    <h2 style="color:var(--primary-accent);">Critical scenarios finished</h2>  
-                    <div style="font-size:3rem; font-weight:bold; color:var(--primary-accent); margin:20px 0;">${accuracy}%</div>  
-                    <p>Correct: ${state.criticalScore}/${state.criticalData.length}</p>  
-                    <div class="nav-row">  
-                        <button class="control-btn" data-action="backHome">← Home</button>  
-                    </div>  
-                </div>  
-            `;  
-            dom.main.innerHTML = html;  
-            utils.safeScrollTop();  
-        }  
-    }  
-};  
-
-// ---------- WATER RIPPLE EFFECT ----------  
-function createRipple(event) {  
-    const target = event.currentTarget;  
-    const rect = target.getBoundingClientRect();  
-    const x = event.clientX - rect.left;  
-    const y = event.clientY - rect.top;  
-      
-    const ripple = document.createElement('span');  
-    ripple.className = 'ripple';  
-    ripple.style.left = `${x}px`;  
-    ripple.style.top = `${y}px`;  
-    ripple.style.width = ripple.style.height = '20px';  
-    ripple.style.background = 'rgba(255, 255, 255, 0.7)';  
-      
-    target.appendChild(ripple);  
-      
-    setTimeout(() => {  
-        ripple.remove();  
-    }, 600);  
-}  
-
-// ---------- EVENT DELEGATION ----------  
-document.addEventListener('click', function(e) {  
-    const target = e.target.closest('button');  
-    if (!target) return;  
-    const action = target.dat
+    html += `</div>`; // close sum-card
+    return html;
+} 
