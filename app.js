@@ -218,8 +218,8 @@ const render = {
         const tabs = renderSectionTabs(section.id);  
         const nav = renderSectionNavigation();  
         
-        // 🔥 FIX: Only show "Back to Chapters" button if NOT the index page
-        const showBackButton = !(chapterData && chapterData.id === 'c-index');
+        // 🔥 FIX: Always show "Back to Chapters" button on chapter pages (including index)
+        const showBackButton = true;  // <-- changed: now appears on c-index as well
         
         // Summary is already HTML from data; we need to ensure it's safe, but it's trusted.
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
