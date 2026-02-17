@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (FIXED backHome navigation) ========== */
+/* ========== app.js – DCAS CPG 2025 (FIXED backHome + index search) ========== */
 (function(){
 "use strict";
 
