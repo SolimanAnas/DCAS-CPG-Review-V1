@@ -163,13 +163,13 @@
             padding: 30px 20px;
             color: var(--text-secondary);
             font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(5px);
             border-top: 1px solid rgba(255, 255, 255, 0.3);
             margin-top: auto;
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 0 -5px 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
         }
         footer div:first-child {
             font-weight: 500;
@@ -182,6 +182,20 @@
         footer a {
             color: inherit;
             text-decoration: underline;
+        }
+        /* Dark and forest theme footer adjustments */
+        [data-theme="dark"] footer {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        [data-theme="forest"] footer {
+            color: #edf4e7; /* light text for forest */
+            background: rgba(30, 75, 62, 0.8); /* darker green overlay */
+        }
+        [data-theme="light"] footer {
+            color: #1a2a3a;
+        }
+        [data-theme="sepia"] footer {
+            color: #4a3c2c;
         }
 
         /* Button container – default: flex with equal width buttons, wrap */
@@ -210,7 +224,7 @@
             }
             .btn-action {
                 width: 100%;
-                white-space: normal; /* allow text wrap if needed */
+                white-space: normal;
                 font-size: 0.75rem;
                 padding: 8px 4px;
             }
@@ -262,15 +276,13 @@
             border-radius: 10px;
         }
 
-        /* Floating scroll-to-bottom button – semi-transparent */
-        .scroll-to-bottom {
+        /* Floating buttons – shared styles */
+        .float-btn {
             position: fixed;
-            bottom: 20px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: rgba(61, 100, 115, 0.6);
+            background: rgba(61, 100, 115, 0.7);
             color: white;
             border: none;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -278,18 +290,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
             transition: transform 0.2s, background 0.2s, opacity 0.2s;
             z-index: 999;
             backdrop-filter: blur(2px);
+            opacity: 0.8;
         }
-        .scroll-to-bottom:hover {
+        .float-btn:hover {
             transform: scale(1.1);
             background: var(--toggle-active);
             opacity: 1;
         }
-        .scroll-to-bottom:active {
+        .float-btn:active {
             transform: scale(0.95);
+        }
+        .float-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Specific positioning */
+        #scrollToBottomBtn {
+            bottom: 20px;
+            right: 15px;
+        }
+        #scrollToTopBtn {
+            bottom: 70px;  /* above bottom button */
+            right: 15px;
         }
     </style>
 </head>
@@ -338,8 +364,9 @@
     <div><a href="about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
 </footer>
 
-<!-- Floating scroll-to-bottom button -->
-<button class="scroll-to-bottom" id="scrollToBottomBtn" title="Go to progress dashboard">↓</button>
+<!-- Floating buttons -->
+<button class="float-btn hidden" id="scrollToTopBtn" title="Go to top">↑</button>
+<button class="float-btn" id="scrollToBottomBtn" title="Go to progress dashboard">↓</button>
 
 <script>
     (function(){
@@ -385,12 +412,45 @@
         progressToggle.addEventListener('click', togglePopup);
         document.addEventListener('click', hidePopup);
 
-        // ---------- SCROLL TO BOTTOM ----------
-        const scrollBtn = document.getElementById('scrollToBottomBtn');
-        scrollBtn.addEventListener('click', () => {
-            const statsCard = document.getElementById('statsCard');
-            if (statsCard) {
-                statsCard.scrollIntoView({ behavior: 'smooth' });
+        // ---------- SCROLL BUTTONS ----------
+        const scrollTopBtn = document.getElementById('scrollToTopBtn');
+        const scrollBottomBtn = document.getElementById('scrollToBottomBtn');
+        const statsCard = document.getElementById('statsCard'); // may not exist initially; we'll check on scroll
+
+        function updateFloatButtons() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            // Show top button only if scrolled down more than 200px
+            if (scrollY > 200) {
+                scrollTopBtn.classList.remove('hidden');
+            } else {
+                scrollTopBtn.classList.add('hidden');
+            }
+
+            // Show bottom button only if not at bottom (within 100px of bottom)
+            if (documentHeight - (scrollY + windowHeight) > 100) {
+                scrollBottomBtn.classList.remove('hidden');
+            } else {
+                scrollBottomBtn.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('scroll', updateFloatButtons);
+        window.addEventListener('resize', updateFloatButtons);
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        scrollBottomBtn.addEventListener('click', () => {
+            const stats = document.getElementById('statsCard');
+            if (stats) {
+                stats.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // fallback: bottom of page
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         });
 
@@ -743,7 +803,10 @@
         if(homeBtn) homeBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
         if(indexBtn) indexBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'chapters/c-index.html?view=summary'; });
 
+        // Initial render
         renderMenu();
+        // Update buttons after first render
+        setTimeout(updateFloatButtons, 100);
     })();
 </script>
 
