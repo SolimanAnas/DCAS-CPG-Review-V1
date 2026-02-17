@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index with Search (old style) ========== */
+/* ========== c-index.js – Full CPG Index with Dynamic Filter ========== */
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -127,12 +127,12 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // Search bar with icon – styled like the original
+    // Search bar – clean, no inline styles, relies on global CSS
     html += `
-        <div class="search-container" style="margin-bottom:24px;">
+        <div class="search-container">
             <span>🔍</span>
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="width:100%; padding:12px; border-radius:40px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
-            <button id="indexSearchClearBtn" style="display:none; margin-left:8px; padding:8px 16px; border-radius:40px; background:var(--primary-accent); color:white; border:none;">✕</button>
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines...">
+            <button id="indexSearchClearBtn" style="display:none;">✕</button>
         </div>
         <div id="indexTableContainer">
     `;
@@ -158,6 +158,105 @@ function generateIndexHTML() {
     }
 
     html += `</div>`; // close indexTableContainer
+
+    // Self‑contained search script – now with true hiding of non‑matching rows
+    html += `
+        <style>
+            /* Ensure filtered-out rows are hidden */
+            .index-table tr.filtered-out {
+                display: none !important;
+            }
+            /* Highlight style */
+            .index-table tr mark {
+                background: #ffeb3b;
+                color: #000;
+                padding: 2px 0;
+                border-radius: 2px;
+            }
+        </style>
+        <script>
+            (function() {
+                function initIndexSearch() {
+                    const input = document.getElementById('indexSearchInput');
+                    const clearBtn = document.getElementById('indexSearchClearBtn');
+                    const container = document.getElementById('indexTableContainer');
+                    if (!input || !container) return;
+
+                    // Get all rows
+                    const rows = container.querySelectorAll('.index-table tr');
+
+                    // Store original text for each link
+                    rows.forEach(row => {
+                        const link = row.querySelector('a');
+                        if (link && !link.getAttribute('data-original')) {
+                            link.setAttribute('data-original', link.textContent);
+                        }
+                    });
+
+                    function filterRows(text) {
+                        const lowerText = text.toLowerCase().trim();
+
+                        rows.forEach(row => {
+                            const link = row.querySelector('a');
+                            if (!link) return;
+
+                            const originalText = link.getAttribute('data-original') || link.textContent;
+                            const rowText = originalText.toLowerCase();
+
+                            if (rowText.includes(lowerText)) {
+                                // Remove hidden class
+                                row.classList.remove('filtered-out');
+
+                                // Apply highlight
+                                if (lowerText) {
+                                    const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                                    link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                                } else {
+                                    link.innerHTML = originalText;
+                                }
+                            } else {
+                                // Hide this row
+                                row.classList.add('filtered-out');
+                                // Restore original text (remove any marks)
+                                link.innerHTML = originalText;
+                            }
+                        });
+                    }
+
+                    // Remove old handlers to avoid duplicates
+                    input.removeEventListener('input', input._handler);
+                    clearBtn?.removeEventListener('click', clearBtn._handler);
+
+                    input._handler = function(e) {
+                        const val = e.target.value;
+                        if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
+                        filterRows(val);
+                    };
+                    input.addEventListener('input', input._handler);
+
+                    if (clearBtn) {
+                        clearBtn._handler = function() {
+                            input.value = '';
+                            clearBtn.style.display = 'none';
+                            filterRows('');
+                        };
+                        clearBtn.addEventListener('click', clearBtn._handler);
+                    }
+
+                    // Initial state: all visible, no marks, button hidden
+                    filterRows('');
+                }
+
+                // Run after DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initIndexSearch);
+                } else {
+                    setTimeout(initIndexSearch, 100);
+                }
+            })();
+        </script>
+    `;
+
     html += `</div>`; // close sum-card
     return html;
 }
