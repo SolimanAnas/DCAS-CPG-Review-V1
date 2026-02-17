@@ -1,208 +1,757 @@
-/* ========== c-index.js – Full CPG Index with Search ========== */
-window.CPG_DATA = {
-    id: "c-index",
-    title: "DCAS CPG Index",
-    shortTitle: "📋 Full Index",
-    sections: [
-        {
-            id: "c-index-main",
-            shortTitle: "Complete Index",
-            summary: generateIndexHTML(),
-            quiz: [],
-            flashcards: [],
-            critical: []
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DCAS CPG 2025 · Index</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- PWA Manifest and icons -->
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    <link rel="apple-touch-icon" href="../icon.png">
+
+    <style>
+        /* ========== THEME CONFIGURATION ========== */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #b8e1ff 50%, #f0f9ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --text-primary: #1a2a3a;
+            --text-secondary: #475569;
+            --header-text: #0056b3;
+            --toggle-bg: #cbd5e1;
+            --toggle-active: #0056b3;
+            --btn-grad-sum: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+            --btn-grad-flash: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+            --btn-grad-quiz: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+            --btn-grad-scen: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+            --border-sum: #ffedd5; --text-sum: #9a3412;
+            --border-flash: #dbeafe; --text-flash: #1e40af;
+            --border-quiz: #dcfce7; --text-quiz: #166534;
+            --border-scen: #fee2e2; --text-scen: #991b1b;
         }
-    ]
-};
 
-function generateIndexHTML() {
-    // ---------- Complete CPG list (must match main index) ----------
-    const CHAPTERS = [
-        // Universal Care
-        { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", chapterFile: "c1", sectionParam: "c1s1", chapterGroup: "universal" },
-        { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", chapterFile: "c1", sectionParam: "c1s2", chapterGroup: "universal" },
-        { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", chapterFile: "c1", sectionParam: "c1s3", chapterGroup: "universal" },
-        { id: "c1s4", shortTitle: "1.4 Functional Needs", title: "Functional Needs", chapterFile: "c1", sectionParam: "c1s4", chapterGroup: "universal" },
-        { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
-        { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+            --text-primary: #1a2a3a;
+            --text-secondary: #334155;
+            --header-text: #ffffff;
+            --toggle-bg: #374151;
+            --toggle-active: #2dd4bf;
+        }
 
-        // Airway & Breathing
-        { id: "c2", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", chapterGroup: "airway" },
-        { id: "c2-2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2-2", chapterGroup: "airway" },
-        { id: "c2-3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2-3", chapterGroup: "airway" },
-        { id: "c2-4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2-4", chapterGroup: "airway" },
-        { id: "c2-5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", chapterFile: "c2-5", chapterGroup: "airway" },
+        [data-theme="sepia"] {
+            --bg-gradient: linear-gradient(135deg, #f4e4c1 0%, #e5d3b3 50%, #d6c2a3 100%);
+            --glass-bg: rgba(255, 248, 235, 0.9);
+            --glass-border: rgba(210, 180, 140, 0.6);
+            --glass-shadow: 0 12px 40px 0 rgba(100, 70, 40, 0.2);
+            --text-primary: #4a3c2c;
+            --text-secondary: #6b5a48;
+            --header-text: #4a3c2c;
+            --toggle-bg: #c4a484;
+            --toggle-active: #8b6b4f;
+        }
 
-        // Cardiovascular
-        { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", chapterFile: "c3-1", chapterGroup: "cardio" },
-        { id: "c3-2", shortTitle: "3.2 Adult Bradycardia", title: "Adult Bradycardia", chapterFile: "c3-2", chapterGroup: "cardio" },
-        { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", chapterFile: "c3-3", chapterGroup: "cardio" },
-        { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", chapterFile: "c3-4", chapterGroup: "cardio" },
+        [data-theme="forest"] {
+            --bg-gradient: linear-gradient(135deg, #1e4b3e 0%, #2d6a4f 50%, #40916c 100%);
+            --glass-bg: rgba(220, 237, 193, 0.85);
+            --glass-border: rgba(162, 191, 132, 0.7);
+            --glass-shadow: 0 12px 40px 0 rgba(0, 50, 30, 0.3);
+            --text-primary: #0f2c1f;
+            --text-secondary: #2d5a3a;
+            --header-text: #edf4e7;
+            --toggle-bg: #52796f;
+            --toggle-active: #84a98c;
+        }
 
-        // Resuscitation
-        { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", chapterFile: "c4-1", chapterGroup: "resus" },
-        { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", chapterFile: "c4-2", chapterGroup: "resus" },
-        { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", chapterFile: "c4-3", chapterGroup: "resus" },
-        { id: "c4-4", shortTitle: "4.4 Pediatric Cardiac Arrest", title: "Pediatric Cardiac Arrest", chapterFile: "c4-4", chapterGroup: "resus" },
-        { id: "c4-5", shortTitle: "4.5 Trauma Cardiac Arrest", title: "Cardiac Arrest in Trauma", chapterFile: "c4-5", chapterGroup: "resus" },
-        { id: "c4-6", shortTitle: "4.6 Newborn Resuscitation", title: "Newborn (<4 weeks) and Pre‑term Infant Resuscitation", chapterFile: "c4-6", chapterGroup: "resus" },
-        { id: "c4-7", shortTitle: "4.7 Post-ROSC", title: "Post Cardiac Arrest Care (ROSC)", chapterFile: "c4-7", chapterGroup: "resus" },
-        { id: "c4-8", shortTitle: "4.8 Starting/Stopping CPR", title: "Starting, Stopping and Transferring CPR", chapterFile: "c4-8", chapterGroup: "resus" },
-        { id: "c4-9", shortTitle: "4.9 Verification of Death", title: "Verification of Death", chapterFile: "c4-9", chapterGroup: "resus" },
+        :root {
+            --accent-universal: #d63384;       
+            --accent-airway: #0ca678;          
+            --accent-cardio: #e03131;          
+            --accent-resus: #6741d9;           
+            --accent-neuro: #0891b2;           
+            --accent-medical: #f76707;         
+            --accent-trauma: #fcc419;          
+            --accent-environmental: #845ef7;   
+            --accent-pediatric: #ff922b;       
+            --accent-obstetric: #f06595;       
+            --accent-mci: #2f9e44;             
+            --accent-scope: #495057;           
+            --header-height: 72px;
+        }
 
-        // Neurological
-        { id: "c5-1", shortTitle: "5.1 Stroke", title: "Stroke", chapterFile: "c5-1", chapterGroup: "neuro" },
-        { id: "c5-2", shortTitle: "5.2 Seizures", title: "Seizures", chapterFile: "c5-2", chapterGroup: "neuro" },
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
-        // General Medical
-        { id: "c6-1", shortTitle: "6.1 Abdominal Pain", title: "Abdominal Pain", chapterFile: "c6-1", chapterGroup: "medical" },
-        { id: "c6-2", shortTitle: "6.2 Abnormal Behavior", title: "Abnormal Behavior", chapterFile: "c6-2", chapterGroup: "medical" },
-        { id: "c6-3", shortTitle: "6.3 Adrenal Insufficiency", title: "Adrenal Insufficiency", chapterFile: "c6-3", chapterGroup: "medical" },
-        { id: "c6-4", shortTitle: "6.4 Anaphylaxis", title: "Anaphylaxis / Allergic Reaction", chapterFile: "c6-4", chapterGroup: "medical" },
-        { id: "c6-5", shortTitle: "6.5 Altered Mental Status", title: "Altered Mental Status", chapterFile: "c6-5", chapterGroup: "medical" },
-        { id: "c6-6", shortTitle: "6.6 Epistaxis", title: "Epistaxis", chapterFile: "c6-6", chapterGroup: "medical" },
-        { id: "c6-7", shortTitle: "6.7 Fever and Sepsis", title: "Fever and Sepsis", chapterFile: "c6-7", chapterGroup: "medical" },
-        { id: "c6-8", shortTitle: "6.8 Hypoglycemia", title: "Hypoglycemia", chapterFile: "c6-8", chapterGroup: "medical" },
-        { id: "c6-9", shortTitle: "6.9 Hyperglycemia", title: "Hyperglycemia", chapterFile: "c6-9", chapterGroup: "medical" },
-        { id: "c6-10", shortTitle: "6.10 Nausea and Vomiting", title: "Nausea and Vomiting", chapterFile: "c6-10", chapterGroup: "medical" },
-        { id: "c6-11", shortTitle: "6.11 Non‑Traumatic Shock", title: "Non‑Traumatic Shock", chapterFile: "c6-11", chapterGroup: "medical" },
-        { id: "c6-12", shortTitle: "6.12 Pain Management", title: "Pain Management", chapterFile: "c6-12", chapterGroup: "medical" },
-        { id: "c6-13", shortTitle: "6.13 Sickle Cell Crisis", title: "Sickle Cell Crisis", chapterFile: "c6-13", chapterGroup: "medical" },
-        { id: "c6-14", shortTitle: "6.14 Alcohol Intoxication", title: "Suspected Alcohol Intoxication", chapterFile: "c6-14", chapterGroup: "medical" },
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            transition: background 0.5s ease;
+        }
 
-        // Trauma
-        { id: "c7-1", shortTitle: "7.1 General Trauma", title: "General Trauma Management", chapterFile: "c7-1", chapterGroup: "trauma" },
-        { id: "c7-2", shortTitle: "7.2 Burns", title: "Burns", chapterFile: "c7-2", chapterGroup: "trauma" },
-        { id: "c7-3", shortTitle: "7.3 Crush Injuries", title: "Crush Injuries", chapterFile: "c7-3", chapterGroup: "trauma" },
-        { id: "c7-4", shortTitle: "7.4 Limb Injuries", title: "Limb Injuries", chapterFile: "c7-4", chapterGroup: "trauma" },
-        { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", chapterFile: "c7-5", chapterGroup: "trauma" },
-        { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", chapterFile: "c7-6", chapterGroup: "trauma" },
+        /* ========== HEADER ========== */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: var(--header-height);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
 
-        // Environmental
-        { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", chapterFile: "c8-1", chapterGroup: "environmental" },
-        { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", chapterFile: "c8-2", chapterGroup: "environmental" },
-        { id: "c8-3", shortTitle: "8.3 Beta‑Blocker Overdose", title: "Beta‑Blocker Overdose", chapterFile: "c8-3", chapterGroup: "environmental" },
-        { id: "c8-4", shortTitle: "8.4 CCB Overdose", title: "Calcium Channel Blocker Overdose", chapterFile: "c8-4", chapterGroup: "environmental" },
-        { id: "c8-5", shortTitle: "8.5 Organophosphate", title: "Organophosphate Poisoning", chapterFile: "c8-5", chapterGroup: "environmental" },
-        { id: "c8-6", shortTitle: "8.6 Diving Emergencies", title: "Diving (SCUBA) Emergencies", chapterFile: "c8-6", chapterGroup: "environmental" },
-        { id: "c8-7", shortTitle: "8.7 Drowning", title: "Drowning / Near Drowning", chapterFile: "c8-7", chapterGroup: "environmental" },
-        { id: "c8-8", shortTitle: "8.8 Envenomation", title: "Envenomation", chapterFile: "c8-8", chapterGroup: "environmental" },
-        { id: "c8-9", shortTitle: "8.9 Hypothermia", title: "Hypothermia / Cold Exposure", chapterFile: "c8-9", chapterGroup: "environmental" },
-        { id: "c8-10", shortTitle: "8.10 Hyperthermia", title: "Hyperthermia / Heat Exposure", chapterFile: "c8-10", chapterGroup: "environmental" },
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
 
-        // Pediatric
-        { id: "c9-1", shortTitle: "9.1 Croup", title: "Croup", chapterFile: "c9-1", chapterGroup: "pediatric" },
-        { id: "c9-2", shortTitle: "9.2 Pediatric Bradycardia", title: "Pediatric Bradycardia", chapterFile: "c9-2", chapterGroup: "pediatric" },
-        { id: "c9-3", shortTitle: "9.3 Pediatric Tachycardia", title: "Pediatric Tachycardia", chapterFile: "c9-3", chapterGroup: "pediatric" },
+        .header-text h1 { 
+            font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; 
+            color: var(--header-text); margin: 0; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-text p { 
+            font-size: 0.75rem; color: var(--header-text); 
+            opacity: 0.8; font-weight: 500; margin-top: 2px; 
+        }
 
-        // Obstetrics
-        { id: "c10-1", shortTitle: "10.1 Childbirth", title: "Childbirth", chapterFile: "c10-1", chapterGroup: "obstetric" },
-        { id: "c10-2", shortTitle: "10.2 Post Partum Hemorrhage", title: "Post Partum Hemorrhage", chapterFile: "c10-2", chapterGroup: "obstetric" },
-        { id: "c10-3", shortTitle: "10.3 PV Hemorrhage", title: "PV Hemorrhage in Pregnancy", chapterFile: "c10-3", chapterGroup: "obstetric" },
-        { id: "c10-4", shortTitle: "10.4 Eclampsia", title: "Eclampsia / Pre‑eclampsia", chapterFile: "c10-4", chapterGroup: "obstetric" },
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--header-text);
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .icon-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.4); }
 
-        // Major Incident Triage
-        { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", chapterFile: "c11-1", chapterGroup: "mci" },
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+            color: var(--header-text);
+            display: flex; align-items: center; gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .stats-divider { width: 1px; height: 14px; background: currentColor; opacity: 0.4; }
 
-        // Scope & Medications
-        { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", chapterFile: "s1", chapterGroup: "scope" },
-        { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", chapterFile: "m1-38", chapterGroup: "scope" }
-    ];
+        /* ========== MAIN CONTENT ========== */
+        main {
+            flex: 1; padding: 24px 20px;
+            max-width: 800px; margin: 0 auto; width: 100%;
+        }
 
-    // Group chapters by category
-    const categories = {
-        "universal": { name: "🛡️ Universal Care", color: "var(--accent-universal)" },
-        "airway": { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" },
-        "cardio": { name: "❤️ Cardiovascular", color: "var(--accent-cardio)" },
-        "resus": { name: "🔄 Resuscitation", color: "var(--accent-resus)" },
-        "neuro": { name: "🧠 Neurological", color: "var(--accent-neuro)" },
-        "medical": { name: "📋 General Medical", color: "var(--accent-medical)" },
-        "trauma": { name: "🩻 Trauma", color: "var(--accent-trauma)" },
-        "environmental": { name: "🌡️ Environmental", color: "var(--accent-environmental)" },
-        "pediatric": { name: "👶 Pediatric", color: "var(--accent-pediatric)" },
-        "obstetric": { name: "🤰 Obstetrics & Gynecology", color: "var(--accent-obstetric)" },
-        "mci": { name: "🚨 Major Incident Triage", color: "var(--accent-mci)" },
-        "scope": { name: "📘 Scope & Medications", color: "var(--accent-scope)" }
-    };
+        .sum-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 28px;
+            box-shadow: var(--glass-shadow);
+            animation: fadeInUp 0.6s ease forwards;
+        }
 
-    let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
+        .sum-card h3 {
+            font-size: 1.5rem; font-weight: 700; color: var(--text-primary);
+            margin-bottom: 24px; border-bottom: 2px solid var(--accent-universal);
+            padding-bottom: 10px;
+        }
 
-    // Search bar
-    html += `
-        <div class="search-container" style="margin-bottom:24px;">
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="width:100%; padding:12px; border-radius:40px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
-            <button id="indexSearchClearBtn" style="display:none; margin-left:8px; padding:8px 16px; border-radius:40px; background:var(--primary-accent); color:white; border:none;">✕</button>
+        .sum-card h4 {
+            font-size: 1.2rem; font-weight: 600; color: var(--text-primary);
+            margin: 30px 0 15px;
+        }
+
+        .index-table {
+            width: 100%; border-collapse: collapse;
+        }
+        .index-table tr {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: background 0.1s;
+        }
+        .index-table tr:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .index-table td {
+            padding: 14px 8px;
+        }
+        .index-table a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+        }
+        .index-table a:hover {
+            text-decoration: underline;
+            color: var(--accent-universal);
+        }
+
+        /* Search bar */
+        .search-container {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 4px 4px 4px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glass-shadow);
+        }
+        .search-container input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+            outline: none;
+        }
+        .search-container input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        .search-container button {
+            background: var(--primary-accent);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-container button:active {
+            background: #003d80;
+        }
+        .index-table tr.filtered-out {
+            display: none;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
+        }
+        footer div:first-child {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        footer div:last-child {
+            opacity: 0.9;
+            font-size: 0.7rem;
+        }
+        footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+        [data-theme="dark"] footer {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        [data-theme="forest"] footer {
+            color: #edf4e7;
+            background: rgba(30, 75, 62, 0.8);
+        }
+        [data-theme="light"] footer {
+            color: #1a2a3a;
+        }
+        [data-theme="sepia"] footer {
+            color: #4a3c2c;
+        }
+
+        /* ========== FLOATING BUTTONS ========== */
+        .float-btn {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(61, 100, 115, 0.7);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.2s, background 0.2s, opacity 0.2s;
+            z-index: 999;
+            backdrop-filter: blur(2px);
+            opacity: 0.8;
+        }
+        .float-btn:hover {
+            transform: scale(1.1);
+            background: var(--toggle-active);
+            opacity: 1;
+        }
+        .float-btn:active {
+            transform: scale(0.95);
+        }
+        .float-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #scrollToBottomBtn {
+            bottom: 20px;
+            right: 15px;
+        }
+        #scrollToTopBtn {
+            bottom: 70px;
+            right: 15px;
+        }
+
+        /* ========== DRAWER STYLES ========== */
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .notification-drawer {
+            position: fixed;
+            top: -450px;
+            left: 0;
+            width: 100%;
+            background: rgba(20, 30, 40, 0.4);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            z-index: 2001;
+            padding: 25px 20px 35px;
+            border-radius: 0 0 30px 30px;
+            transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .notification-drawer.open {
+            top: 0;
+        }
+
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            justify-content: center;
+        }
+        .toggle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .toggle-btn {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .toggle-btn.active {
+            background: var(--primary-accent);
+            border-color: var(--primary-accent);
+            color: white;
+            box-shadow: 0 0 15px var(--primary-accent);
+        }
+        .toggle-btn:active {
+            transform: scale(0.92);
+        }
+        .toggle-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 8px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .drawer-stats {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stat-num {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .stat-text {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .close-drawer-btn {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.5;
+            margin-top: -10px;
+        }
+
+        /* Two‑line trigger */
+        .drawer-trigger {
+            position: absolute;
+            left: 50%;
+            bottom: -35px;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 0 0 30px 30px;
+            animation: floatDown 3s ease-in-out infinite;
+        }
+        .trigger-line {
+            height: 3px;
+            background: var(--primary-accent);
+            border-radius: 3px;
+            margin: 3px 0;
+            box-shadow: 0 0 8px var(--primary-accent);
+        }
+        .trigger-line.top {
+            width: 30px;
+        }
+        .trigger-line.bottom {
+            width: 20px;
+        }
+        @keyframes floatDown {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(6px); }
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .header-text h1 { font-size: 1rem; }
+            .header-text p { display: none; }
+            .index-table td { padding: 10px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- Super Glassy Notification Drawer -->
+<div class="notification-drawer" id="notificationDrawer">
+    <div class="toggles-grid">
+        <!-- Theme toggles -->
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleDark">🌑</button>
+            <div class="toggle-label">Dark</div>
         </div>
-        <div id="indexTableContainer">
-    `;
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleLight">☀️</button>
+            <div class="toggle-label">Light</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleSepia">📜</button>
+            <div class="toggle-label">Sepia</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="toggleForest">🌲</button>
+            <div class="toggle-label">Forest</div>
+        </div>
+        <!-- Shortcuts -->
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsIndex">📋</button>
+            <div class="toggle-label">Index</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsAbout">ℹ️</button>
+            <div class="toggle-label">About</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsJumpDown">⬇️</button>
+            <div class="toggle-label">Bottom</div>
+        </div>
+        <div class="toggle-item">
+            <button class="toggle-btn" id="qsReload">🔄</button>
+            <div class="toggle-label">Reload</div>
+        </div>
+    </div>
 
-    for (let group in categories) {
-        const groupChapters = CHAPTERS.filter(ch => ch.chapterGroup === group);
-        if (groupChapters.length === 0) continue;
+    <!-- Mini stats (dummy data – will be updated by script) -->
+    <div class="drawer-stats">
+        <div class="stat-item">
+            <span class="stat-num" id="drawerDone">0/0</span>
+            <span class="stat-text">Chapters</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="drawerAttempts">0</span>
+            <span class="stat-text">Attempts</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="drawerAcc">0%</span>
+            <span class="stat-text">Accuracy</span>
+        </div>
+    </div>
 
-        html += `<h4 style="color: ${categories[group].color};">${categories[group].name}</h4>`;
-        html += `<table class="index-table">`;
+    <!-- Close handle (up arrow) -->
+    <div class="close-drawer-btn" id="closeDrawerBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+    </div>
+</div>
 
-        groupChapters.forEach(ch => {
-            const baseFile = ch.chapterFile || ch.id;
-            const sectionParam = ch.sectionParam ? `&section=${ch.sectionParam}` : '';
-            const link = `${baseFile}.html?view=summary${sectionParam}`;
-            html += `
-                <tr>
-                    <td><a href="${link}" style="display: block; padding: 8px 0;">${ch.shortTitle}</a></td>
-                </tr>
-            `;
+<header>
+    <div class="header-left">
+        <button class="icon-btn" id="homeBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="header-text">
+            <h1 id="pageTitle">DCAS CPG Index</h1>
+            <p id="pageSubtitle">Complete Guideline List</p>
+        </div>
+    </div>
+
+    <!-- Drawer trigger (two lines) -->
+    <div class="drawer-trigger" id="drawerTrigger">
+        <div class="trigger-line top"></div>
+        <div class="trigger-line bottom"></div>
+    </div>
+
+    <div class="header-right">
+        <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
+        <button class="icon-btn" id="progressToggle" title="Progress">📊</button>
+        <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+        <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
+    </div>
+</header>
+
+<main id="mainContent">
+    <!-- Content will be injected by app.js -->
+</main>
+
+<footer>
+    <div>Created by Soliman Anas · for study aid only</div>
+    <div><a href="../about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
+</footer>
+
+<!-- Floating buttons -->
+<button class="float-btn hidden" id="scrollToTopBtn" title="Go to top">↑</button>
+<button class="float-btn" id="scrollToBottomBtn" title="Go to bottom">↓</button>
+
+<!-- Load content data first, then app.js to render it -->
+<script src="../content/c-index.js"></script>
+<script src="../app.js"></script>
+
+<script>
+    (function() {
+        "use strict";
+
+        // ---------- THEME SYSTEM ----------
+        const themeBtn = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const themes = ['dark', 'light', 'sepia', 'forest'];
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            // Update active class on drawer buttons
+            document.querySelectorAll('.toggle-btn[id^="toggle"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`toggle${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function nextTheme() {
+            const current = html.getAttribute('data-theme') || 'dark';
+            const currentIndex = themes.indexOf(current);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            setTheme(themes[nextIndex]);
+        }
+
+        themeBtn.addEventListener('click', nextTheme);
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        // Add click handlers for drawer theme buttons
+        document.getElementById('toggleDark').addEventListener('click', () => setTheme('dark'));
+        document.getElementById('toggleLight').addEventListener('click', () => setTheme('light'));
+        document.getElementById('toggleSepia').addEventListener('click', () => setTheme('sepia'));
+        document.getElementById('toggleForest').addEventListener('click', () => setTheme('forest'));
+
+        // ---------- DRAWER CONTROLS ----------
+        const drawer = document.getElementById('notificationDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        const trigger = document.getElementById('drawerTrigger');
+        const closeBtn = document.getElementById('closeDrawerBtn');
+
+        function openDrawer() {
+            drawer.classList.add('open');
+            overlay.classList.add('active');
+        }
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        trigger.addEventListener('click', openDrawer);
+        closeBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+
+        // Drawer shortcut buttons
+        document.getElementById('qsIndex').addEventListener('click', () => {
+            window.location.href = 'c-index.html?view=summary';
         });
-        html += `</table>`;
+        document.getElementById('qsAbout').addEventListener('click', () => {
+            window.location.href = '../about.html';
+        });
+        document.getElementById('qsJumpDown').addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            closeDrawer();
+        });
+        document.getElementById('qsReload').addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        // ---------- SCROLL BUTTONS ----------
+        const scrollTopBtn = document.getElementById('scrollToTopBtn');
+        const scrollBottomBtn = document.getElementById('scrollToBottomBtn');
+
+        function updateFloatButtons() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            scrollTopBtn.classList.toggle('hidden', scrollY <= 200);
+            scrollBottomBtn.classList.toggle('hidden', documentHeight - (scrollY + windowHeight) <= 100);
+        }
+        window.addEventListener('scroll', updateFloatButtons);
+        window.addEventListener('resize', updateFloatButtons);
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        scrollBottomBtn.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        // ---------- UPDATE DRAWER STATS ----------
+        function updateDrawerStats() {
+            try {
+                const data = localStorage.getItem('dcas_cpg_stats');
+                const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
+                const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
+
+                // For chapters count, we'd need the CHAPTERS array from main index, but this is a fallback
+                document.getElementById('drawerDone').innerText = '?/66';
+                document.getElementById('drawerAttempts').innerText = stats.totalAttempts || 0;
+                document.getElementById('drawerAcc').innerText = `${critAcc}%`;
+            } catch(e) {}
+        }
+
+        updateDrawerStats();
+
+        // ---------- HOME BUTTON ----------
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+
+        // ---------- STATS POPUP (dummy) ----------
+        const progressToggle = document.getElementById('progressToggle');
+        const statsPopup = document.createElement('div');
+        statsPopup.className = 'progress-popup';
+        statsPopup.id = 'tempStatsPopup';
+        statsPopup.innerHTML = `
+            <div class="popup-title">📊 Quick Stats</div>
+            <div class="popup-item"><span>Chapters:</span><span id="popupChaps">?</span></div>
+            <div class="popup-item"><span>Attempts:</span><span id="popupAtt">0</span></div>
+            <div class="popup-item"><span>Accuracy:</span><span id="popupAcc">0%</span></div>
+        `;
+        document.body.appendChild(statsPopup);
+
+        function toggleStatsPopup(e) {
+            e.stopPropagation();
+            const rect = progressToggle.getBoundingClientRect();
+            statsPopup.style.top = rect.bottom + 10 + 'px';
+            statsPopup.style.right = (window.innerWidth - rect.right) + 'px';
+            statsPopup.classList.toggle('show');
+        }
+        progressToggle.addEventListener('click', toggleStatsPopup);
+        document.addEventListener('click', (e) => {
+            if (!statsPopup.contains(e.target) && e.target !== progressToggle) {
+                statsPopup.classList.remove('show');
+            }
+        });
+    })();
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('../sw.js')
+                .then(reg => console.log('PWA Ready!', reg))
+                .catch(err => console.log('PWA Failed', err));
+        });
     }
-
-    html += `</div>`; // close indexTableContainer
-
-    // ✨ REMOVED the duplicate "Back to Chapters" button ✨
-
-    // Self‑contained search script
-    html += `
-        <script>
-            (function() {
-                function initIndexSearch() {
-                    const input = document.getElementById('indexSearchInput');
-                    const clearBtn = document.getElementById('indexSearchClearBtn');
-                    const container = document.getElementById('indexTableContainer');
-                    if (!input || !container) return;
-                    
-                    const rows = container.querySelectorAll('.index-table tr');
-                    
-                    function filterRows(text) {
-                        const lowerText = text.toLowerCase().trim();
-                        rows.forEach(row => {
-                            const rowText = row.textContent.toLowerCase();
-                            if (rowText.includes(lowerText)) {
-                                row.classList.remove('filtered-out');
-                            } else {
-                                row.classList.add('filtered-out');
-                            }
-                        });
-                    }
-
-                    input.addEventListener('input', function(e) {
-                        const val = e.target.value;
-                        if (clearBtn) clearBtn.style.display = val ? 'inline-block' : 'none';
-                        filterRows(val);
-                    });
-
-                    if (clearBtn) {
-                        clearBtn.addEventListener('click', function() {
-                            input.value = '';
-                            clearBtn.style.display = 'none';
-                            filterRows('');
-                        });
-                    }
-                }
-                setTimeout(initIndexSearch, 100);
-            })();
-        </script>
-    `;
-
-    html += `</div>`; // close sum-card
-    return html;
-}
+</script>
+</body>
+</html>
