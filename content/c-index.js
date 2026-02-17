@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index with Dynamic Filter ========== */
+/* ========== c-index.js – Full CPG Index (with improved search UI) ========== */
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -127,12 +127,12 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // Search bar – clean, no inline styles, relies on global CSS
+    // ----- IMPROVED SEARCH BAR (icon inside, clear button inside) -----
     html += `
-        <div class="search-container">
-            <span>🔍</span>
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines...">
-            <button id="indexSearchClearBtn" style="display:none;">✕</button>
+        <div class="index-search-wrapper" style="display: flex; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; padding: 4px 4px 4px 16px; margin-bottom: 24px; backdrop-filter: blur(10px); box-shadow: var(--glass-shadow);">
+            <span style="font-size: 1.2rem; color: var(--text-secondary); margin-right: 8px;">🔍</span>
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex: 1; background: transparent; border: none; padding: 12px 0; font-size: 1rem; color: var(--text-primary); outline: none;">
+            <button id="indexSearchClearBtn" style="display: none; background: transparent; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; margin-right: 4px;">✕</button>
         </div>
         <div id="indexTableContainer">
     `;
@@ -142,7 +142,7 @@ function generateIndexHTML() {
         if (groupChapters.length === 0) continue;
 
         html += `<h4 style="color: ${categories[group].color};">${categories[group].name}</h4>`;
-        html += `<table class="index-table">`;
+        html += `<table class="index-table" style="width: 100%; border-collapse: collapse;">`;
 
         groupChapters.forEach(ch => {
             const baseFile = ch.chapterFile || ch.id;
@@ -150,7 +150,7 @@ function generateIndexHTML() {
             const link = `${baseFile}.html?view=summary${sectionParam}`;
             html += `
                 <tr>
-                    <td><a href="${link}" style="display: block; padding: 8px 0;">${ch.shortTitle}</a></td>
+                    <td><a href="${link}" class="index-topic-link" style="display: block; padding: 10px 0; font-weight: 500; font-size: 1.05rem; color: var(--text-primary); text-decoration: none; transition: color 0.2s, padding-left 0.2s;">${ch.shortTitle}</a></td>
                 </tr>
             `;
         });
@@ -158,105 +158,6 @@ function generateIndexHTML() {
     }
 
     html += `</div>`; // close indexTableContainer
-
-    // Self‑contained search script – now with true hiding of non‑matching rows
-    html += `
-        <style>
-            /* Ensure filtered-out rows are hidden */
-            .index-table tr.filtered-out {
-                display: none !important;
-            }
-            /* Highlight style */
-            .index-table tr mark {
-                background: #ffeb3b;
-                color: #000;
-                padding: 2px 0;
-                border-radius: 2px;
-            }
-        </style>
-        <script>
-            (function() {
-                function initIndexSearch() {
-                    const input = document.getElementById('indexSearchInput');
-                    const clearBtn = document.getElementById('indexSearchClearBtn');
-                    const container = document.getElementById('indexTableContainer');
-                    if (!input || !container) return;
-
-                    // Get all rows
-                    const rows = container.querySelectorAll('.index-table tr');
-
-                    // Store original text for each link
-                    rows.forEach(row => {
-                        const link = row.querySelector('a');
-                        if (link && !link.getAttribute('data-original')) {
-                            link.setAttribute('data-original', link.textContent);
-                        }
-                    });
-
-                    function filterRows(text) {
-                        const lowerText = text.toLowerCase().trim();
-
-                        rows.forEach(row => {
-                            const link = row.querySelector('a');
-                            if (!link) return;
-
-                            const originalText = link.getAttribute('data-original') || link.textContent;
-                            const rowText = originalText.toLowerCase();
-
-                            if (rowText.includes(lowerText)) {
-                                // Remove hidden class
-                                row.classList.remove('filtered-out');
-
-                                // Apply highlight
-                                if (lowerText) {
-                                    const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-                                    link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-                                } else {
-                                    link.innerHTML = originalText;
-                                }
-                            } else {
-                                // Hide this row
-                                row.classList.add('filtered-out');
-                                // Restore original text (remove any marks)
-                                link.innerHTML = originalText;
-                            }
-                        });
-                    }
-
-                    // Remove old handlers to avoid duplicates
-                    input.removeEventListener('input', input._handler);
-                    clearBtn?.removeEventListener('click', clearBtn._handler);
-
-                    input._handler = function(e) {
-                        const val = e.target.value;
-                        if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
-                        filterRows(val);
-                    };
-                    input.addEventListener('input', input._handler);
-
-                    if (clearBtn) {
-                        clearBtn._handler = function() {
-                            input.value = '';
-                            clearBtn.style.display = 'none';
-                            filterRows('');
-                        };
-                        clearBtn.addEventListener('click', clearBtn._handler);
-                    }
-
-                    // Initial state: all visible, no marks, button hidden
-                    filterRows('');
-                }
-
-                // Run after DOM is ready
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', initIndexSearch);
-                } else {
-                    setTimeout(initIndexSearch, 100);
-                }
-            })();
-        </script>
-    `;
-
     html += `</div>`; // close sum-card
     return html;
 }
