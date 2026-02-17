@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcas-cpg-v2'; // Changed to v2 to force update
+const CACHE_NAME = 'dcas-cpg-v3'; // Changed to v2 to force update
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
