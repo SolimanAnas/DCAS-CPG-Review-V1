@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (FULL, MODERN, with INDEX SEARCH) ========== */
+/* ========== app.js – DCAS CPG 2025 (FIXED backHome navigation) ========== */
 (function(){
 "use strict";
 
@@ -218,8 +218,8 @@ const render = {
         const tabs = renderSectionTabs(section.id);  
         const nav = renderSectionNavigation();  
         
-        // 🔥 FIX: Always show "Back to Chapters" button on chapter pages (including index)
-        const showBackButton = true;  // <-- changed: now appears on c-index as well
+        // Always show "Back to Chapters" button on chapter pages (including index)
+        const showBackButton = true;
         
         // Summary is already HTML from data; we need to ensure it's safe, but it's trusted.
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
@@ -748,7 +748,12 @@ document.addEventListener('click', function(e) {
     
     // Handle navigation
     if (action === 'backHome') {
-        window.location.href = 'index.html';
+        // FIX: use correct relative path to index.html
+        if (window.location.pathname.includes('/chapters/')) {
+            window.location.href = '../index.html';
+        } else {
+            window.location.href = 'index.html';
+        }
         return;
     }
     
