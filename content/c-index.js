@@ -26,12 +26,12 @@ function generateIndexHTML() {
         { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
         { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
 
-        // Airway & Breathing
-        { id: "c2", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", chapterGroup: "airway" },
-        { id: "c2-2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2-2", chapterGroup: "airway" },
-        { id: "c2-3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2-3", chapterGroup: "airway" },
-        { id: "c2-4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2-4", chapterGroup: "airway" },
-        { id: "c2-5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", chapterFile: "c2-5", chapterGroup: "airway" },
+        // Airway & Breathing – FIXED: each has its own HTML file
+        { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", sectionParam: "c2s1", chapterGroup: "airway" },
+        { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2", sectionParam: "c2s2", chapterGroup: "airway" },
+        { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2", sectionParam: "c2s3", chapterGroup: "airway" },
+        { id: "c2s4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2", sectionParam: "c2s4", chapterGroup: "airway" },
+        { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", chapterFile: "c2", sectionParam: "c2s5", chapterGroup: "airway" },
 
         // Cardiovascular
         { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", chapterFile: "c3-1", chapterGroup: "cardio" },
@@ -127,9 +127,10 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // Search bar
+    // Search bar with icon
     html += `
         <div class="search-container" style="margin-bottom:24px;">
+            <span>🔍</span>
             <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="width:100%; padding:12px; border-radius:40px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
             <button id="indexSearchClearBtn" style="display:none; margin-left:8px; padding:8px 16px; border-radius:40px; background:var(--primary-accent); color:white; border:none;">✕</button>
         </div>
@@ -158,8 +159,6 @@ function generateIndexHTML() {
 
     html += `</div>`; // close indexTableContainer
 
-    // ✨ REMOVED the duplicate "Back to Chapters" button ✨
-
     // Self‑contained search script
     html += `
         <script>
@@ -178,8 +177,19 @@ function generateIndexHTML() {
                             const rowText = row.textContent.toLowerCase();
                             if (rowText.includes(lowerText)) {
                                 row.classList.remove('filtered-out');
+                                // Highlight matching text
+                                const link = row.querySelector('a');
+                                if (link) {
+                                    const regex = new RegExp('(' + lowerText + ')', 'gi');
+                                    link.innerHTML = link.textContent.replace(regex, '<mark>$1</mark>');
+                                }
                             } else {
                                 row.classList.add('filtered-out');
+                                // Restore original text (remove highlights)
+                                const link = row.querySelector('a');
+                                if (link) {
+                                    link.innerHTML = link.textContent;
+                                }
                             }
                         });
                     }
@@ -205,4 +215,4 @@ function generateIndexHTML() {
 
     html += `</div>`; // close sum-card
     return html;
-} 
+}
