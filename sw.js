@@ -1,26 +1,26 @@
-const CACHE_NAME = 'dcas-cpg-v3'; // Changed to v2 to force update
+const CACHE_NAME = 'dcas-cpg-v3'; // Increment this when you update files
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './styles.css',       // <--- CRITICAL: This fixes the unformatted look
-  './app.js',           // <--- CRITICAL: This fixes the navigation logic
+  './styles.css',
+  './app.js',
   './manifest.json',
   './icons/icon.png'
 ];
 
 // Install event – Pre-cache core assets immediately
 self.addEventListener('install', event => {
-  self.skipWaiting();
+  self.skipWaiting(); // Activate worker immediately
   event.waitUntil(
     caches.open(CACHE_NAME)
-    .then(cache => {
-      console.log('Opened cache & pre-caching shell');
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+      .then(cache => {
+        console.log('Opened cache & pre-caching shell');
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
   );
 });
 
-// Fetch event – Cache First strategy
+// Fetch event – Cache First strategy, but fallback to network
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response => {
@@ -47,7 +47,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Activate event – Clean up old v1 caches
+// Activate event – Clean up old caches and take control
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -59,6 +59,9 @@ self.addEventListener('activate', event => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim();
     })
   );
 });
