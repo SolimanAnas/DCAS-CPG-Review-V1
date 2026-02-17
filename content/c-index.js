@@ -158,9 +158,7 @@ function generateIndexHTML() {
 
     html += `</div>`; // close indexTableContainer
 
-    html += `<div style="text-align:center; margin-top:30px;">
-                <button class="btn-action btn-summary" data-action="backHome">← Back to Chapters</button>
-            </div>`;
+    // ✨ REMOVED the duplicate "Back to Chapters" button ✨
 
     // Self‑contained search script
     html += `
@@ -200,7 +198,6 @@ function generateIndexHTML() {
                         });
                     }
                 }
-                // Run after a short delay to ensure DOM is ready
                 setTimeout(initIndexSearch, 100);
             })();
         </script>
