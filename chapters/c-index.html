@@ -133,18 +133,27 @@
             width: 40px; height: 40px;
             border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer;
+            font-size: 1.2rem;
+            cursor: pointer;
             transition: all 0.2s;
+            outline: none; /* remove white square focus outline */
         }
-        .icon-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.4); }
+        .icon-btn:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.4);
+        }
 
         .stats-badge {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 6px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--header-text);
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             backdrop-filter: blur(10px);
         }
         .stats-divider { width: 1px; height: 14px; background: currentColor; opacity: 0.4; }
@@ -502,6 +511,41 @@
             50% { transform: translateX(-50%) translateY(6px); }
         }
 
+        /* ========== PROGRESS POPUP ========== */
+        .progress-popup {
+            position: absolute;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--glass-shadow);
+            z-index: 1001;
+            min-width: 250px;
+            display: none;
+            color: var(--text-primary);
+        }
+        .progress-popup.show {
+            display: block;
+        }
+        .progress-popup .popup-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary-accent);
+        }
+        .progress-popup .popup-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .progress-popup .popup-quote {
+            margin-top: 16px;
+            font-style: italic;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--glass-border);
+            padding-top: 12px;
+        }
+
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
         }
@@ -603,6 +647,9 @@
         <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
 </header>
+
+<!-- Progress popup (will be dynamically created, but we add a container for it) -->
+<div id="progressPopupContainer" style="position: relative;"></div>
 
 <main id="mainContent">
     <!-- Content will be injected by app.js -->
@@ -735,7 +782,7 @@
             window.location.href = '../index.html';
         });
 
-        // ---------- PROGRESS POPUP ----------
+        // ---------- PROGRESS POPUP (working) ----------
         const progressToggle = document.getElementById('progressToggle');
         const statsPopup = document.createElement('div');
         statsPopup.className = 'progress-popup';
@@ -747,6 +794,17 @@
             <div class="popup-item"><span>Accuracy:</span><span id="popupAcc">0%</span></div>
         `;
         document.body.appendChild(statsPopup);
+
+        function updatePopupStats() {
+            try {
+                const data = localStorage.getItem('dcas_cpg_stats');
+                const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
+                const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
+                document.getElementById('popupAtt').innerText = stats.totalAttempts || 0;
+                document.getElementById('popupAcc').innerText = `${critAcc}%`;
+            } catch(e) {}
+        }
+        updatePopupStats();
 
         function toggleStatsPopup(e) {
             e.stopPropagation();
@@ -762,9 +820,8 @@
             }
         });
 
-        // ---------- SEARCH HIGHLIGHT (fallback if app.js doesn't do it) ----------
-        // The actual search and highlight is handled by the embedded script in c-index.js.
-        // We'll rely on that.
+        // ---------- SEARCH HIGHLIGHT (already handled by c-index.js) ----------
+        // We just need to ensure the CSS for mark is present (already added).
     })();
 </script>
 
