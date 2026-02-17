@@ -55,13 +55,16 @@ const utils = {
         document.documentElement.scrollTop = 0;  
         setTimeout(() => window.scrollTo(0,0), 20);  
     },  
-    escapeHTML: (str) => str.replace(/[&<>"]/g, (c) => {  
-        if(c === '&') return '&amp;';  
-        if(c === '<') return '&lt;';  
-        if(c === '>') return '&gt;';  
-        if(c === '"') return '&quot;';  
-        return c;  
-    }),  
+    escapeHTML: (str) => {  
+        if (!str) return '';
+        return str.replace(/[&<>"]/g, (c) => {  
+            if(c === '&') return '&amp;';  
+            if(c === '<') return '&lt;';  
+            if(c === '>') return '&gt;';  
+            if(c === '"') return '&quot;';  
+            return c;  
+        });
+    },  
     getSection: (id) => {  
         if (!state.sections) return null;  
         return state.sections.find(s => s.id === id);  
@@ -136,7 +139,7 @@ function renderSectionTabs(activeId) {
             ${state.sections.map(s => `  
                 <button class="section-tab ${s.id === activeId ? 'active-tab' : ''}"   
                         data-section-id="${s.id}">  
-                    ${s.shortTitle}  
+                    ${utils.escapeHTML(s.shortTitle)}  
                 </button>  
             `).join('')}  
         </div>  
@@ -154,13 +157,13 @@ function renderSectionNavigation() {
         <div class="section-nav-row">  
             ${prevSection ?   
                 `<button class="section-nav-btn" data-section-nav="prev" data-section-id="${prevSection.id}">  
-                    ◀ Previous Section (${prevSection.shortTitle})  
+                    ◀ Previous Section (${utils.escapeHTML(prevSection.shortTitle)})  
                 </button>` :   
                 `<button class="section-nav-btn" disabled>◀ Previous Section</button>`  
             }  
             ${nextSection ?   
                 `<button class="section-nav-btn" data-section-nav="next" data-section-id="${nextSection.id}">  
-                    Next Section (${nextSection.shortTitle}) ▶  
+                    Next Section (${utils.escapeHTML(nextSection.shortTitle)}) ▶  
                 </button>` :   
                 `<button class="section-nav-btn" disabled>Next Section ▶</button>`  
             }  
@@ -218,10 +221,13 @@ const render = {
         // 🔥 FIX: Only show "Back to Chapters" button if NOT the index page
         const showBackButton = !(chapterData && chapterData.id === 'c-index');
         
+        // Summary is already HTML from data; we need to ensure it's safe, but it's trusted.
+        const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
+        
         const html = `  
             <div class="section active">  
                 ${tabs}  
-                ${section.summary || '<div class="sum-card">No summary available.</div>'}  
+                ${summaryContent}  
                 ${nav}  
                 ${showBackButton ? `
                     <div class="nav-row">  
@@ -231,7 +237,7 @@ const render = {
             </div>  
         `;  
         dom.main.innerHTML = html;  
-        updateHeader(section.shortTitle, 'Summary', true);  
+        updateHeader(utils.escapeHTML(section.shortTitle), 'Summary', true);  
         utils.safeScrollTop();
 
         // Initialize index search if this is the index chapter
@@ -253,7 +259,7 @@ const render = {
         }  
         state.fIndex = 0;  
         this._renderFlashcard();  
-        updateHeader(section.shortTitle, 'Flashcards', true);  
+        updateHeader(utils.escapeHTML(section.shortTitle), 'Flashcards', true);  
     },  
 
     _renderFlashcard: function() {  
@@ -261,21 +267,28 @@ const render = {
         const card = state.flashData[state.fIndex];  
         const tabs = renderSectionTabs(state.activeSectionId);  
         const nav = renderSectionNavigation();  
+        
+        // Escape all user‑supplied content
+        const category = utils.escapeHTML(card.category || '');
+        const question = utils.escapeHTML(card.question);
+        // For answer, escape first, then replace newlines with <br>
+        const safeAnswer = utils.escapeHTML(card.answer || '').replace(/\n/g, '<br>');
+        
         const html = `  
             ${tabs}  
             <div class="fc-progress">Card ${state.fIndex+1} of ${state.flashData.length}</div>  
             <div class="scene" id="cardScene">  
                 <div class="card" id="flashcard">  
                     <div class="card__face card__face--front">  
-                        <span class="category-badge">${utils.escapeHTML(card.category || '')}</span>  
+                        <span class="category-badge">${category}</span>  
                         ${card.image ? `<div style="margin-bottom:15px;">  
-                            <img src="${card.image}" alt="ECG" style="max-width:100%; max-height:150px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">  
+                            <img src="${utils.escapeHTML(card.image)}" alt="ECG" style="max-width:100%; max-height:150px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">  
                         </div>` : ''}  
-                        <div style="white-space: pre-wrap; font-size:1.3rem;">${utils.escapeHTML(card.question)}</div>  
+                        <div style="white-space: pre-wrap; font-size:1.3rem;">${question}</div>  
                         <div style="font-size:0.8rem; color:#888; margin-top:20px;">Tap to flip</div>  
                     </div>  
                     <div class="card__face card__face--back">  
-                        <div style="white-space: pre-wrap;">${(card.answer || '').replace(/\n/g, '<br>')}</div>  
+                        <div style="white-space: pre-wrap;">${safeAnswer}</div>  
                     </div>  
                 </div>  
             </div>  
@@ -330,7 +343,7 @@ const render = {
         const html = `  
             ${tabs}  
             <div class="quiz-setup-container">  
-                <h2 style="color:var(--primary-accent);">Quiz: ${section.shortTitle}</h2>  
+                <h2 style="color:var(--primary-accent);">Quiz: ${utils.escapeHTML(section.shortTitle)}</h2>  
                 <p style="color:var(--text-secondary);">Select number of questions</p>  
                 <div class="setup-grid">  
                     ${buttonsHtml}
@@ -342,7 +355,7 @@ const render = {
             </div>  
         `;  
         dom.main.innerHTML = html;  
-        updateHeader('Quiz Setup', section.shortTitle, true);  
+        updateHeader('Quiz Setup', utils.escapeHTML(section.shortTitle), true);  
         utils.safeScrollTop();  
     },  
 
@@ -371,7 +384,7 @@ const render = {
                     </span>  
                 </div>  
                 ${q.image ? `<div style="text-align:center; margin-bottom:20px;">  
-                    <img src="${q.image}" alt="ECG" style="max-width:100%; max-height:200px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">  
+                    <img src="${utils.escapeHTML(q.image)}" alt="ECG" style="max-width:100%; max-height:200px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">  
                 </div>` : ''}  
                 <div style="font-size:1.15rem; font-weight:600; margin-bottom:20px; color:var(--text-primary);">${utils.escapeHTML(q.q)}</div>  
                 <div class="quiz-options" id="quizOptionsContainer">${optionsHtml}</div>  
@@ -398,7 +411,7 @@ const render = {
         state.criticalIndex = 0;  
         state.criticalScore = 0;  
         this._renderCriticalQuestion();  
-        updateHeader('Critical Scenarios', section.shortTitle, true);  
+        updateHeader('Critical Scenarios', utils.escapeHTML(section.shortTitle), true);  
     },  
 
     _renderCriticalQuestion: function() {  
@@ -442,7 +455,7 @@ const render = {
             const avg = ch.totalMax ? Math.round((ch.totalScore / ch.totalMax) * 100) : 0;  
             chapStatsHtml += `  
                 <div class="stat-row">  
-                    <span class="stat-label">Chapter ${chId}</span>  
+                    <span class="stat-label">Chapter ${utils.escapeHTML(chId)}</span>  
                     <span class="stat-value">${avg}% (${ch.attempts} attempts)</span>  
                 </div>  
             `;  
@@ -515,11 +528,26 @@ function initIndexSearch() {
         function filterRows(text) {
             const lowerText = text.toLowerCase().trim();
             rows.forEach(row => {
-                const rowText = row.textContent.toLowerCase();
+                const link = row.querySelector('a');
+                if (!link) return;
+                const originalText = link.getAttribute('data-original') || link.textContent;
+                // Store original if not already stored
+                if (!link.getAttribute('data-original')) {
+                    link.setAttribute('data-original', originalText);
+                }
+                const rowText = originalText.toLowerCase();
                 if (rowText.includes(lowerText)) {
                     row.classList.remove('filtered-out');
+                    // Highlight matching text
+                    if (lowerText) {
+                        const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                        link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                    } else {
+                        link.innerHTML = originalText;
+                    }
                 } else {
                     row.classList.add('filtered-out');
+                    link.innerHTML = originalText;
                 }
             });
         }
@@ -585,7 +613,7 @@ const quizEngine = {
         if (fb) {  
             fb.style.display = 'block';  
             fb.innerHTML = `<strong style="color:${isCorrect?'#155724':'#721c24'};">${isCorrect?'✅ Correct':'❌ Incorrect'}</strong>  
-                            <p style="margin-top:8px;">${q.explanation}</p>`;  
+                            <p style="margin-top:8px;">${utils.escapeHTML(q.explanation)}</p>`;  
         }  
         const nextBtn = document.getElementById('nextQuizBtn');  
         if (nextBtn) nextBtn.style.display = 'block';  
@@ -653,8 +681,8 @@ const criticalEngine = {
         if (fb) {  
             fb.style.display = 'block';  
             fb.innerHTML = `<strong style="color:${isCorrect?'#155724':'#721c24'};">${isCorrect?'✅ Correct':'❌ Incorrect'}</strong>  
-                            <p style="margin-top:8px;">${q.explanation}</p>  
-                            ${q.kpi ? `<div class="highlight-box" style="margin-top:10px;">🎯 KPI: ${q.kpi}</div>` : ''}`;  
+                            <p style="margin-top:8px;">${utils.escapeHTML(q.explanation)}</p>  
+                            ${q.kpi ? `<div class="highlight-box" style="margin-top:10px;">🎯 KPI: ${utils.escapeHTML(q.kpi)}</div>` : ''}`;  
         }  
         const nextBtn = document.getElementById('nextCriticalBtn');  
         if (nextBtn) nextBtn.style.display = 'block';  
