@@ -108,7 +108,7 @@ function renderComingSoon() {
             title = 'Flashcards';
             subtitle = 'Coming Soon';
             message = 'Interactive flashcards for this chapter are under construction.';
-            icon = '📇';
+            icon = '⏳';
             break;
         case 'quiz':
             title = 'Quiz';
