@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (FIXED backHome navigation) ========== */
+/* ========== app.js – DCAS CPG 2025 (FIXED navigation) ========== */
 (function(){
 "use strict";
 
@@ -710,25 +710,28 @@ const criticalEngine = {
     }  
 };  
 
-// ---------- WATER RIPPLE EFFECT ----------  
-function createRipple(event) {  
-    const target = event.currentTarget;  
-    const rect = target.getBoundingClientRect();  
-    const x = event.clientX - rect.left;  
-    const y = event.clientY - rect.top;  
-      
-    const ripple = document.createElement('span');  
-    ripple.className = 'ripple';  
-    ripple.style.left = `${x}px`;  
-    ripple.style.top = `${y}px`;  
-    ripple.style.width = ripple.style.height = '20px';  
-    ripple.style.background = 'rgba(255, 255, 255, 0.7)';  
-      
-    target.appendChild(ripple);  
-      
-    setTimeout(() => {  
-        ripple.remove();  
-    }, 600);  
+// ---------- WATER RIPPLE EFFECT (fixed to use target) ----------  
+function createRipple(event, target) {  
+    try {
+        const rect = target.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.width = ripple.style.height = '20px';
+        ripple.style.background = 'rgba(255, 255, 255, 0.7)';
+
+        target.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    } catch (err) {
+        // Silently fail – ripple is non‑essential
+    }
 }  
 
 // ---------- COMPLETE EVENT DELEGATION ----------  
@@ -736,15 +739,15 @@ document.addEventListener('click', function(e) {
     const target = e.target.closest('button');  
     if (!target) return;  
     
+    // Add ripple effect using the target (the button)
+    createRipple(e, target);
+    
     const action = target.dataset.action;
     const sectionNav = target.dataset.sectionNav;
     const sectionId = target.dataset.sectionId;
     const quizSize = target.dataset.quizSize;
     const flashAction = target.dataset.flash;
     const optIndex = target.dataset.optIndex;
-    
-    // Add ripple effect
-    createRipple(e);
     
     // Handle navigation
     if (action === 'backHome') {
@@ -755,7 +758,7 @@ document.addEventListener('click', function(e) {
         return;
     }
     
-    if (action === 'viewStats') {
+    if (action === 'stats') {
         render.stats();
         return;
     }
@@ -767,12 +770,14 @@ document.addEventListener('click', function(e) {
     
     // Section tab switching
     if (sectionId && target.classList.contains('section-tab')) {
+        e.preventDefault();
         switchSection(sectionId);
         return;
     }
     
     // Section navigation (prev/next)
     if (sectionNav && sectionId) {
+        e.preventDefault();
         switchSection(sectionId);
         return;
     }
@@ -825,7 +830,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ---------- POPSTATE HANDLER (browser back/forward) ----------
+// ---------- POPSTATE HANDLER (browser back/forward) ----------  
 window.addEventListener('popstate', function() {
     const sectionId = utils.getQueryParam('section');
     const view = utils.getQueryParam('view') || 'summary';
@@ -839,7 +844,7 @@ window.addEventListener('popstate', function() {
     }
 });
 
-// ---------- INITIALIZE ON PAGE LOAD ----------
+// ---------- INITIALIZE ON PAGE LOAD ----------  
 document.addEventListener('DOMContentLoaded', function() {
     // Check if chapter data exists
     if (isChapterMissing) {
