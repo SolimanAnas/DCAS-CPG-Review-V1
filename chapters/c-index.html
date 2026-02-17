@@ -136,7 +136,7 @@
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.2s;
-            outline: none; /* remove white square focus outline */
+            outline: none;
         }
         .icon-btn:active {
             transform: scale(0.95);
@@ -208,7 +208,7 @@
             color: var(--accent-universal);
         }
 
-        /* Search bar with icon */
+        /* Search bar with icon (matches home screen) */
         .search-container {
             margin-bottom: 24px;
             display: flex;
@@ -648,9 +648,6 @@
     </div>
 </header>
 
-<!-- Progress popup (will be dynamically created, but we add a container for it) -->
-<div id="progressPopupContainer" style="position: relative;"></div>
-
 <main id="mainContent">
     <!-- Content will be injected by app.js -->
 </main>
@@ -782,7 +779,7 @@
             window.location.href = '../index.html';
         });
 
-        // ---------- PROGRESS POPUP (working) ----------
+        // ---------- PROGRESS POPUP ----------
         const progressToggle = document.getElementById('progressToggle');
         const statsPopup = document.createElement('div');
         statsPopup.className = 'progress-popup';
@@ -819,9 +816,6 @@
                 statsPopup.classList.remove('show');
             }
         });
-
-        // ---------- SEARCH HIGHLIGHT (already handled by c-index.js) ----------
-        // We just need to ensure the CSS for mark is present (already added).
     })();
 </script>
 
