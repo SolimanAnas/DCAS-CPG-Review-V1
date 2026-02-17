@@ -17,305 +17,130 @@
     <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
-        /* Search bar with icon */
-        .search-container {
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 4px 4px 4px 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: var(--glass-shadow);
-        }
-        .search-container span {
+        /* ---------- Existing styles (keep everything you already had) ---------- */
+        /* For brevity, only the new and modified parts are shown below.
+           You must keep your original CSS for search bar, cards, footer, etc. */
+        
+        /* New arrow button in header */
+        #quickSettingsToggle {
             font-size: 1.2rem;
-            margin-right: 8px;
-            color: var(--text-secondary);
         }
-        .search-container input {
-            flex: 1;
+        
+        /* Quick Settings panel – hidden by default */
+        .quick-settings-panel {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            z-index: 999;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 0 0 24px 24px;
+        }
+        .quick-settings-panel.show {
+            transform: translateY(0);
+        }
+        
+        /* Panel header with up arrow */
+        .panel-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .panel-header button {
             background: transparent;
             border: none;
-            padding: 12px 0;
-            font-size: 1rem;
-            color: var(--text-primary);
-            outline: none;
-        }
-        .search-container input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-        /* Clear button */
-        .search-container button {
-            background: transparent;
-            border: none;
-            width: 32px;
-            height: 32px;
+            color: var(--header-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-right: 4px;
-            padding: 0;
         }
-        .search-container button:hover {
+        .panel-header button:hover {
             background: rgba(255,255,255,0.1);
-            color: var(--text-primary);
         }
-        .search-container button:active {
-            transform: scale(0.95);
+        
+        /* Toggle grid – like Android quick settings */
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
         }
-
-        /* Hide cards that don't match search (applied only to normal cards) */
-        .menu-card.filtered-out {
-            display: none;
-        }
-
-        /* Special card style for c0 and c-index – always visible */
-        .menu-card.special-card {
+        .toggle-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            color: var(--header-text);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 16px 20px;
-            box-shadow: var(--glass-shadow);
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            border-left-width: 6px;
-            border-left-style: solid;
+            transition: background 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
         }
-        .menu-card.special-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+        .toggle-item:hover {
+            background: rgba(255,255,255,0.2);
         }
-        .menu-card.special-card .card-header {
-            display: none;
+        .toggle-item span:first-child {
+            font-size: 1.3rem;
         }
-        .menu-card.special-card h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 2px 0;
-            line-height: 1.2;
+        /* Theme indicator for current theme */
+        .toggle-item.active-theme {
+            background: var(--primary-accent);
+            color: white;
         }
-        .menu-card.special-card p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin: 0;
-            line-height: 1.3;
-        }
-        /* Distinct left border colors */
-        .menu-card.special-card[data-chapter="updates"] {
-            border-left-color: #f39c12;
-        }
-        .menu-card.special-card[data-chapter="index"] {
-            border-left-color: #3498db;
-        }
-
-        /* Progress popup */
-        .progress-popup {
-            position: absolute;
-            top: 60px;
-            right: 10px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
+        
+        /* Progress mini card */
+        .mini-progress {
+            background: rgba(255,255,255,0.1);
             border-radius: 16px;
-            padding: 20px;
-            box-shadow: var(--glass-shadow);
-            z-index: 1001;
-            min-width: 250px;
-            display: none;
-            color: var(--text-primary);
+            padding: 16px;
+            color: var(--header-text);
         }
-        .progress-popup.show {
-            display: block;
-        }
-        .progress-popup .popup-title {
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--primary-accent);
-        }
-        .progress-popup .popup-item {
+        .mini-progress-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
         }
-        .progress-popup .popup-quote {
-            margin-top: 16px;
-            font-style: italic;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--glass-border);
-            padding-top: 12px;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            margin-top: auto;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
-        }
-        footer div:first-child {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        footer div:last-child {
-            opacity: 0.9;
-            font-size: 0.7rem;
-        }
-        footer a {
-            color: inherit;
-            text-decoration: underline;
-        }
-        /* Dark and forest theme footer adjustments */
-        [data-theme="dark"] footer {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        [data-theme="forest"] footer {
-            color: #edf4e7; /* light text for forest */
-            background: rgba(30, 75, 62, 0.8); /* darker green overlay */
-        }
-        [data-theme="light"] footer {
-            color: #1a2a3a;
-        }
-        [data-theme="sepia"] footer {
-            color: #4a3c2c;
-        }
-
-        /* Button container – default: flex with equal width buttons, wrap */
-        .menu-sub-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 16px;
-        }
-        .btn-action {
-            flex: 1 1 0%; /* equal width */
-            min-width: 80px;
-            text-align: center;
-            padding: 10px 8px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-
-        /* Small screens: exactly 2 columns */
-        @media (max-width: 480px) {
-            .menu-sub-options {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            .btn-action {
-                width: 100%;
-                white-space: normal;
-                font-size: 0.75rem;
-                padding: 8px 4px;
-            }
-            .btn-flash {
-                font-size: 0.75rem;
-                padding: 8px 4px;
-            }
-        }
-
-        /* Offline download button and progress bar */
-        .offline-download {
-            margin: 20px 0;
-            text-align: center;
-        }
-        .download-btn {
-            background: var(--primary-accent);
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .download-btn:active {
-            transform: scale(0.98);
-        }
-        .download-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        progress {
-            width: 100%;
-            height: 20px;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-        progress::-webkit-progress-bar {
-            background-color: var(--glass-bg);
-            border-radius: 10px;
-        }
-        progress::-webkit-progress-value {
-            background-color: var(--primary-accent);
-            border-radius: 10px;
-        }
-
-        /* Floating buttons – shared styles */
-        .float-btn {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(61, 100, 115, 0.7);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: transform 0.2s, background 0.2s, opacity 0.2s;
-            z-index: 999;
-            backdrop-filter: blur(2px);
+        .mini-progress-label {
             opacity: 0.8;
         }
-        .float-btn:hover {
-            transform: scale(1.1);
-            background: var(--toggle-active);
-            opacity: 1;
+        .mini-progress-value {
+            font-weight: 700;
         }
-        .float-btn:active {
-            transform: scale(0.95);
+        .mini-quote {
+            margin-top: 12px;
+            font-style: italic;
+            opacity: 0.9;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 10px;
+            font-size: 0.85rem;
         }
-        .float-btn.hidden {
-            opacity: 0;
+        
+        /* Fix for special cards hiding during search */
+        .menu-card.filtered-out {
+            display: none !important; /* force hide even on special cards */
+        }
+        
+        /* Keep your existing scroll button styles, but add a class to dim them when panel open (optional) */
+        .panel-open .float-btn {
+            opacity: 0.3;
             pointer-events: none;
-        }
-        /* Specific positioning */
-        #scrollToBottomBtn {
-            bottom: 20px;
-            right: 15px;
-        }
-        #scrollToTopBtn {
-            bottom: 70px;  /* above bottom button */
-            right: 15px;
         }
     </style>
 </head>
@@ -332,6 +157,7 @@
         </div>
     </div>
     <div class="header-right" id="headerShortcuts">
+        <button class="icon-btn" id="quickSettingsToggle" title="Quick settings">↓</button>
         <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
         <button class="icon-btn" id="progressToggle" title="Progress">📊</button>
         <a href="chapters/c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
@@ -339,7 +165,70 @@
     </div>
 </header>
 
-<!-- Progress popup -->
+<!-- Quick Settings Panel -->
+<div class="quick-settings-panel" id="quickSettingsPanel">
+    <div class="panel-header">
+        <button id="closeQuickSettings">↑</button>
+    </div>
+    
+    <!-- Toggles grid -->
+    <div class="toggle-grid">
+        <!-- Theme toggles – 4 themes -->
+        <div class="toggle-item theme-tile" data-theme="dark" id="themeDark">
+            <span>🌙</span>
+            <span>Dark</span>
+        </div>
+        <div class="toggle-item theme-tile" data-theme="light" id="themeLight">
+            <span>☀️</span>
+            <span>Light</span>
+        </div>
+        <div class="toggle-item theme-tile" data-theme="sepia" id="themeSepia">
+            <span>📜</span>
+            <span>Sepia</span>
+        </div>
+        <div class="toggle-item theme-tile" data-theme="forest" id="themeForest">
+            <span>🌲</span>
+            <span>Forest</span>
+        </div>
+        
+        <!-- Shortcuts -->
+        <div class="toggle-item" id="qsIndex">
+            <span>📋</span>
+            <span>Index</span>
+        </div>
+        <div class="toggle-item" id="qsAbout">
+            <span>ℹ️</span>
+            <span>About</span>
+        </div>
+        <div class="toggle-item" id="qsJumpDown">
+            <span>↓</span>
+            <span>Jump Down</span>
+        </div>
+        <div class="toggle-item" id="qsDownload">
+            <span>📥</span>
+            <span>Offline</span>
+        </div>
+    </div>
+    
+    <!-- Mini progress dashboard -->
+    <div class="mini-progress">
+        <div class="mini-progress-row">
+            <span class="mini-progress-label">Chapters Done</span>
+            <span class="mini-progress-value" id="miniChaptersDone">0/0</span>
+        </div>
+        <div class="mini-progress-row">
+            <span class="mini-progress-label">Total Attempts</span>
+            <span class="mini-progress-value" id="miniAttempts">0</span>
+        </div>
+        <div class="mini-progress-row">
+            <span class="mini-progress-label">Critical Accuracy</span>
+            <span class="mini-progress-value" id="miniCritical">0%</span>
+        </div>
+        <div class="mini-quote" id="miniQuote">✨ Every review sharpens your skills.</div>
+    </div>
+</div>
+
+<!-- Progress popup (existing) -->
 <div class="progress-popup" id="progressPopup">
     <div class="popup-title">📊 Your Progress</div>
     <div class="popup-item">
@@ -449,7 +338,6 @@
             if (stats) {
                 stats.scrollIntoView({ behavior: 'smooth' });
             } else {
-                // fallback: bottom of page
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         });
@@ -617,9 +505,12 @@
                         titleText = "Index";
                         subtitleText = "Full Table of Contents";
                     }
-                    // Special cards have no data-search attribute so they are ignored by filter
+                    // Special cards now have data-search so they can be filtered
                     return `
-                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;">
+                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" 
+                           data-chapter="${ch.specialGroup}" 
+                           data-search="${titleText} ${subtitleText} ${ch.id}"
+                           style="animation-delay: ${index * 0.03}s;">
                             <h2>${titleText}</h2>
                             <p>${subtitleText}</p>
                         </a>
@@ -627,7 +518,6 @@
                 }
 
                 const isChecked = completion[ch.id] || false;
-                // Always show 4 buttons for all non-special cards
                 return `
                     <div class="menu-card" data-chapter="${ch.chapterGroup || 'none'}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
                         <div class="card-header">
@@ -685,7 +575,6 @@
                 </div>
             `;
 
-            // Download button placed between grid and stats
             const fullHtml = `
                 <div class="search-container">
                     <span>🔍</span>
@@ -704,6 +593,7 @@
 
             document.getElementById('mainContent').innerHTML = fullHtml;
             updateProgressPopup();
+            updateMiniProgress(); // update the quick panel's progress
 
             // Attach search listener
             const searchInput = document.getElementById('searchInput');
@@ -723,7 +613,7 @@
                 });
             }
 
-            // Offline download with progress bar
+            // Offline download
             const downloadBtn = document.getElementById('downloadOfflineBtn');
             const progressBar = document.getElementById('downloadProgress');
 
@@ -764,9 +654,7 @@
                         if (response.ok) {
                             await cache.put(url, response);
                         }
-                    } catch (err) {
-                        // silently ignore
-                    }
+                    } catch (err) {}
                     completed++;
                     progressBar.value = (completed / total) * 100;
                 }
@@ -783,9 +671,9 @@
             }
         }
 
-        // Filter function – now ignores special cards
+        // Filter function – now selects ALL cards (including special) and hides non-matching
         function filterCards(text) {
-            const cards = document.querySelectorAll('.menu-card:not(.special-card)');
+            const cards = document.querySelectorAll('.menu-card'); // include special cards
             const lowerText = text.toLowerCase().trim();
             cards.forEach(card => {
                 const searchData = card.dataset.search || '';
@@ -796,6 +684,108 @@
                 }
             });
         }
+
+        // ---------- QUICK SETTINGS PANEL ----------
+        const quickToggle = document.getElementById('quickSettingsToggle');
+        const quickPanel = document.getElementById('quickSettingsPanel');
+        const closeQuick = document.getElementById('closeQuickSettings');
+        const body = document.body;
+        
+        function openQuickPanel() {
+            quickPanel.classList.add('show');
+            body.classList.add('panel-open');
+        }
+        function closeQuickPanel() {
+            quickPanel.classList.remove('show');
+            body.classList.remove('panel-open');
+        }
+        
+        quickToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (quickPanel.classList.contains('show')) {
+                closeQuickPanel();
+            } else {
+                openQuickPanel();
+            }
+        });
+        
+        closeQuick.addEventListener('click', closeQuickPanel);
+        
+        document.addEventListener('click', (e) => {
+            if (!quickPanel.contains(e.target) && !quickToggle.contains(e.target) && quickPanel.classList.contains('show')) {
+                closeQuickPanel();
+            }
+        });
+        
+        // Theme tiles
+        const themeTiles = document.querySelectorAll('.theme-tile');
+        function setActiveThemeTile(theme) {
+            themeTiles.forEach(tile => {
+                if (tile.dataset.theme === theme) {
+                    tile.classList.add('active-theme');
+                } else {
+                    tile.classList.remove('active-theme');
+                }
+            });
+        }
+        
+        themeTiles.forEach(tile => {
+            tile.addEventListener('click', () => {
+                const theme = tile.dataset.theme;
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                setActiveThemeTile(theme);
+                // Also update theme via main button (optional)
+                // No need to close panel
+            });
+        });
+        
+        // Sync theme tile on load
+        setActiveThemeTile(localStorage.getItem('theme') || 'dark');
+        
+        // Shortcut tiles
+        document.getElementById('qsIndex').addEventListener('click', () => {
+            window.location.href = 'chapters/c-index.html?view=summary';
+        });
+        document.getElementById('qsAbout').addEventListener('click', () => {
+            window.location.href = 'about.html';
+        });
+        document.getElementById('qsJumpDown').addEventListener('click', () => {
+            const stats = document.getElementById('statsCard');
+            if (stats) stats.scrollIntoView({ behavior: 'smooth' });
+            closeQuickPanel();
+        });
+        document.getElementById('qsDownload').addEventListener('click', () => {
+            const downloadBtn = document.getElementById('downloadOfflineBtn');
+            if (downloadBtn) downloadBtn.click();
+            closeQuickPanel();
+        });
+        
+        // Update mini progress
+        function updateMiniProgress() {
+            const stats = loadStorage(STATS_KEY, { totalAttempts: 0, critical: { total: 0, correct: 0 } });
+            const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
+            const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
+            const completion = loadStorage(COMPLETION_KEY, {});
+            const completedCount = Object.values(completion).filter(v => v).length;
+            const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+            
+            const miniChapters = document.getElementById('miniChaptersDone');
+            const miniAttempts = document.getElementById('miniAttempts');
+            const miniCritical = document.getElementById('miniCritical');
+            const miniQuote = document.getElementById('miniQuote');
+            if (miniChapters) miniChapters.innerText = `${completedCount}/${totalChaps}`;
+            if (miniAttempts) miniAttempts.innerText = stats.totalAttempts || 0;
+            if (miniCritical) miniCritical.innerText = `${critAcc}%`;
+            if (miniQuote) miniQuote.innerText = `✨ ${quote}`;
+        }
+
+        // Override updateProgressPopup to also call updateMiniProgress
+        const originalUpdateProgressPopup = updateProgressPopup;
+        updateProgressPopup = function() {
+            originalUpdateProgressPopup();
+            updateMiniProgress();
+        };
 
         // ---------- HOME & INDEX BUTTONS ----------
         const homeBtn = document.getElementById('homeBtn');
