@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index with Search ========== */
+/* ========== c-index.js – Full CPG Index with Search (old style) ========== */
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -26,7 +26,7 @@ function generateIndexHTML() {
         { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
         { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
 
-        // Airway & Breathing – FIXED: each has its own HTML file
+        // Airway & Breathing
         { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", sectionParam: "c2s1", chapterGroup: "airway" },
         { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2", sectionParam: "c2s2", chapterGroup: "airway" },
         { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2", sectionParam: "c2s3", chapterGroup: "airway" },
@@ -127,7 +127,7 @@ function generateIndexHTML() {
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // Search bar with icon – the functionality will be provided by app.js
+    // Search bar with icon – styled like the original
     html += `
         <div class="search-container" style="margin-bottom:24px;">
             <span>🔍</span>
