@@ -143,7 +143,7 @@ window.CPG_DATA = {
                     <div class="highlight-box" style="margin-top:30px; background:#f8d7da; border-left-color:#dc3545;">
                         <strong>⚠️ Final reminder:</strong> This summary is not a replacement for the full CPG. Always follow the full guideline and your scope of practice.
                     </div>
-                    <button class="control-btn" data-action="backHome" style="width:100%; margin-top:30px;">← Back to Chapters</button>
+                    <!-- Removed manual Back to Chapters button -->
                 </div>
             `,
             quiz: [],        // no quiz for updates
