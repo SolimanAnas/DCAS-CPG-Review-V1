@@ -184,12 +184,7 @@
             text-decoration: underline;
         }
 
-        /* Ensure flashcards button text does not wrap */
-        .btn-flash {
-            white-space: nowrap;
-        }
-
-        /* Button container – flex with equal width buttons, wrap on small screens */
+        /* Button container – default: flex with equal width buttons, wrap */
         .menu-sub-options {
             display: flex;
             flex-wrap: wrap;
@@ -199,19 +194,29 @@
         }
         .btn-action {
             flex: 1 1 0%; /* equal width */
-            min-width: 80px; /* prevent too small */
+            min-width: 80px;
             text-align: center;
             padding: 10px 8px;
             font-size: 0.85rem;
-            white-space: nowrap; /* keep text in one line */
+            white-space: nowrap;
         }
+
+        /* Small screens: exactly 2 columns */
         @media (max-width: 480px) {
-            .btn-flash {
+            .menu-sub-options {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .btn-action {
+                width: 100%;
+                white-space: normal; /* allow text wrap if needed */
                 font-size: 0.75rem;
                 padding: 8px 4px;
             }
-            .btn-action {
-                white-space: normal; /* allow text wrap if absolutely needed */
+            .btn-flash {
+                font-size: 0.75rem;
+                padding: 8px 4px;
             }
         }
 
