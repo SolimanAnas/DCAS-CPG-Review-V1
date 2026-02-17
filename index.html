@@ -72,12 +72,12 @@
             transform: scale(0.95);
         }
 
-        /* Hide cards that don't match search */
+        /* Hide cards that don't match search (applied only to normal cards) */
         .menu-card.filtered-out {
             display: none;
         }
 
-        /* Special card style for c0 and c-index */
+        /* Special card style for c0 and c-index – always visible */
         .menu-card.special-card {
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -189,7 +189,7 @@
             white-space: nowrap;
         }
 
-        /* Button container – flex with equal width buttons */
+        /* Button container – flex with equal width buttons, wrap on small screens */
         .menu-sub-options {
             display: flex;
             flex-wrap: wrap;
@@ -203,11 +203,15 @@
             text-align: center;
             padding: 10px 8px;
             font-size: 0.85rem;
+            white-space: nowrap; /* keep text in one line */
         }
         @media (max-width: 480px) {
             .btn-flash {
                 font-size: 0.75rem;
                 padding: 8px 4px;
+            }
+            .btn-action {
+                white-space: normal; /* allow text wrap if absolutely needed */
             }
         }
 
@@ -261,7 +265,7 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: rgba(61, 100, 115, 0.6); /* semi-transparent */
+            background: rgba(61, 100, 115, 0.6);
             color: white;
             border: none;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -276,7 +280,7 @@
         }
         .scroll-to-bottom:hover {
             transform: scale(1.1);
-            background: var(--toggle-active); /* fully opaque on hover */
+            background: var(--toggle-active);
             opacity: 1;
         }
         .scroll-to-bottom:active {
@@ -548,8 +552,9 @@
                         titleText = "Index";
                         subtitleText = "Full Table of Contents";
                     }
+                    // Special cards have no data-search attribute so they are ignored by filter
                     return `
-                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;" data-search="${ch.shortTitle} ${ch.title} ${ch.id}">
+                        <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" data-chapter="${ch.specialGroup}" style="animation-delay: ${index * 0.03}s;">
                             <h2>${titleText}</h2>
                             <p>${subtitleText}</p>
                         </a>
@@ -713,8 +718,9 @@
             }
         }
 
+        // Filter function – now ignores special cards
         function filterCards(text) {
-            const cards = document.querySelectorAll('.menu-card');
+            const cards = document.querySelectorAll('.menu-card:not(.special-card)');
             const lowerText = text.toLowerCase().trim();
             cards.forEach(card => {
                 const searchData = card.dataset.search || '';
