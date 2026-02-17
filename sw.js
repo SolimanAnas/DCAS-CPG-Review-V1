@@ -1,67 +1,62 @@
-const CACHE_NAME = 'dcas-cpg-v4'; // Increment this when you update files
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  './manifest.json',
-  './icons/icon.png'
-];
+const CACHE_NAME = 'dcas-cpg-v5'; // Increment this when you make major changes
 
-// Install event – Pre-cache core assets immediately
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Activate worker immediately
+  self.skipWaiting(); // Activate immediately
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache & pre-caching shell');
-        return cache.addAll(ASSETS_TO_CACHE);
-      })
-  );
-});
-
-// Fetch event – Cache First strategy, but fallback to network
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      // Return cached file if found
-      if (response) {
-        return response;
-      }
-      // Otherwise, go to network and update cache
-      return fetch(event.request).then(networkResponse => {
-        // Check if we received a valid response
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
-        }
-
-        // Clone and cache the new file
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
-
-        return networkResponse;
-      });
+    caches.open(CACHE_NAME).then(cache => {
+      // Cache only critical assets – everything else will be cached on demand
+      return cache.addAll([
+        './',
+        './index.html',
+        './styles.css',
+        './app.js',
+        './manifest.json',
+        './icons/icon.png'
+      ]);
     })
   );
 });
 
-// Activate event – Clean up old caches and take control
+self.addEventListener('fetch', event => {
+  // For HTML pages – network first, fallback to cache
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then(networkResponse => {
+        // Update cache with the new version
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
+        });
+        return networkResponse;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // For other assets (CSS, JS, images) – stale-while-revalidate
+  event.respondWith(
+    caches.match(event.request).then(cachedResponse => {
+      const fetchPromise = fetch(event.request).then(networkResponse => {
+        // Update cache
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+        });
+        return networkResponse;
+      }).catch(() => cachedResponse); // fallback to cache if offline
+      return cachedResponse || fetchPromise;
+    })
+  );
+});
+
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Take control of all clients immediately
-      return self.clients.claim();
-    })
+    Promise.all([
+      self.clients.claim(), // Take control immediately
+      caches.keys().then(keys => {
+        return Promise.all(
+          keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+        );
+      })
+    ])
   );
 });
