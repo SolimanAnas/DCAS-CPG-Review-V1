@@ -17,25 +17,478 @@
     <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
-        /* ---------- Existing styles (keep everything you already had) ---------- */
-        /* For brevity, only the new and modified parts are shown below.
-           You must keep your original CSS for search bar, cards, footer, etc. */
-        
-        /* New arrow button in header */
-        #quickSettingsToggle {
-            font-size: 1.2rem;
+        /* ========== RESET & GLOBAL ========== */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
-        
-        /* Quick Settings panel – hidden by default */
-        .quick-settings-panel {
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            right: 0;
-            background: var(--glass-bg);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.5s ease;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height, 72px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-text h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--header-text);
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-text p {
+            font-size: 0.75rem;
+            color: var(--header-text);
+            opacity: 0.8;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--header-text);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .icon-btn:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* ========== MAIN LAYOUT ========== */
+        main {
+            flex: 1;
+            padding: 24px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ========== SEARCH BAR ========== */
+        .search-container {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 4px 4px 4px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glass-shadow);
+        }
+        .search-container span {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            color: var(--text-secondary);
+        }
+        .search-container input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+            outline: none;
+        }
+        .search-container input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        .search-container button {
+            background: transparent;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 4px;
+            padding: 0;
+        }
+        .search-container button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+        .search-container button:active {
+            transform: scale(0.95);
+        }
+
+        /* ========== MENU CARDS ========== */
+        .menu-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .menu-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--glass-shadow);
+            transform: translateZ(0);
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+        }
+        .menu-card[data-chapter] {
+            border-left: 6px solid transparent;
+        }
+        .menu-card[data-chapter="universal"] { border-left-color: var(--accent-universal); }
+        .menu-card[data-chapter="airway"] { border-left-color: var(--accent-airway); }
+        .menu-card[data-chapter="cardio"] { border-left-color: var(--accent-cardio); }
+        .menu-card[data-chapter="resus"] { border-left-color: var(--accent-resus); }
+        .menu-card[data-chapter="neuro"] { border-left-color: var(--accent-neuro); }
+        .menu-card[data-chapter="medical"] { border-left-color: var(--accent-medical); }
+        .menu-card[data-chapter="trauma"] { border-left-color: var(--accent-trauma); }
+        .menu-card[data-chapter="environmental"] { border-left-color: var(--accent-environmental); }
+        .menu-card[data-chapter="pediatric"] { border-left-color: var(--accent-pediatric); }
+        .menu-card[data-chapter="obstetric"] { border-left-color: var(--accent-obstetric); }
+        .menu-card[data-chapter="mci"] { border-left-color: var(--accent-mci); }
+        .menu-card[data-chapter="scope"] { border-left-color: var(--accent-scope); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            background: rgba(0,0,0,0.06);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .menu-card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 6px 0;
+            line-height: 1.3;
+        }
+        .menu-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+        .menu-sub-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .btn-action {
+            flex: 1 1 0%;
+            min-width: 80px;
+            text-align: center;
+            padding: 10px 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-summary {
+            background: var(--btn-grad-sum);
+            color: var(--text-sum);
+            border: 1px solid var(--border-sum);
+        }
+        .btn-flash {
+            background: var(--btn-grad-flash);
+            color: var(--text-flash);
+            border: 1px solid var(--border-flash);
+            white-space: nowrap;
+        }
+        .btn-quiz {
+            background: var(--btn-grad-quiz);
+            color: var(--text-quiz);
+            border: 1px solid var(--border-quiz);
+        }
+        .btn-scenario {
+            background: var(--btn-grad-scen);
+            color: var(--text-scen);
+            border: 1px solid var(--border-scen);
+        }
+        .btn-action:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        /* Special card style */
+        .menu-card.special-card {
+            cursor: pointer;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 16px 20px;
+            box-shadow: var(--glass-shadow);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border-left-width: 6px;
+            border-left-style: solid;
+        }
+        .menu-card.special-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+        }
+        .menu-card.special-card .card-header {
+            display: none;
+        }
+        .menu-card.special-card h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 2px 0;
+            line-height: 1.2;
+        }
+        .menu-card.special-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.3;
+        }
+        .menu-card.special-card[data-chapter="updates"] {
+            border-left-color: #f39c12;
+        }
+        .menu-card.special-card[data-chapter="index"] {
+            border-left-color: #3498db;
+        }
+
+        /* Hide cards that don't match search */
+        .menu-card.filtered-out {
+            display: none !important;
+        }
+
+        /* ========== STATS CARD ========== */
+        .stats-card {
+            background: var(--glass-bg);
+            border-radius: 24px;
+            padding: 28px;
+            margin-top: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .progress-container {
+            height: 12px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #3b82f6, #0056b3);
+            transition: width 1s ease-out;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-box {
+            background: rgba(0,0,0,0.03);
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .encouragement {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 16px;
+            background: var(--btn-grad-flash);
+            color: var(--text-flash);
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid var(--border-flash);
+        }
+
+        /* ========== TOGGLE (completion) ========== */
+        .toggle-wrapper {
+            position: relative;
+            z-index: 5;
+        }
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .toggle-input {
+            display: none;
+        }
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: var(--toggle-bg);
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-input:checked + .toggle-track {
+            background: var(--toggle-active);
+        }
+        .toggle-input:checked + .toggle-track::after {
+            transform: translateX(20px);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
+        }
+        footer div:first-child {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        footer div:last-child {
+            opacity: 0.9;
+            font-size: 0.7rem;
+        }
+        footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+        [data-theme="dark"] footer {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        [data-theme="forest"] footer {
+            color: #edf4e7;
+            background: rgba(30, 75, 62, 0.8);
+        }
+        [data-theme="light"] footer {
+            color: #1a2a3a;
+        }
+        [data-theme="sepia"] footer {
+            color: #4a3c2c;
+        }
+
+        /* ========== QUICK SETTINGS PANEL (glassy) ========== */
+        .quick-settings-panel {
+            position: fixed;
+            top: var(--header-height, 72px);
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
             box-shadow: var(--glass-shadow);
             z-index: 999;
             transform: translateY(-100%);
@@ -44,35 +497,33 @@
             max-width: 800px;
             margin: 0 auto;
             border-radius: 0 0 24px 24px;
+            color: var(--header-text);
         }
         .quick-settings-panel.show {
             transform: translateY(0);
         }
-        
-        /* Panel header with up arrow */
         .panel-header {
             display: flex;
             justify-content: flex-end;
             margin-bottom: 15px;
         }
         .panel-header button {
-            background: transparent;
-            border: none;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
             color: var(--header-text);
-            font-size: 1.5rem;
-            cursor: pointer;
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
         }
         .panel-header button:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.3);
         }
-        
-        /* Toggle grid – like Android quick settings */
         .toggle-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -81,6 +532,7 @@
         }
         .toggle-item {
             background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 12px;
             padding: 12px 8px;
             text-align: center;
@@ -99,18 +551,16 @@
         .toggle-item span:first-child {
             font-size: 1.3rem;
         }
-        /* Theme indicator for current theme */
         .toggle-item.active-theme {
             background: var(--primary-accent);
-            color: white;
+            border-color: transparent;
         }
-        
-        /* Progress mini card */
         .mini-progress {
             background: rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 16px;
             color: var(--header-text);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         .mini-progress-row {
             display: flex;
@@ -131,16 +581,173 @@
             padding-top: 10px;
             font-size: 0.85rem;
         }
-        
-        /* Fix for special cards hiding during search */
-        .menu-card.filtered-out {
-            display: none !important; /* force hide even on special cards */
+
+        /* ========== FLOATING BUTTONS ========== */
+        .float-btn {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(61, 100, 115, 0.7);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.2s, background 0.2s, opacity 0.2s;
+            z-index: 999;
+            backdrop-filter: blur(2px);
+            opacity: 0.8;
         }
-        
-        /* Keep your existing scroll button styles, but add a class to dim them when panel open (optional) */
-        .panel-open .float-btn {
-            opacity: 0.3;
+        .float-btn:hover {
+            transform: scale(1.1);
+            background: var(--toggle-active);
+            opacity: 1;
+        }
+        .float-btn:active {
+            transform: scale(0.95);
+        }
+        .float-btn.hidden {
+            opacity: 0;
             pointer-events: none;
+        }
+        #scrollToBottomBtn {
+            bottom: 20px;
+            right: 15px;
+        }
+        #scrollToTopBtn {
+            bottom: 70px;
+            right: 15px;
+        }
+
+        /* ========== OFFLINE DOWNLOAD ========== */
+        .offline-download {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .download-btn {
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        progress {
+            width: 100%;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        progress::-webkit-progress-bar {
+            background-color: var(--glass-bg);
+            border-radius: 10px;
+        }
+        progress::-webkit-progress-value {
+            background-color: var(--primary-accent);
+            border-radius: 10px;
+        }
+
+        /* ========== PROGRESS POPUP ========== */
+        .progress-popup {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--glass-shadow);
+            z-index: 1001;
+            min-width: 250px;
+            display: none;
+            color: var(--text-primary);
+        }
+        .progress-popup.show {
+            display: block;
+        }
+        .progress-popup .popup-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary-accent);
+        }
+        .progress-popup .popup-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .progress-popup .popup-quote {
+            margin-top: 16px;
+            font-style: italic;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--glass-border);
+            padding-top: 12px;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .header-text h1 {
+                font-size: 1rem;
+            }
+            .header-text p {
+                display: none;
+            }
+            .section-nav-row {
+                flex-direction: column;
+            }
+            .nav-row button {
+                padding: 10px 20px;
+                min-width: 120px;
+            }
+            .quiz-container, .quiz-setup-container, .critical-card, .sum-card {
+                padding: 20px;
+            }
+            .sum-card h3 {
+                font-size: 1.3rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .menu-sub-options {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .btn-action {
+                width: 100%;
+                white-space: normal;
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
+            .btn-flash {
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
         }
     </style>
 </head>
@@ -165,15 +772,12 @@
     </div>
 </header>
 
-<!-- Quick Settings Panel -->
+<!-- Quick Settings Panel (glassy) -->
 <div class="quick-settings-panel" id="quickSettingsPanel">
     <div class="panel-header">
         <button id="closeQuickSettings">↑</button>
     </div>
-    
-    <!-- Toggles grid -->
     <div class="toggle-grid">
-        <!-- Theme toggles – 4 themes -->
         <div class="toggle-item theme-tile" data-theme="dark" id="themeDark">
             <span>🌙</span>
             <span>Dark</span>
@@ -190,8 +794,6 @@
             <span>🌲</span>
             <span>Forest</span>
         </div>
-        
-        <!-- Shortcuts -->
         <div class="toggle-item" id="qsIndex">
             <span>📋</span>
             <span>Index</span>
@@ -209,8 +811,6 @@
             <span>Offline</span>
         </div>
     </div>
-    
-    <!-- Mini progress dashboard -->
     <div class="mini-progress">
         <div class="mini-progress-row">
             <span class="mini-progress-label">Chapters Done</span>
@@ -228,7 +828,7 @@
     </div>
 </div>
 
-<!-- Progress popup (existing) -->
+<!-- Progress popup -->
 <div class="progress-popup" id="progressPopup">
     <div class="popup-title">📊 Your Progress</div>
     <div class="popup-item">
@@ -304,21 +904,18 @@
         // ---------- SCROLL BUTTONS ----------
         const scrollTopBtn = document.getElementById('scrollToTopBtn');
         const scrollBottomBtn = document.getElementById('scrollToBottomBtn');
-        const statsCard = document.getElementById('statsCard'); // may not exist initially; we'll check on scroll
 
         function updateFloatButtons() {
             const scrollY = window.scrollY;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
-            // Show top button only if scrolled down more than 200px
             if (scrollY > 200) {
                 scrollTopBtn.classList.remove('hidden');
             } else {
                 scrollTopBtn.classList.add('hidden');
             }
 
-            // Show bottom button only if not at bottom (within 100px of bottom)
             if (documentHeight - (scrollY + windowHeight) > 100) {
                 scrollBottomBtn.classList.remove('hidden');
             } else {
@@ -351,32 +948,23 @@
 
         // ---------- COMPLETE CHAPTER LIST (ALL CPG 2025) ----------
         const CHAPTERS = [
-            // Special chapters (c0 and c-index)
             { id: "c0", shortTitle: "2025 Updates", title: "What's New in 2025", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "updates" },
             { id: "c-index", shortTitle: "Index", title: "Full Table of Contents", hasCritical: false, isFirstInChapter: false, chapterGroup: null, isSpecial: true, specialGroup: "index" },
-            
-            // Universal Care
             { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", hasCritical: true, chapterFile: "c1", sectionParam: "c1s1", isFirstInChapter: true, chapterGroup: "universal" },
             { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", hasCritical: true, chapterFile: "c1", sectionParam: "c1s2", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", hasCritical: true, chapterFile: "c1", sectionParam: "c1s3", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s4", shortTitle: "1.4 Functional Needs", title: "Functional Needs", hasCritical: true, chapterFile: "c1", sectionParam: "c1s4", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", hasCritical: true, chapterFile: "c1", sectionParam: "c1s5", isFirstInChapter: false, chapterGroup: "universal" },
             { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", hasCritical: true, chapterFile: "c1", sectionParam: "c1s6", isFirstInChapter: false, chapterGroup: "universal" },
-
-            // Airway & Breathing
             { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", hasCritical: true, chapterFile: "c2", sectionParam: "c2s1", isFirstInChapter: true, chapterGroup: "airway" },
             { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", hasCritical: true, chapterFile: "c2", sectionParam: "c2s2", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", hasCritical: true, chapterFile: "c2", sectionParam: "c2s3", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s4", shortTitle: "2.4 COPD", title: "COPD", hasCritical: true, chapterFile: "c2", sectionParam: "c2s4", isFirstInChapter: false, chapterGroup: "airway" },
             { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", hasCritical: true, chapterFile: "c2", sectionParam: "c2s5", isFirstInChapter: false, chapterGroup: "airway" },
-
-            // Cardiovascular
             { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", hasCritical: true, isFirstInChapter: true, chapterGroup: "cardio" },
             { id: "c3-2", shortTitle: "3.2 Adult Bradycardia", title: "Adult Bradycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
             { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", hasCritical: true, isFirstInChapter: false, chapterGroup: "cardio" },
-
-            // Resuscitation
             { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", hasCritical: true, isFirstInChapter: true, chapterGroup: "resus" },
             { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
@@ -386,12 +974,8 @@
             { id: "c4-7", shortTitle: "4.7 Post-ROSC", title: "Post Cardiac Arrest Care (ROSC)", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-8", shortTitle: "4.8 Starting/Stopping CPR", title: "Starting, Stopping and Transferring CPR", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
             { id: "c4-9", shortTitle: "4.9 Verification of Death", title: "Verification of Death", hasCritical: true, isFirstInChapter: false, chapterGroup: "resus" },
-
-            // Neurological
             { id: "c5-1", shortTitle: "5.1 Stroke", title: "Stroke", hasCritical: true, isFirstInChapter: true, chapterGroup: "neuro" },
             { id: "c5-2", shortTitle: "5.2 Seizures", title: "Seizures", hasCritical: true, isFirstInChapter: false, chapterGroup: "neuro" },
-
-            // General Medical
             { id: "c6-1", shortTitle: "6.1 Abdominal Pain", title: "Abdominal Pain", hasCritical: true, isFirstInChapter: true, chapterGroup: "medical" },
             { id: "c6-2", shortTitle: "6.2 Abnormal Behavior", title: "Abnormal Behavior", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-3", shortTitle: "6.3 Adrenal Insufficiency", title: "Adrenal Insufficiency", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
@@ -406,16 +990,12 @@
             { id: "c6-12", shortTitle: "6.12 Pain Management", title: "Pain Management", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-13", shortTitle: "6.13 Sickle Cell Crisis", title: "Sickle Cell Crisis", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
             { id: "c6-14", shortTitle: "6.14 Alcohol Intoxication", title: "Suspected Alcohol Intoxication", hasCritical: true, isFirstInChapter: false, chapterGroup: "medical" },
-
-            // Trauma
             { id: "c7-1", shortTitle: "7.1 General Trauma", title: "General Trauma Management", hasCritical: true, isFirstInChapter: true, chapterGroup: "trauma" },
             { id: "c7-2", shortTitle: "7.2 Burns", title: "Burns", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-3", shortTitle: "7.3 Crush Injuries", title: "Crush Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-4", shortTitle: "7.4 Limb Injuries", title: "Limb Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
             { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", hasCritical: true, isFirstInChapter: false, chapterGroup: "trauma" },
-
-            // Environmental
             { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", hasCritical: true, isFirstInChapter: true, chapterGroup: "environmental" },
             { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-3", shortTitle: "8.3 Beta‑Blocker Overdose", title: "Beta‑Blocker Overdose", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
@@ -426,27 +1006,19 @@
             { id: "c8-8", shortTitle: "8.8 Envenomation", title: "Envenomation", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-9", shortTitle: "8.9 Hypothermia", title: "Hypothermia / Cold Exposure", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
             { id: "c8-10", shortTitle: "8.10 Hyperthermia", title: "Hyperthermia / Heat Exposure", hasCritical: true, isFirstInChapter: false, chapterGroup: "environmental" },
-
-            // Pediatric
             { id: "c9-1", shortTitle: "9.1 Croup", title: "Croup", hasCritical: true, isFirstInChapter: true, chapterGroup: "pediatric" },
             { id: "c9-2", shortTitle: "9.2 Pediatric Bradycardia", title: "Pediatric Bradycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "pediatric" },
             { id: "c9-3", shortTitle: "9.3 Pediatric Tachycardia", title: "Pediatric Tachycardia", hasCritical: true, isFirstInChapter: false, chapterGroup: "pediatric" },
-
-            // Obstetrics
             { id: "c10-1", shortTitle: "10.1 Childbirth", title: "Childbirth", hasCritical: true, isFirstInChapter: true, chapterGroup: "obstetric" },
             { id: "c10-2", shortTitle: "10.2 Post Partum Hemorrhage", title: "Post Partum Hemorrhage", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
             { id: "c10-3", shortTitle: "10.3 PV Hemorrhage", title: "PV Hemorrhage in Pregnancy", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
             { id: "c10-4", shortTitle: "10.4 Eclampsia", title: "Eclampsia / Pre‑eclampsia", hasCritical: true, isFirstInChapter: false, chapterGroup: "obstetric" },
-
-            // Major Incident Triage
             { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", hasCritical: true, isFirstInChapter: true, chapterGroup: "mci" },
-
-            // Scope & Medications
             { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", hasCritical: false, isFirstInChapter: true, chapterGroup: "scope" },
             { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", hasCritical: false, isFirstInChapter: false, chapterGroup: "scope" }
         ];
 
-        // ---------- STORAGE & LOGIC ----------
+        // ---------- STORAGE ----------
         const COMPLETION_KEY = 'dcas_cpg_completion';
         const STATS_KEY = 'dcas_cpg_stats';
 
@@ -464,17 +1036,11 @@
             const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
             const completion = loadStorage(COMPLETION_KEY, {});
             const completedCount = Object.values(completion).filter(v => v).length;
-            const popupChapters = document.getElementById('popupChaptersDone');
-            const popupAttempts = document.getElementById('popupAttempts');
-            const popupCritical = document.getElementById('popupCritical');
-            const popupQuote = document.getElementById('popupQuote');
-            if (popupChapters) popupChapters.innerText = `${completedCount}/${totalChaps}`;
-            if (popupAttempts) popupAttempts.innerText = stats.totalAttempts || 0;
-            if (popupCritical) popupCritical.innerText = `${critAcc}%`;
-            if (popupQuote) {
-                const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
-                popupQuote.innerText = `✨ ${quote}`;
-            }
+            document.getElementById('popupChaptersDone').innerText = `${completedCount}/${totalChaps}`;
+            document.getElementById('popupAttempts').innerText = stats.totalAttempts || 0;
+            document.getElementById('popupCritical').innerText = `${critAcc}%`;
+            const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+            document.getElementById('popupQuote').innerText = `✨ ${quote}`;
         }
 
         window.app = window.app || {};
@@ -485,7 +1051,7 @@
             renderMenu(); 
         };
 
-        // ---------- RENDER MENU WITH SEARCH AND SPECIAL CARDS ----------
+        // ---------- RENDER MENU ----------
         function renderMenu(filterText = '') {
             const stats = loadStorage(STATS_KEY, { chapters: {} });
             const completion = loadStorage(COMPLETION_KEY, {});
@@ -505,7 +1071,6 @@
                         titleText = "Index";
                         subtitleText = "Full Table of Contents";
                     }
-                    // Special cards now have data-search so they can be filtered
                     return `
                         <a href="chapters/${baseFile}.html?view=summary" class="menu-card special-card" 
                            data-chapter="${ch.specialGroup}" 
@@ -532,10 +1097,8 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <h2>${ch.shortTitle}</h2>
                         <p>${ch.title} • ${s.attempts} attempts • Avg ${avg}%</p>
-                        
                         <div class="menu-sub-options">
                             <a href="chapters/${baseFile}.html?view=summary${sec}" class="btn-action btn-summary">📘 Summary</a>
                             <a href="chapters/${baseFile}.html?view=flashcards${sec}" class="btn-action btn-flash">⚡Flashcards</a>
@@ -546,7 +1109,6 @@
                 `;
             }).join('');
 
-            // Stats Card
             const totalChaps = CHAPTERS.filter(c => c.id !== 'c0' && c.id !== 'c-index').length;
             const completedCount = Object.values(completion).filter(v => v).length;
             const overallPercent = totalChaps ? Math.round((completedCount / totalChaps) * 100) : 0;
@@ -593,9 +1155,8 @@
 
             document.getElementById('mainContent').innerHTML = fullHtml;
             updateProgressPopup();
-            updateMiniProgress(); // update the quick panel's progress
+            updateMiniProgress();
 
-            // Attach search listener
             const searchInput = document.getElementById('searchInput');
             const clearBtn = document.getElementById('searchClearBtn');
             if (searchInput) {
@@ -613,7 +1174,6 @@
                 });
             }
 
-            // Offline download
             const downloadBtn = document.getElementById('downloadOfflineBtn');
             const progressBar = document.getElementById('downloadProgress');
 
@@ -622,25 +1182,16 @@
                     alert('Your browser does not support caching.');
                     return;
                 }
-
                 downloadBtn.disabled = true;
                 progressBar.style.display = 'block';
                 progressBar.value = 0;
 
                 const base = window.location.origin + (window.location.pathname.includes('/DCAS-CPG-Review-V1') ? '/DCAS-CPG-Review-V1' : '') + '/';
                 const filesToCache = [
-                    '/',
-                    '/index.html',
-                    '/about.html',
-                    '/styles.css',
-                    '/app.js',
-                    '/manifest.json',
-                    '/icons/icon.png',
-                    '/images/image-01.png',
+                    '/', '/index.html', '/about.html', '/styles.css', '/app.js', '/manifest.json', '/icons/icon.png', '/images/image-01.png',
                     ...CHAPTERS.filter(ch => !ch.isSpecial).map(ch => `/content/${ch.chapterFile || ch.id}.js`),
                     ...CHAPTERS.filter(ch => !ch.isSpecial).map(ch => `/chapters/${ch.chapterFile || ch.id}.html`)
                 ].map(path => path.startsWith('/') ? base + path.slice(1) : base + path);
-
                 filesToCache.push(base + 'content/c0.js', base + 'content/c-index.js');
                 filesToCache.push(base + 'chapters/c0.html', base + 'chapters/c-index.html');
 
@@ -651,29 +1202,23 @@
                 for (const url of filesToCache) {
                     try {
                         const response = await fetch(url);
-                        if (response.ok) {
-                            await cache.put(url, response);
-                        }
+                        if (response.ok) await cache.put(url, response);
                     } catch (err) {}
                     completed++;
                     progressBar.value = (completed / total) * 100;
                 }
-
                 progressBar.value = 100;
                 downloadBtn.disabled = false;
                 setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
             }
 
             downloadBtn.addEventListener('click', downloadAllContent);
-
-            if (filterText) {
-                filterCards(filterText);
-            }
+            if (filterText) filterCards(filterText);
         }
 
-        // Filter function – now selects ALL cards (including special) and hides non-matching
+        // Filter ALL cards (including special) and hide non‑matching
         function filterCards(text) {
-            const cards = document.querySelectorAll('.menu-card'); // include special cards
+            const cards = document.querySelectorAll('.menu-card');
             const lowerText = text.toLowerCase().trim();
             cards.forEach(card => {
                 const searchData = card.dataset.search || '';
@@ -685,7 +1230,7 @@
             });
         }
 
-        // ---------- QUICK SETTINGS PANEL ----------
+        // ---------- QUICK SETTINGS ----------
         const quickToggle = document.getElementById('quickSettingsToggle');
         const quickPanel = document.getElementById('quickSettingsPanel');
         const closeQuick = document.getElementById('closeQuickSettings');
@@ -710,40 +1255,28 @@
         });
         
         closeQuick.addEventListener('click', closeQuickPanel);
-        
         document.addEventListener('click', (e) => {
             if (!quickPanel.contains(e.target) && !quickToggle.contains(e.target) && quickPanel.classList.contains('show')) {
                 closeQuickPanel();
             }
         });
         
-        // Theme tiles
         const themeTiles = document.querySelectorAll('.theme-tile');
         function setActiveThemeTile(theme) {
             themeTiles.forEach(tile => {
-                if (tile.dataset.theme === theme) {
-                    tile.classList.add('active-theme');
-                } else {
-                    tile.classList.remove('active-theme');
-                }
+                tile.classList.toggle('active-theme', tile.dataset.theme === theme);
             });
         }
-        
         themeTiles.forEach(tile => {
             tile.addEventListener('click', () => {
                 const theme = tile.dataset.theme;
                 html.setAttribute('data-theme', theme);
                 localStorage.setItem('theme', theme);
                 setActiveThemeTile(theme);
-                // Also update theme via main button (optional)
-                // No need to close panel
             });
         });
-        
-        // Sync theme tile on load
         setActiveThemeTile(localStorage.getItem('theme') || 'dark');
         
-        // Shortcut tiles
         document.getElementById('qsIndex').addEventListener('click', () => {
             window.location.href = 'chapters/c-index.html?view=summary';
         });
@@ -761,7 +1294,6 @@
             closeQuickPanel();
         });
         
-        // Update mini progress
         function updateMiniProgress() {
             const stats = loadStorage(STATS_KEY, { totalAttempts: 0, critical: { total: 0, correct: 0 } });
             const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
@@ -770,32 +1302,29 @@
             const completedCount = Object.values(completion).filter(v => v).length;
             const quote = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
             
-            const miniChapters = document.getElementById('miniChaptersDone');
-            const miniAttempts = document.getElementById('miniAttempts');
-            const miniCritical = document.getElementById('miniCritical');
-            const miniQuote = document.getElementById('miniQuote');
-            if (miniChapters) miniChapters.innerText = `${completedCount}/${totalChaps}`;
-            if (miniAttempts) miniAttempts.innerText = stats.totalAttempts || 0;
-            if (miniCritical) miniCritical.innerText = `${critAcc}%`;
-            if (miniQuote) miniQuote.innerText = `✨ ${quote}`;
+            document.getElementById('miniChaptersDone').innerText = `${completedCount}/${totalChaps}`;
+            document.getElementById('miniAttempts').innerText = stats.totalAttempts || 0;
+            document.getElementById('miniCritical').innerText = `${critAcc}%`;
+            document.getElementById('miniQuote').innerText = `✨ ${quote}`;
         }
 
-        // Override updateProgressPopup to also call updateMiniProgress
         const originalUpdateProgressPopup = updateProgressPopup;
         updateProgressPopup = function() {
             originalUpdateProgressPopup();
             updateMiniProgress();
         };
 
-        // ---------- HOME & INDEX BUTTONS ----------
-        const homeBtn = document.getElementById('homeBtn');
-        const indexBtn = document.getElementById('headerIndexBtn');
-        if(homeBtn) homeBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
-        if(indexBtn) indexBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'chapters/c-index.html?view=summary'; });
+        // ---------- HOME & INDEX ----------
+        document.getElementById('homeBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        });
+        document.getElementById('headerIndexBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'chapters/c-index.html?view=summary';
+        });
 
-        // Initial render
         renderMenu();
-        // Update buttons after first render
         setTimeout(updateFloatButtons, 100);
     })();
 </script>
