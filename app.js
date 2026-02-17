@@ -703,8 +703,148 @@ function createRipple(event) {
     }, 600);  
 }  
 
-// ---------- EVENT DELEGATION ----------  
+// ---------- COMPLETE EVENT DELEGATION ----------  
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button');  
     if (!target) return;  
-    const action = target.dat
+    
+    const action = target.dataset.action;
+    const sectionNav = target.dataset.sectionNav;
+    const sectionId = target.dataset.sectionId;
+    const quizSize = target.dataset.quizSize;
+    const flashAction = target.dataset.flash;
+    const optIndex = target.dataset.optIndex;
+    
+    // Add ripple effect
+    createRipple(e);
+    
+    // Handle navigation
+    if (action === 'backHome') {
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    if (action === 'viewStats') {
+        render.stats();
+        return;
+    }
+    
+    if (action === 'reviewMistakes') {
+        render.reviewMistakes();
+        return;
+    }
+    
+    // Section tab switching
+    if (sectionId && target.classList.contains('section-tab')) {
+        switchSection(sectionId);
+        return;
+    }
+    
+    // Section navigation (prev/next)
+    if (sectionNav && sectionId) {
+        switchSection(sectionId);
+        return;
+    }
+    
+    // Quiz setup
+    if (quizSize) {
+        quizEngine.init(parseInt(quizSize, 10));
+        return;
+    }
+    
+    // Flashcard navigation
+    if (flashAction === 'prev') {
+        if (state.fIndex > 0) {
+            state.fIndex--;
+            render._renderFlashcard();
+        }
+        return;
+    }
+    
+    if (flashAction === 'next') {
+        if (state.fIndex < state.flashData.length - 1) {
+            state.fIndex++;
+            render._renderFlashcard();
+        }
+        return;
+    }
+    
+    // Quiz answer handling
+    if (optIndex !== undefined && target.classList.contains('option-btn')) {
+        const inQuiz = document.getElementById('quizFeedback') !== null;
+        const inCritical = document.getElementById('criticalFeedback') !== null;
+        
+        if (inQuiz) {
+            quizEngine.handleAnswer(parseInt(optIndex, 10), target);
+        } else if (inCritical) {
+            criticalEngine.handleAnswer(parseInt(optIndex, 10), target);
+        }
+        return;
+    }
+    
+    // Next question buttons
+    if (target.id === 'nextQuizBtn') {
+        quizEngine.next();
+        return;
+    }
+    
+    if (target.id === 'nextCriticalBtn') {
+        criticalEngine.next();
+        return;
+    }
+});
+
+// ---------- POPSTATE HANDLER (browser back/forward) ----------
+window.addEventListener('popstate', function() {
+    const sectionId = utils.getQueryParam('section');
+    const view = utils.getQueryParam('view') || 'summary';
+    
+    if (sectionId && state.sections) {
+        switchSection(sectionId, false);
+    } else if (view === 'stats') {
+        render.stats();
+    } else {
+        window.location.reload();
+    }
+});
+
+// ---------- INITIALIZE ON PAGE LOAD ----------
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if chapter data exists
+    if (isChapterMissing) {
+        renderComingSoon();
+        return;
+    }
+    
+    // Get section from URL or use first section
+    const urlSection = utils.getQueryParam('section');
+    const urlView = utils.getQueryParam('view') || 'summary';
+    
+    if (urlSection && state.sections) {
+        const section = utils.getSection(urlSection);
+        if (section) {
+            state.activeSectionId = urlSection;
+            state.activeSection = section;
+            state.flashData = section.flashcards || [];
+            state.criticalData = section.critical || [];
+            
+            // Render appropriate view
+            if (urlView === 'flashcards') render.flashcards();
+            else if (urlView === 'quiz') render.quizSetup();
+            else if (urlView === 'critical') render.criticalGame();
+            else render.summary();
+        } else {
+            // Invalid section, use first
+            if (state.sections && state.sections.length > 0) {
+                switchSection(state.sections[0].id);
+            }
+        }
+    } else {
+        // No section in URL, use first
+        if (state.sections && state.sections.length > 0) {
+            switchSection(state.sections[0].id);
+        }
+    }
+});
+
+})();
