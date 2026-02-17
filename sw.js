@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcas-cpg-v3'; // Increment this when you update files
+const CACHE_NAME = 'dcas-cpg-v4'; // Increment this when you update files
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
