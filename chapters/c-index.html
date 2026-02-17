@@ -15,9 +15,9 @@
     <link rel="apple-touch-icon" href="../icon.png">
 
     <style>
-        /* ---------- THEME CONFIGURATION (same as main index.html) ---------- */
+        /* ---------- THEME CONFIGURATION ---------- */
         :root {
-            /* --- LIGHT THEME (Fresh Clinical Blue) --- */
+            /* --- LIGHT THEME --- */
             --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #b8e1ff 50%, #f0f9ff 100%);
             --glass-bg: rgba(255, 255, 255, 0.9);
             --glass-border: rgba(255, 255, 255, 0.8);
@@ -42,7 +42,7 @@
         }
 
         [data-theme="dark"] {
-            /* --- DARK THEME (Deep Teal/Slate) --- */
+            /* --- DARK THEME --- */
             --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             --glass-bg: rgba(255, 255, 255, 0.75);
             --glass-border: rgba(255, 255, 255, 0.6);
@@ -54,6 +54,32 @@
             
             --toggle-bg: #374151;
             --toggle-active: #2dd4bf;
+        }
+
+        [data-theme="sepia"] {
+            /* --- SEPIA THEME --- */
+            --bg-gradient: linear-gradient(135deg, #f4e4c1 0%, #e5d3b3 50%, #d6c2a3 100%);
+            --glass-bg: rgba(255, 248, 235, 0.9);
+            --glass-border: rgba(210, 180, 140, 0.6);
+            --glass-shadow: 0 12px 40px 0 rgba(100, 70, 40, 0.2);
+            --text-primary: #4a3c2c;
+            --text-secondary: #6b5a48;
+            --header-text: #4a3c2c;
+            --toggle-bg: #c4a484;
+            --toggle-active: #8b6b4f;
+        }
+
+        [data-theme="forest"] {
+            /* --- FOREST THEME --- */
+            --bg-gradient: linear-gradient(135deg, #1e4b3e 0%, #2d6a4f 50%, #40916c 100%);
+            --glass-bg: rgba(220, 237, 193, 0.85);
+            --glass-border: rgba(162, 191, 132, 0.7);
+            --glass-shadow: 0 12px 40px 0 rgba(0, 50, 30, 0.3);
+            --text-primary: #0f2c1f;
+            --text-secondary: #2d5a3a;
+            --header-text: #edf4e7;
+            --toggle-bg: #52796f;
+            --toggle-active: #84a98c;
         }
 
         :root {
@@ -243,19 +269,19 @@
             display: none;
         }
 
-        /* Footer */
+        /* ---------- FOOTER – FIXED VISIBILITY ---------- */
         footer {
             text-align: center;
             padding: 30px 20px;
             color: var(--text-secondary);
             font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(5px);
             border-top: 1px solid rgba(255, 255, 255, 0.3);
             margin-top: auto;
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 0 -5px 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
         }
         footer div:first-child {
             font-weight: 500;
@@ -268,6 +294,19 @@
         footer a {
             color: inherit;
             text-decoration: underline;
+        }
+        [data-theme="dark"] footer {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        [data-theme="forest"] footer {
+            color: #edf4e7;
+            background: rgba(30, 75, 62, 0.8);
+        }
+        [data-theme="light"] footer {
+            color: #1a2a3a;
+        }
+        [data-theme="sepia"] footer {
+            color: #4a3c2c;
         }
 
         @keyframes fadeInUp {
