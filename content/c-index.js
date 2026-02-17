@@ -199,7 +199,7 @@
             color: var(--accent-universal);
         }
 
-        /* Search bar */
+        /* Search bar with icon */
         .search-container {
             margin-bottom: 24px;
             display: flex;
@@ -210,6 +210,11 @@
             padding: 4px 4px 4px 20px;
             backdrop-filter: blur(10px);
             box-shadow: var(--glass-shadow);
+        }
+        .search-container span {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            color: var(--text-secondary);
         }
         .search-container input {
             flex: 1;
@@ -225,20 +230,37 @@
             opacity: 0.7;
         }
         .search-container button {
-            background: var(--primary-accent);
+            background: transparent;
             border: none;
-            border-radius: 40px;
-            padding: 10px 24px;
-            color: white;
-            font-weight: 600;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            margin-right: 4px;
+            padding: 0;
+        }
+        .search-container button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
         }
         .search-container button:active {
-            background: #003d80;
+            transform: scale(0.95);
         }
         .index-table tr.filtered-out {
             display: none;
+        }
+        /* Highlight search matches */
+        .index-table tr mark {
+            background: #ffeb3b;
+            color: #000;
+            padding: 2px 0;
+            border-radius: 2px;
         }
 
         /* ========== FOOTER ========== */
@@ -535,7 +557,7 @@
         </div>
     </div>
 
-    <!-- Mini stats (dummy data – will be updated by script) -->
+    <!-- Mini stats -->
     <div class="drawer-stats">
         <div class="stat-item">
             <span class="stat-num" id="drawerDone">0/0</span>
@@ -700,10 +722,9 @@
                 const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
                 const critAcc = stats.critical.total ? Math.round((stats.critical.correct / stats.critical.total) * 100) : 0;
 
-                // For chapters count, we'd need the CHAPTERS array from main index, but this is a fallback
-                document.getElementById('drawerDone').innerText = '?/66';
                 document.getElementById('drawerAttempts').innerText = stats.totalAttempts || 0;
                 document.getElementById('drawerAcc').innerText = `${critAcc}%`;
+                // We can't get total chapters here easily, so leave as ?/66
             } catch(e) {}
         }
 
@@ -714,14 +735,14 @@
             window.location.href = '../index.html';
         });
 
-        // ---------- STATS POPUP (dummy) ----------
+        // ---------- PROGRESS POPUP ----------
         const progressToggle = document.getElementById('progressToggle');
         const statsPopup = document.createElement('div');
         statsPopup.className = 'progress-popup';
         statsPopup.id = 'tempStatsPopup';
         statsPopup.innerHTML = `
             <div class="popup-title">📊 Quick Stats</div>
-            <div class="popup-item"><span>Chapters:</span><span id="popupChaps">?</span></div>
+            <div class="popup-item"><span>Chapters:</span><span id="popupChaps">?/66</span></div>
             <div class="popup-item"><span>Attempts:</span><span id="popupAtt">0</span></div>
             <div class="popup-item"><span>Accuracy:</span><span id="popupAcc">0%</span></div>
         `;
@@ -740,6 +761,10 @@
                 statsPopup.classList.remove('show');
             }
         });
+
+        // ---------- SEARCH HIGHLIGHT (fallback if app.js doesn't do it) ----------
+        // The actual search and highlight is handled by the embedded script in c-index.js.
+        // We'll rely on that.
     })();
 </script>
 
