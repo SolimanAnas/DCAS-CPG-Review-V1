@@ -214,14 +214,20 @@ const render = {
         }  
         const tabs = renderSectionTabs(section.id);  
         const nav = renderSectionNavigation();  
+        
+        // 🔥 FIX: Only show "Back to Chapters" button if NOT the index page
+        const showBackButton = !(chapterData && chapterData.id === 'c-index');
+        
         const html = `  
             <div class="section active">  
                 ${tabs}  
                 ${section.summary || '<div class="sum-card">No summary available.</div>'}  
                 ${nav}  
-                <div class="nav-row">  
-                    <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-                </div>  
+                ${showBackButton ? `
+                    <div class="nav-row">  
+                        <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
+                    </div>
+                ` : ''}  
             </div>  
         `;  
         dom.main.innerHTML = html;  
@@ -701,195 +707,4 @@ function createRipple(event) {
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button');  
     if (!target) return;  
-    const action = target.dataset.action;  
-    const size = target.dataset.quizSize;  
-    const sectionId = target.dataset.sectionId;  
-    const flash = target.dataset.flash;  
-    const sectionNav = target.dataset.sectionNav;  
-
-    // Section tab switching  
-    if (sectionId && !sectionNav) {  
-        e.preventDefault();  
-        switchSection(sectionId, true);  
-        return;  
-    }  
-
-    // Section navigation (Previous / Next)  
-    if (sectionNav && target.dataset.sectionId) {  
-        e.preventDefault();  
-        switchSection(target.dataset.sectionId, true);  
-        return;  
-    }  
-
-    // ----- BACK HOME – PATH DETECTION -----  
-    if (action === 'backHome') {  
-        e.preventDefault();  
-        const path = window.location.pathname;  
-        if (path.includes('/chapters/')) {  
-            window.location.href = '../index.html';  
-        } else {  
-            window.location.href = 'index.html';  
-        }  
-        return;  
-    }  
-
-    if (action === 'stats') {  
-        const path = window.location.pathname;  
-        if (path.includes('/chapters/')) {  
-            window.location.href = '../index.html?view=stats';  
-        } else {  
-            window.location.href = 'index.html?view=stats';  
-        }  
-        return;  
-    }  
-
-    if (action === 'reviewMistakes') {  
-        render.reviewMistakes();  
-        return;  
-    }  
-
-    // Quiz size selection  
-    if (target.classList.contains('setup-btn') && size) {  
-        quizEngine.init(parseInt(size, 10));  
-        return;  
-    }  
-
-    // Quiz answer  
-    if (target.classList.contains('option-btn') && target.closest('#quizOptionsContainer')) {  
-        const idx = parseInt(target.dataset.optIndex, 10);  
-        quizEngine.handleAnswer(idx, target);  
-        return;  
-    }  
-
-    // Critical answer  
-    if (target.classList.contains('option-btn') && target.closest('#criticalOptionsContainer')) {  
-        const idx = parseInt(target.dataset.optIndex, 10);  
-        criticalEngine.handleAnswer(idx, target);  
-        return;  
-    }  
-
-    // Next question / critical  
-    if (target.id === 'nextQuizBtn') {  
-        quizEngine.next();  
-        return;  
-    }  
-    if (target.id === 'nextCriticalBtn') {  
-        criticalEngine.next();  
-        return;  
-    }  
-
-    // Flashcard navigation  
-    if (flash === 'prev') {  
-        if (state.fIndex > 0) state.fIndex--;  
-        render._renderFlashcard();  
-        return;  
-    }  
-    if (flash === 'next') {  
-        if (state.fIndex < state.flashData.length - 1) state.fIndex++;  
-        render._renderFlashcard();  
-        return;  
-    }  
-});  
-
-// ---------- HOME BUTTON LISTENER ----------  
-function setupHomeButton() {  
-    if (dom.homeBtn) {  
-        dom.homeBtn.addEventListener('click', function(e) {  
-            e.preventDefault();  
-            const path = window.location.pathname;  
-            if (path.includes('/chapters/')) {  
-                window.location.href = '../index.html';  
-            } else {  
-                window.location.href = 'index.html';  
-            }  
-        });  
-    }  
-}  
-
-// ---------- INITIALISE ----------  
-function init() {  
-    state.stats = storage.load();  
-
-    if (isChapterMissing) {  
-        renderComingSoon();  
-        setupHomeButton();  
-        return;  
-    }  
-
-    // ----- MULTI-SECTION MODE -----  
-    if (state.sections && state.sections.length > 0) {  
-        let sectionId = utils.getQueryParam('section');  
-        if (!sectionId) {  
-            sectionId = state.sections[0].id;  
-            utils.replaceQueryParam('section', sectionId);  
-        }  
-        const section = utils.getSection(sectionId);  
-        if (section) {  
-            state.activeSectionId = sectionId;  
-            state.activeSection = section;  
-            state.flashData = section.flashcards || [];  
-            state.criticalData = section.critical || [];  
-        } else {  
-            // fallback to first section  
-            const fallback = state.sections[0];  
-            state.activeSectionId = fallback.id;  
-            state.activeSection = fallback;  
-            state.flashData = fallback.flashcards || [];  
-            state.criticalData = fallback.critical || [];  
-            utils.replaceQueryParam('section', fallback.id);  
-        }  
-    } else {  
-        // ----- SINGLE-SECTION MODE (backward compatibility) -----  
-        state.activeSection = {  
-            id: 'main',  
-            shortTitle: chapterData.shortTitle || 'Chapter',  
-            summary: chapterData.summary,  
-            quiz: chapterData.quiz,  
-            flashcards: chapterData.flashcards,  
-            critical: chapterData.critical  
-        };  
-        state.activeSectionId = 'main';  
-        state.flashData = state.activeSection.flashcards || [];  
-        state.criticalData = state.activeSection.critical || [];  
-    }  
-
-    // ----- DETERMINE VIEW -----  
-    let view = utils.getQueryParam('view') || 'summary';  
-    if (!utils.getQueryParam('view')) {  
-        utils.replaceQueryParam('view', view);  
-    }  
-
-    // ----- RENDER -----  
-    if (view === 'summary') render.summary();  
-    else if (view === 'flashcards') render.flashcards();  
-    else if (view === 'quiz') render.quizSetup();  
-    else if (view === 'critical') render.criticalGame();  
-    else if (view === 'stats') render.stats();  
-    else if (view === 'reviewMistakes') render.reviewMistakes();  
-    else render.summary();  
-
-    // ----- ADD RIPPLE LISTENERS TO INTERACTIVE ELEMENTS -----  
-    setTimeout(() => {  
-        document.querySelectorAll('.menu-card, .btn-action, .control-btn, .icon-btn, .setup-btn, .section-tab, .section-nav-btn').forEach(el => {  
-            if (el) {  
-                el.removeEventListener('click', createRipple);  
-                el.removeEventListener('touchstart', createRipple);  
-                el.addEventListener('click', createRipple);  
-                el.addEventListener('touchstart', createRipple);  
-            }  
-        });  
-    }, 200);  
-
-    setupHomeButton();  
-}  
-
-init();  
-
-// Expose toggler for completion (used in index.html)  
-window.app = window.app || {};  
-window.app.toggleCompletion = function(chapterId, checked) {  
-    // This function is defined in index.html, but we keep the namespace  
-    console.log('toggleCompletion called from app.js – should be overridden by index.html');  
-};  
-window.app.state = state;
-})();
+    const action = target.dat
