@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="icons/icon.png">
     
     <style>
-        /* Base Glassy Card Style */
+        /* --- Base Glassy Card Style --- */
         .about-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -23,12 +23,12 @@
             padding: 32px;
             box-shadow: var(--glass-shadow);
             margin: 20px 0;
-            overflow: auto; /* clearfix */
+            overflow: auto; /* clearfix to handle the floated image */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
 
-        /* Headings */
+        /* --- Headings --- */
         .about-card h2 {
             color: var(--primary-accent);
             margin-bottom: 20px;
@@ -44,7 +44,7 @@
             padding-left: 12px;
         }
 
-        /* Text & Lists */
+        /* --- Text & Lists --- */
         .about-card p {
             margin: 15px 0;
             line-height: 1.6;
@@ -59,6 +59,32 @@
             margin-bottom: 8px;
         }
 
+        /* --- PROFILE IMAGE FIX (Use Original Photoshop Effects) --- */
+        .about-card .float-image {
+            float: right;
+            width: 220px;       /* Good size for desktop */
+            height: auto;       /* CRITICAL: Maintains your Oval shape */
+            margin-left: 30px;
+            margin-bottom: 20px;
+            
+            /* Disable all CSS interference so your Photoshop shadow/border shows */
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            object-fit: contain !important; /* Prevents "Head Chopping" */
+        }
+
+        /* Mobile adjustments for image */
+        @media (max-width: 600px) {
+            .about-card .float-image {
+                float: none;
+                display: block;
+                margin: 0 auto 25px auto;
+                width: 200px; /* Slightly smaller for phone */
+            }
+        }
+
         /* --- LIABILITY SECTION (Red Warning) --- */
         .liability-section {
             background: rgba(255, 59, 48, 0.08);
@@ -69,7 +95,7 @@
             color: var(--text-primary);
         }
         .liability-section strong {
-            color: #ff3b30; /* Red for importance */
+            color: #ff3b30;
             display: block;
             margin-bottom: 8px;
             font-size: 1.1rem;
@@ -85,36 +111,15 @@
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin-top: 15px;
-            white-space: pre-wrap; /* Keeps formatting */
+            white-space: pre-wrap;
+            overflow-x: auto;
         }
         [data-theme="light"] .license-box {
             background: rgba(0, 0, 0, 0.05);
             color: #444;
         }
 
-        /* Floated Profile Image */
-        .about-card .float-image {
-            float: right;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-left: 30px;
-            margin-bottom: 20px;
-            border: 3px solid var(--primary-accent);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        @media (max-width: 600px) {
-            .about-card .float-image {
-                float: none;
-                display: block;
-                margin: 0 auto 20px;
-                width: 140px;
-                height: 140px;
-            }
-        }
-
-        /* How-To List Styling */
+        /* --- How-To List Styling --- */
         .how-to-list {
             list-style: none;
             padding: 0;
@@ -180,7 +185,7 @@
         <p>
             <strong>Soliman Anas</strong><br>
             <em>EMT, RN, MSN, MBA</em><br>
-            Graphic Designer & Junior Web Developer
+            Graphic Designer & Web Developer
         </p>
         <p>
             A passionate advocate for merging clinical excellence with modern technology. This "Portfolio Project" demonstrates the potential of PWA (Progressive Web App) technology in medical education.
@@ -215,9 +220,11 @@
 
 Copyright (c) 2025 Soliman Anas
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software...
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.</div>
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</div>
         
         <h3>Version Info</h3>
         <p style="font-size: 0.9rem; color: var(--text-secondary);">
