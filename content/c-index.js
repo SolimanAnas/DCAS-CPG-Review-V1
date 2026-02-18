@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index with Dynamic Filter ========== */
+/* ========== c-index.js – Full CPG Index (Filtered Search Version) ========== */
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -16,7 +16,7 @@ window.CPG_DATA = {
 };
 
 function generateIndexHTML() {
-    // ---------- Complete CPG list (must match main index) ----------
+
     const CHAPTERS = [
         // Universal Care
         { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", chapterFile: "c1", sectionParam: "c1s1", chapterGroup: "universal" },
@@ -26,223 +26,102 @@ function generateIndexHTML() {
         { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
         { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
 
-        // Airway & Breathing
+        // Airway
         { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", sectionParam: "c2s1", chapterGroup: "airway" },
         { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2", sectionParam: "c2s2", chapterGroup: "airway" },
         { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2", sectionParam: "c2s3", chapterGroup: "airway" },
         { id: "c2s4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2", sectionParam: "c2s4", chapterGroup: "airway" },
-        { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive (Mechanical) Ventilation", chapterFile: "c2", sectionParam: "c2s5", chapterGroup: "airway" },
-
-        // Cardiovascular
-        { id: "c3-1", shortTitle: "3.1 Chest Pain / ACS", title: "Chest Pain / Acute Coronary Syndrome", chapterFile: "c3-1", chapterGroup: "cardio" },
-        { id: "c3-2", shortTitle: "3.2 Adult Bradycardia", title: "Adult Bradycardia", chapterFile: "c3-2", chapterGroup: "cardio" },
-        { id: "c3-3", shortTitle: "3.3 Adult Tachycardia", title: "Adult Tachycardia with a Pulse", chapterFile: "c3-3", chapterGroup: "cardio" },
-        { id: "c3-4", shortTitle: "3.4 Acute Pulmonary Edema", title: "Acute Pulmonary Edema", chapterFile: "c3-4", chapterGroup: "cardio" },
-
-        // Resuscitation
-        { id: "c4-1", shortTitle: "4.1 Adult BLS", title: "Adult Basic Life Support", chapterFile: "c4-1", chapterGroup: "resus" },
-        { id: "c4-2", shortTitle: "4.2 Pediatric BLS", title: "Pediatric Basic Life Support", chapterFile: "c4-2", chapterGroup: "resus" },
-        { id: "c4-3", shortTitle: "4.3 Adult Cardiac Arrest", title: "Adult Cardiac Arrest", chapterFile: "c4-3", chapterGroup: "resus" },
-        { id: "c4-4", shortTitle: "4.4 Pediatric Cardiac Arrest", title: "Pediatric Cardiac Arrest", chapterFile: "c4-4", chapterGroup: "resus" },
-        { id: "c4-5", shortTitle: "4.5 Trauma Cardiac Arrest", title: "Cardiac Arrest in Trauma", chapterFile: "c4-5", chapterGroup: "resus" },
-        { id: "c4-6", shortTitle: "4.6 Newborn Resuscitation", title: "Newborn (<4 weeks) and Pre‑term Infant Resuscitation", chapterFile: "c4-6", chapterGroup: "resus" },
-        { id: "c4-7", shortTitle: "4.7 Post-ROSC", title: "Post Cardiac Arrest Care (ROSC)", chapterFile: "c4-7", chapterGroup: "resus" },
-        { id: "c4-8", shortTitle: "4.8 Starting/Stopping CPR", title: "Starting, Stopping and Transferring CPR", chapterFile: "c4-8", chapterGroup: "resus" },
-        { id: "c4-9", shortTitle: "4.9 Verification of Death", title: "Verification of Death", chapterFile: "c4-9", chapterGroup: "resus" },
-
-        // Neurological
-        { id: "c5-1", shortTitle: "5.1 Stroke", title: "Stroke", chapterFile: "c5-1", chapterGroup: "neuro" },
-        { id: "c5-2", shortTitle: "5.2 Seizures", title: "Seizures", chapterFile: "c5-2", chapterGroup: "neuro" },
-
-        // General Medical
-        { id: "c6-1", shortTitle: "6.1 Abdominal Pain", title: "Abdominal Pain", chapterFile: "c6-1", chapterGroup: "medical" },
-        { id: "c6-2", shortTitle: "6.2 Abnormal Behavior", title: "Abnormal Behavior", chapterFile: "c6-2", chapterGroup: "medical" },
-        { id: "c6-3", shortTitle: "6.3 Adrenal Insufficiency", title: "Adrenal Insufficiency", chapterFile: "c6-3", chapterGroup: "medical" },
-        { id: "c6-4", shortTitle: "6.4 Anaphylaxis", title: "Anaphylaxis / Allergic Reaction", chapterFile: "c6-4", chapterGroup: "medical" },
-        { id: "c6-5", shortTitle: "6.5 Altered Mental Status", title: "Altered Mental Status", chapterFile: "c6-5", chapterGroup: "medical" },
-        { id: "c6-6", shortTitle: "6.6 Epistaxis", title: "Epistaxis", chapterFile: "c6-6", chapterGroup: "medical" },
-        { id: "c6-7", shortTitle: "6.7 Fever and Sepsis", title: "Fever and Sepsis", chapterFile: "c6-7", chapterGroup: "medical" },
-        { id: "c6-8", shortTitle: "6.8 Hypoglycemia", title: "Hypoglycemia", chapterFile: "c6-8", chapterGroup: "medical" },
-        { id: "c6-9", shortTitle: "6.9 Hyperglycemia", title: "Hyperglycemia", chapterFile: "c6-9", chapterGroup: "medical" },
-        { id: "c6-10", shortTitle: "6.10 Nausea and Vomiting", title: "Nausea and Vomiting", chapterFile: "c6-10", chapterGroup: "medical" },
-        { id: "c6-11", shortTitle: "6.11 Non‑Traumatic Shock", title: "Non‑Traumatic Shock", chapterFile: "c6-11", chapterGroup: "medical" },
-        { id: "c6-12", shortTitle: "6.12 Pain Management", title: "Pain Management", chapterFile: "c6-12", chapterGroup: "medical" },
-        { id: "c6-13", shortTitle: "6.13 Sickle Cell Crisis", title: "Sickle Cell Crisis", chapterFile: "c6-13", chapterGroup: "medical" },
-        { id: "c6-14", shortTitle: "6.14 Alcohol Intoxication", title: "Suspected Alcohol Intoxication", chapterFile: "c6-14", chapterGroup: "medical" },
-
-        // Trauma
-        { id: "c7-1", shortTitle: "7.1 General Trauma", title: "General Trauma Management", chapterFile: "c7-1", chapterGroup: "trauma" },
-        { id: "c7-2", shortTitle: "7.2 Burns", title: "Burns", chapterFile: "c7-2", chapterGroup: "trauma" },
-        { id: "c7-3", shortTitle: "7.3 Crush Injuries", title: "Crush Injuries", chapterFile: "c7-3", chapterGroup: "trauma" },
-        { id: "c7-4", shortTitle: "7.4 Limb Injuries", title: "Limb Injuries", chapterFile: "c7-4", chapterGroup: "trauma" },
-        { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", chapterFile: "c7-5", chapterGroup: "trauma" },
-        { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", chapterFile: "c7-6", chapterGroup: "trauma" },
-
-        // Environmental
-        { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", chapterFile: "c8-1", chapterGroup: "environmental" },
-        { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", chapterFile: "c8-2", chapterGroup: "environmental" },
-        { id: "c8-3", shortTitle: "8.3 Beta‑Blocker Overdose", title: "Beta‑Blocker Overdose", chapterFile: "c8-3", chapterGroup: "environmental" },
-        { id: "c8-4", shortTitle: "8.4 CCB Overdose", title: "Calcium Channel Blocker Overdose", chapterFile: "c8-4", chapterGroup: "environmental" },
-        { id: "c8-5", shortTitle: "8.5 Organophosphate", title: "Organophosphate Poisoning", chapterFile: "c8-5", chapterGroup: "environmental" },
-        { id: "c8-6", shortTitle: "8.6 Diving Emergencies", title: "Diving (SCUBA) Emergencies", chapterFile: "c8-6", chapterGroup: "environmental" },
-        { id: "c8-7", shortTitle: "8.7 Drowning", title: "Drowning / Near Drowning", chapterFile: "c8-7", chapterGroup: "environmental" },
-        { id: "c8-8", shortTitle: "8.8 Envenomation", title: "Envenomation", chapterFile: "c8-8", chapterGroup: "environmental" },
-        { id: "c8-9", shortTitle: "8.9 Hypothermia", title: "Hypothermia / Cold Exposure", chapterFile: "c8-9", chapterGroup: "environmental" },
-        { id: "c8-10", shortTitle: "8.10 Hyperthermia", title: "Hyperthermia / Heat Exposure", chapterFile: "c8-10", chapterGroup: "environmental" },
-
-        // Pediatric
-        { id: "c9-1", shortTitle: "9.1 Croup", title: "Croup", chapterFile: "c9-1", chapterGroup: "pediatric" },
-        { id: "c9-2", shortTitle: "9.2 Pediatric Bradycardia", title: "Pediatric Bradycardia", chapterFile: "c9-2", chapterGroup: "pediatric" },
-        { id: "c9-3", shortTitle: "9.3 Pediatric Tachycardia", title: "Pediatric Tachycardia", chapterFile: "c9-3", chapterGroup: "pediatric" },
-
-        // Obstetrics
-        { id: "c10-1", shortTitle: "10.1 Childbirth", title: "Childbirth", chapterFile: "c10-1", chapterGroup: "obstetric" },
-        { id: "c10-2", shortTitle: "10.2 Post Partum Hemorrhage", title: "Post Partum Hemorrhage", chapterFile: "c10-2", chapterGroup: "obstetric" },
-        { id: "c10-3", shortTitle: "10.3 PV Hemorrhage", title: "PV Hemorrhage in Pregnancy", chapterFile: "c10-3", chapterGroup: "obstetric" },
-        { id: "c10-4", shortTitle: "10.4 Eclampsia", title: "Eclampsia / Pre‑eclampsia", chapterFile: "c10-4", chapterGroup: "obstetric" },
-
-        // Major Incident Triage
-        { id: "c11-1", shortTitle: "11.1 START Triage", title: "S.T.A.R.T Triage (MCI Triage)", chapterFile: "c11-1", chapterGroup: "mci" },
-
-        // Scope & Medications
-        { id: "s1", shortTitle: "S1 Scope of Practice", title: "Scope of Practice Matrix", chapterFile: "s1", chapterGroup: "scope" },
-        { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", chapterFile: "m1-38", chapterGroup: "scope" }
+        { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive Ventilation", chapterFile: "c2", sectionParam: "c2s5", chapterGroup: "airway" }
     ];
 
-    // Group chapters by category
     const categories = {
-        "universal": { name: "🛡️ Universal Care", color: "var(--accent-universal)" },
-        "airway": { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" },
-        "cardio": { name: "❤️ Cardiovascular", color: "var(--accent-cardio)" },
-        "resus": { name: "🔄 Resuscitation", color: "var(--accent-resus)" },
-        "neuro": { name: "🧠 Neurological", color: "var(--accent-neuro)" },
-        "medical": { name: "📋 General Medical", color: "var(--accent-medical)" },
-        "trauma": { name: "🩻 Trauma", color: "var(--accent-trauma)" },
-        "environmental": { name: "🌡️ Environmental", color: "var(--accent-environmental)" },
-        "pediatric": { name: "👶 Pediatric", color: "var(--accent-pediatric)" },
-        "obstetric": { name: "🤰 Obstetrics & Gynecology", color: "var(--accent-obstetric)" },
-        "mci": { name: "🚨 Major Incident Triage", color: "var(--accent-mci)" },
-        "scope": { name: "📘 Scope & Medications", color: "var(--accent-scope)" }
+        universal: { name: "🛡️ Universal Care", color: "var(--accent-universal)" },
+        airway: { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" }
     };
 
     let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
 
-    // ----- SEARCH BAR (icon inside, clear button inside) -----
     html += `
-        <div class="index-search-wrapper" style="display: flex; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; padding: 4px 4px 4px 16px; margin-bottom: 24px; backdrop-filter: blur(10px); box-shadow: var(--glass-shadow);">
-            <span style="font-size: 1.2rem; color: var(--text-secondary); margin-right: 8px;">🔍</span>
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex: 1; background: transparent; border: none; padding: 12px 0; font-size: 1rem; color: var(--text-primary); outline: none;">
-            <button id="indexSearchClearBtn" style="display: none; background: transparent; border: none; width: 32px; height: 32px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; margin-right: 4px;">✕</button>
+        <div class="index-search-wrapper" style="display:flex;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:40px;padding:4px 4px 4px 16px;margin-bottom:24px;backdrop-filter:blur(10px);box-shadow:var(--glass-shadow);">
+            <span style="font-size:1.2rem;color:var(--text-secondary);margin-right:8px;">🔍</span>
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex:1;background:transparent;border:none;padding:12px 0;font-size:1rem;color:var(--text-primary);outline:none;">
+            <button id="indexSearchClearBtn" style="display:none;background:transparent;border:none;width:32px;height:32px;border-radius:50%;align-items:center;justify-content:center;font-size:1rem;color:var(--text-secondary);cursor:pointer;margin-right:4px;">✕</button>
         </div>
         <div id="indexTableContainer">
     `;
 
     for (let group in categories) {
         const groupChapters = CHAPTERS.filter(ch => ch.chapterGroup === group);
-        if (groupChapters.length === 0) continue;
+        if (!groupChapters.length) continue;
 
-        html += `<h4 style="color: ${categories[group].color};">${categories[group].name}</h4>`;
-        html += `<table class="index-table" style="width: 100%; border-collapse: collapse;">`;
+        html += `<h4 class="index-category" data-group="${group}" style="color:${categories[group].color};margin-top:20px;">${categories[group].name}</h4>`;
+        html += `<table class="index-table" data-group="${group}" style="width:100%;border-collapse:collapse;">`;
 
         groupChapters.forEach(ch => {
             const baseFile = ch.chapterFile || ch.id;
             const sectionParam = ch.sectionParam ? `&section=${ch.sectionParam}` : '';
             const link = `${baseFile}.html?view=summary${sectionParam}`;
+
             html += `
-                <tr>
-                    <td><a href="${link}" class="index-topic-link" style="display: block; padding: 10px 0; font-weight: 500; font-size: 1.05rem; color: var(--text-primary); text-decoration: none; transition: color 0.2s, padding-left 0.2s;">${ch.shortTitle}</a></td>
+                <tr class="index-row" data-title="${(ch.shortTitle + ' ' + ch.title).toLowerCase()}">
+                    <td>
+                        <a href="${link}" class="index-topic-link" style="display:block;padding:10px 0;font-weight:500;font-size:1.05rem;color:var(--text-primary);text-decoration:none;">
+                            ${ch.shortTitle}
+                        </a>
+                    </td>
                 </tr>
             `;
         });
+
         html += `</table>`;
     }
 
-    html += `</div>`; // close indexTableContainer
-    html += `</div>`; // close sum-card
+    html += `</div></div>`;
 
-    // ----- Add search filter script -----
-    html += `
-    <style>
-        .index-table tr.filtered-out {
-            display: none !important;
-        }
-        .index-table mark {
-            background: #ffeb3b;
-            color: #000;
-            padding: 2px 0;
-            border-radius: 2px;
-        }
-    </style>
-    <script>
-        (function() {
-            function initIndexSearch() {
-                const input = document.getElementById('indexSearchInput');
-                const clearBtn = document.getElementById('indexSearchClearBtn');
-                const container = document.getElementById('indexTableContainer');
-                if (!input || !container) return;
+    // Delay script so DOM exists
+    setTimeout(() => {
+        const input = document.getElementById('indexSearchInput');
+        const clearBtn = document.getElementById('indexSearchClearBtn');
 
-                // Get all rows
-                const rows = container.querySelectorAll('.index-table tr');
-                const links = container.querySelectorAll('.index-topic-link');
+        if (!input) return;
 
-                // Store original text for each link
-                links.forEach(link => {
-                    if (!link.getAttribute('data-original')) {
-                        link.setAttribute('data-original', link.textContent);
-                    }
-                });
+        function filterIndex() {
+            const query = input.value.trim().toLowerCase();
+            const rows = document.querySelectorAll('.index-row');
+            const categories = document.querySelectorAll('.index-category');
+            const tables = document.querySelectorAll('.index-table');
 
-                function filterRows(text) {
-                    const lowerText = text.toLowerCase().trim();
+            clearBtn.style.display = query ? 'flex' : 'none';
 
-                    rows.forEach(row => {
-                        const link = row.querySelector('.index-topic-link');
-                        if (!link) return;
+            rows.forEach(row => {
+                const title = row.getAttribute('data-title');
+                const match = title.includes(query);
+                row.style.display = match ? '' : 'none';
+            });
 
-                        const originalText = link.getAttribute('data-original') || link.textContent;
-                        const rowText = originalText.toLowerCase();
-
-                        if (rowText.includes(lowerText)) {
-                            row.classList.remove('filtered-out');
-                            if (lowerText) {
-                                const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-                                link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-                            } else {
-                                link.innerHTML = originalText;
-                            }
-                        } else {
-                            row.classList.add('filtered-out');
-                            link.innerHTML = originalText;
-                        }
-                    });
+            tables.forEach(table => {
+                const visibleRows = table.querySelectorAll('.index-row:not([style*="display: none"])');
+                const group = table.getAttribute('data-group');
+                const header = document.querySelector(`.index-category[data-group="${group}"]`);
+                if (visibleRows.length === 0) {
+                    table.style.display = 'none';
+                    if (header) header.style.display = 'none';
+                } else {
+                    table.style.display = '';
+                    if (header) header.style.display = '';
                 }
+            });
+        }
 
-                // Event listener for input
-                input.addEventListener('input', function(e) {
-                    const val = e.target.value;
-                    clearBtn.style.display = val ? 'flex' : 'none';
-                    filterRows(val);
-                });
+        input.addEventListener('input', filterIndex);
 
-                // Clear button
-                clearBtn.addEventListener('click', function() {
-                    input.value = '';
-                    clearBtn.style.display = 'none';
-                    filterRows('');
-                });
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            filterIndex();
+            input.focus();
+        });
 
-                // Initial state
-                filterRows('');
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initIndexSearch);
-            } else {
-                setTimeout(initIndexSearch, 100);
-            }
-        })();
-    </script>
-    `;
+    }, 50);
 
     return html;
 }
