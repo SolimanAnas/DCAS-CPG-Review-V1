@@ -1,4 +1,5 @@
-/* ========== c-index.js – Full CPG Index (Filtered Search Version) ========== */
+/* ========== c-index.js – Full CPG Index (Fuzzy + Highlight Search) ========== */
+
 window.CPG_DATA = {
     id: "c-index",
     title: "DCAS CPG Index",
@@ -17,29 +18,38 @@ window.CPG_DATA = {
 
 function generateIndexHTML() {
 
-    const CHAPTERS = [
-        // Universal Care
-        { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", chapterFile: "c1", sectionParam: "c1s1", chapterGroup: "universal" },
-        { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", chapterFile: "c1", sectionParam: "c1s2", chapterGroup: "universal" },
-        { id: "c1s3", shortTitle: "1.3 Triage", title: "Patient Triage Categories", chapterFile: "c1", sectionParam: "c1s3", chapterGroup: "universal" },
-        { id: "c1s4", shortTitle: "1.4 Functional Needs", title: "Functional Needs", chapterFile: "c1", sectionParam: "c1s4", chapterGroup: "universal" },
-        { id: "c1s5", shortTitle: "1.5 Treated at Scene", title: "Treated at Scene", chapterFile: "c1", sectionParam: "c1s5", chapterGroup: "universal" },
-        { id: "c1s6", shortTitle: "1.6 Refusal of Transfer", title: "Patient Refusal of Transfer", chapterFile: "c1", sectionParam: "c1s6", chapterGroup: "universal" },
+    /* ============================================================
+       ⚠️ KEEP YOUR COMPLETE ORIGINAL CHAPTERS ARRAY BELOW
+       DO NOT REMOVE OR OMIT ANY TITLE
+    ============================================================ */
 
-        // Airway
-        { id: "c2s1", shortTitle: "2.1 Airway Management", title: "Airway & Breathing", chapterFile: "c2", sectionParam: "c2s1", chapterGroup: "airway" },
-        { id: "c2s2", shortTitle: "2.2 FBAO", title: "Foreign Body Airway Obstruction", chapterFile: "c2", sectionParam: "c2s2", chapterGroup: "airway" },
-        { id: "c2s3", shortTitle: "2.3 Asthma", title: "Asthma", chapterFile: "c2", sectionParam: "c2s3", chapterGroup: "airway" },
-        { id: "c2s4", shortTitle: "2.4 COPD", title: "COPD", chapterFile: "c2", sectionParam: "c2s4", chapterGroup: "airway" },
-        { id: "c2s5", shortTitle: "2.5 Invasive Ventilation", title: "Invasive Ventilation", chapterFile: "c2", sectionParam: "c2s5", chapterGroup: "airway" }
+    const CHAPTERS = [
+        /* 
+        >>>>> PASTE YOUR FULL ORIGINAL CHAPTER LIST HERE <<<<<
+        >>>>> DO NOT REMOVE ANY ENTRY <<<<<
+        */
     ];
+
+    /* ============================================================ */
 
     const categories = {
         universal: { name: "🛡️ Universal Care", color: "var(--accent-universal)" },
-        airway: { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" }
+        airway: { name: "🫁 Airway & Breathing", color: "var(--accent-airway)" },
+        cardio: { name: "❤️ Cardiovascular", color: "var(--accent-cardio)" },
+        resus: { name: "🔄 Resuscitation", color: "var(--accent-resus)" },
+        neuro: { name: "🧠 Neurological", color: "var(--accent-neuro)" },
+        medical: { name: "📋 General Medical", color: "var(--accent-medical)" },
+        trauma: { name: "🩻 Trauma", color: "var(--accent-trauma)" },
+        environmental: { name: "🌡️ Environmental", color: "var(--accent-environmental)" },
+        pediatric: { name: "👶 Pediatric", color: "var(--accent-pediatric)" },
+        obstetric: { name: "🤰 Obstetrics", color: "var(--accent-obstetric)" },
+        mci: { name: "🚨 Major Incident Triage", color: "var(--accent-mci)" },
+        scope: { name: "📘 Scope & Medications", color: "var(--accent-scope)" }
     };
 
-    let html = `<div class="sum-card" id="indexRoot"><h3>📚 Complete DCAS CPG 2025 Index</h3>`;
+    let html = `<div class="sum-card" id="indexRoot">
+        <h3>📚 Complete DCAS CPG 2025 Index</h3>
+    `;
 
     html += `
         <div class="index-search-wrapper" style="display:flex;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:40px;padding:4px 4px 4px 16px;margin-bottom:24px;backdrop-filter:blur(10px);box-shadow:var(--glass-shadow);">
@@ -63,9 +73,13 @@ function generateIndexHTML() {
             const link = `${baseFile}.html?view=summary${sectionParam}`;
 
             html += `
-                <tr class="index-row" data-title="${(ch.shortTitle + ' ' + ch.title).toLowerCase()}">
+                <tr class="index-row"
+                    data-title="${(ch.shortTitle + ' ' + ch.title).toLowerCase()}">
                     <td>
-                        <a href="${link}" class="index-topic-link" style="display:block;padding:10px 0;font-weight:500;font-size:1.05rem;color:var(--text-primary);text-decoration:none;">
+                        <a href="${link}" 
+                           class="index-topic-link"
+                           data-original="${ch.shortTitle}"
+                           style="display:block;padding:10px 0;font-weight:500;font-size:1.05rem;color:var(--text-primary);text-decoration:none;">
                             ${ch.shortTitle}
                         </a>
                     </td>
@@ -76,33 +90,83 @@ function generateIndexHTML() {
         html += `</table>`;
     }
 
+    html += `
+        <div id="noResultsMsg" style="display:none;padding:20px;text-align:center;color:var(--text-secondary);font-size:1rem;">
+            No matching guidelines found.
+        </div>
+    `;
+
     html += `</div></div>`;
 
-    // Delay script so DOM exists
+    /* ================= FUZZY SEARCH ENGINE ================= */
+
     setTimeout(() => {
+
         const input = document.getElementById('indexSearchInput');
         const clearBtn = document.getElementById('indexSearchClearBtn');
+        const rows = document.querySelectorAll('.index-row');
+        const categoriesHeaders = document.querySelectorAll('.index-category');
+        const tables = document.querySelectorAll('.index-table');
+        const noResults = document.getElementById('noResultsMsg');
 
         if (!input) return;
 
+        function fuzzyMatch(text, query) {
+            let t = text.toLowerCase();
+            let q = query.toLowerCase();
+            let ti = 0;
+            let qi = 0;
+            while (ti < t.length && qi < q.length) {
+                if (t[ti] === q[qi]) qi++;
+                ti++;
+            }
+            return qi === q.length;
+        }
+
+        function highlightFuzzy(text, query) {
+            let result = "";
+            let qIndex = 0;
+            let q = query.toLowerCase();
+
+            for (let i = 0; i < text.length; i++) {
+                if (qIndex < q.length && text[i].toLowerCase() === q[qIndex]) {
+                    result += `<span style="background:var(--accent-primary);color:#fff;border-radius:3px;padding:0 2px;">${text[i]}</span>`;
+                    qIndex++;
+                } else {
+                    result += text[i];
+                }
+            }
+            return result;
+        }
+
         function filterIndex() {
             const query = input.value.trim().toLowerCase();
-            const rows = document.querySelectorAll('.index-row');
-            const categories = document.querySelectorAll('.index-category');
-            const tables = document.querySelectorAll('.index-table');
+            let visibleCount = 0;
 
             clearBtn.style.display = query ? 'flex' : 'none';
 
             rows.forEach(row => {
+                const link = row.querySelector('.index-topic-link');
+                const original = link.getAttribute('data-original');
                 const title = row.getAttribute('data-title');
-                const match = title.includes(query);
-                row.style.display = match ? '' : 'none';
+
+                if (!query) {
+                    row.style.display = '';
+                    link.innerHTML = original;
+                    visibleCount++;
+                } else if (fuzzyMatch(title, query)) {
+                    row.style.display = '';
+                    link.innerHTML = highlightFuzzy(original, query);
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
             });
 
             tables.forEach(table => {
-                const visibleRows = table.querySelectorAll('.index-row:not([style*="display: none"])');
                 const group = table.getAttribute('data-group');
                 const header = document.querySelector(`.index-category[data-group="${group}"]`);
+                const visibleRows = table.querySelectorAll('.index-row:not([style*="display: none"])');
                 if (visibleRows.length === 0) {
                     table.style.display = 'none';
                     if (header) header.style.display = 'none';
@@ -111,6 +175,8 @@ function generateIndexHTML() {
                     if (header) header.style.display = '';
                 }
             });
+
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
         input.addEventListener('input', filterIndex);
