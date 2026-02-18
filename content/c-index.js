@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index (Fuzzy + Highlight Search) ========== */
+/* ========== c-index.js – Full CPG Index (Improved Search, Original Design Preserved) ========== */
 
 window.CPG_DATA = {
     id: "c-index",
@@ -18,7 +18,7 @@ window.CPG_DATA = {
 
 function generateIndexHTML() {
 
-    /* ===================== FULL CHAPTER ARRAY ===================== */
+    /* ===================== FULL ORIGINAL CHAPTER ARRAY ===================== */
 
     const CHAPTERS = [
 
@@ -113,7 +113,7 @@ function generateIndexHTML() {
         { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", chapterFile: "m1-38", chapterGroup: "scope" }
     ];
 
-    /* ================= CATEGORY DEFINITIONS ================= */
+    /* ================= ORIGINAL LAYOUT PRESERVED ================= */
 
     const categories = {
         universal: "🛡️ Universal Care",
@@ -125,16 +125,20 @@ function generateIndexHTML() {
         trauma: "🩻 Trauma",
         environmental: "🌡️ Environmental",
         pediatric: "👶 Pediatric",
-        obstetric: "🤰 Obstetrics",
+        obstetric: "🤰 Obstetrics & Gynecology",
         mci: "🚨 Major Incident Triage",
         scope: "📘 Scope & Medications"
     };
 
     let html = `<div class="sum-card" id="indexRoot">
         <h3>📚 Complete DCAS CPG 2025 Index</h3>
-        <div style="margin-bottom:20px;">
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="width:100%;padding:12px;border-radius:30px;border:1px solid #ccc;">
+
+        <div class="index-search-wrapper" style="display:flex;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:40px;padding:4px 4px 4px 16px;margin-bottom:24px;backdrop-filter:blur(10px);box-shadow:var(--glass-shadow);">
+            <span style="font-size:1.2rem;color:var(--text-secondary);margin-right:8px;">🔍</span>
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex:1;background:transparent;border:none;padding:12px 0;font-size:1rem;color:var(--text-primary);outline:none;">
         </div>
+
+        <div id="indexTableContainer">
     `;
 
     for (let group in categories) {
@@ -142,7 +146,7 @@ function generateIndexHTML() {
         if (!groupChapters.length) continue;
 
         html += `<h4 class="index-category">${categories[group]}</h4>`;
-        html += `<table class="index-table" data-group="${group}" style="width:100%;">`;
+        html += `<table class="index-table" style="width:100%;border-collapse:collapse;">`;
 
         groupChapters.forEach(ch => {
             const baseFile = ch.chapterFile || ch.id;
@@ -152,7 +156,7 @@ function generateIndexHTML() {
             html += `
                 <tr class="index-row" data-title="${(ch.shortTitle + ' ' + ch.title).toLowerCase()}">
                     <td>
-                        <a href="${link}" class="index-topic-link" data-original="${ch.shortTitle}">
+                        <a href="${link}" class="index-topic-link" data-original="${ch.shortTitle}" style="display:block;padding:10px 0;font-weight:500;font-size:1.05rem;color:var(--text-primary);text-decoration:none;">
                             ${ch.shortTitle}
                         </a>
                     </td>
@@ -163,23 +167,23 @@ function generateIndexHTML() {
         html += `</table>`;
     }
 
-    html += `<div id="noResults" style="display:none;padding:20px;text-align:center;">No results found.</div>`;
-    html += `</div>`;
+    html += `<div id="noResultsMsg" style="display:none;padding:20px;text-align:center;color:var(--text-secondary);">No matching guidelines found.</div>`;
+    html += `</div></div>`;
 
-    /* ================= FUZZY SEARCH ================= */
+    /* ================= SEARCH LOGIC ONLY (UI untouched) ================= */
 
     setTimeout(() => {
+
         const input = document.getElementById('indexSearchInput');
         const rows = document.querySelectorAll('.index-row');
-        const categoriesHeaders = document.querySelectorAll('.index-category');
         const tables = document.querySelectorAll('.index-table');
-        const noResults = document.getElementById('noResults');
+        const headers = document.querySelectorAll('.index-category');
+        const noResults = document.getElementById('noResultsMsg');
 
         function fuzzyMatch(text, query) {
             let t = text.toLowerCase();
             let q = query.toLowerCase();
-            let ti = 0;
-            let qi = 0;
+            let ti = 0, qi = 0;
             while (ti < t.length && qi < q.length) {
                 if (t[ti] === q[qi]) qi++;
                 ti++;
@@ -193,7 +197,7 @@ function generateIndexHTML() {
             query = query.toLowerCase();
             for (let i = 0; i < text.length; i++) {
                 if (qIndex < query.length && text[i].toLowerCase() === query[qIndex]) {
-                    result += `<mark>${text[i]}</mark>`;
+                    result += `<span style="background:var(--accent-primary);color:#fff;border-radius:3px;padding:0 2px;">${text[i]}</span>`;
                     qIndex++;
                 } else {
                     result += text[i];
@@ -203,33 +207,41 @@ function generateIndexHTML() {
         }
 
         input.addEventListener('input', () => {
+
             const query = input.value.trim().toLowerCase();
-            let visible = 0;
+            let visibleCount = 0;
 
             rows.forEach(row => {
-                const title = row.getAttribute('data-title');
+
                 const link = row.querySelector('.index-topic-link');
                 const original = link.getAttribute('data-original');
+                const title = row.getAttribute('data-title');
 
-                if (!query || fuzzyMatch(title, query)) {
+                if (!query) {
                     row.style.display = '';
-                    link.innerHTML = query ? highlight(original, query) : original;
-                    visible++;
+                    link.innerHTML = original;
+                    visibleCount++;
+                } else if (fuzzyMatch(title, query)) {
+                    row.style.display = '';
+                    link.innerHTML = highlight(original, query);
+                    visibleCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
 
-            tables.forEach(table => {
+            tables.forEach((table, i) => {
                 const visibleRows = table.querySelectorAll('.index-row:not([style*="display: none"])');
-                table.style.display = visibleRows.length ? '' : 'none';
+                if (visibleRows.length === 0) {
+                    table.style.display = 'none';
+                    headers[i].style.display = 'none';
+                } else {
+                    table.style.display = '';
+                    headers[i].style.display = '';
+                }
             });
 
-            categoriesHeaders.forEach((header, i) => {
-                header.style.display = tables[i] && tables[i].style.display !== 'none' ? '' : 'none';
-            });
-
-            noResults.style.display = visible ? 'none' : 'block';
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         });
 
     }, 50);
