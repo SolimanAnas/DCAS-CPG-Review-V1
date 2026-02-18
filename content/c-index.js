@@ -1,4 +1,4 @@
-/* ========== c-index.js – Full CPG Index (Improved Search, Original Design Preserved) ========== */
+/* ========== c-index.js – Full CPG Index (Improved Appearance) ========== */
 
 window.CPG_DATA = {
     id: "c-index",
@@ -19,9 +19,7 @@ window.CPG_DATA = {
 function generateIndexHTML() {
 
     /* ===================== FULL ORIGINAL CHAPTER ARRAY ===================== */
-
     const CHAPTERS = [
-
         // Universal Care
         { id: "c1s1", shortTitle: "1.1 Universal Care", title: "Universal Care – Core Assessment", chapterFile: "c1", sectionParam: "c1s1", chapterGroup: "universal" },
         { id: "c1s2", shortTitle: "1.2 Documentation", title: "Patient Care Documentation", chapterFile: "c1", sectionParam: "c1s2", chapterGroup: "universal" },
@@ -82,7 +80,7 @@ function generateIndexHTML() {
         { id: "c7-5", shortTitle: "7.5 Spinal Motion Restriction", title: "Spinal Motion Restriction", chapterFile: "c7-5", chapterGroup: "trauma" },
         { id: "c7-6", shortTitle: "7.6 Traumatic Brain Injury", title: "Traumatic Brain Injuries", chapterFile: "c7-6", chapterGroup: "trauma" },
 
-        // Environmental & Toxicology
+        // Environmental
         { id: "c8-1", shortTitle: "8.1 General Toxicology", title: "General Toxicology Management", chapterFile: "c8-1", chapterGroup: "environmental" },
         { id: "c8-2", shortTitle: "8.2 Opioid Overdose", title: "Opioid Overdose", chapterFile: "c8-2", chapterGroup: "environmental" },
         { id: "c8-3", shortTitle: "8.3 Beta-Blocker Overdose", title: "Beta-Blocker Overdose", chapterFile: "c8-3", chapterGroup: "environmental" },
@@ -113,8 +111,7 @@ function generateIndexHTML() {
         { id: "m1-38", shortTitle: "M1–38 Formulary", title: "Medication Formulary (38 drugs)", chapterFile: "m1-38", chapterGroup: "scope" }
     ];
 
-    /* ================= ORIGINAL LAYOUT PRESERVED ================= */
-
+    /* ================= ORIGINAL LAYOUT – ENHANCED VISUALS ================= */
     const categories = {
         universal: "🛡️ Universal Care",
         airway: "🫁 Airway & Breathing",
@@ -133,9 +130,11 @@ function generateIndexHTML() {
     let html = `<div class="sum-card" id="indexRoot">
         <h3>📚 Complete DCAS CPG 2025 Index</h3>
 
-        <div class="index-search-wrapper" style="display:flex;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:40px;padding:4px 4px 4px 16px;margin-bottom:24px;backdrop-filter:blur(10px);box-shadow:var(--glass-shadow);">
-            <span style="font-size:1.2rem;color:var(--text-secondary);margin-right:8px;">🔍</span>
-            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." style="flex:1;background:transparent;border:none;padding:12px 0;font-size:1rem;color:var(--text-primary);outline:none;">
+        <!-- Search bar – glassy, icon inside, clear button inside -->
+        <div class="search-container" style="margin-bottom: 24px;">
+            <span>🔍</span>
+            <input type="text" id="indexSearchInput" placeholder="Search guidelines..." value="">
+            <button id="indexSearchClearBtn" style="display: none;">✕</button>
         </div>
 
         <div id="indexTableContainer">
@@ -145,8 +144,8 @@ function generateIndexHTML() {
         const groupChapters = CHAPTERS.filter(ch => ch.chapterGroup === group);
         if (!groupChapters.length) continue;
 
-        html += `<h4 class="index-category">${categories[group]}</h4>`;
-        html += `<table class="index-table" style="width:100%;border-collapse:collapse;">`;
+        html += `<h4 class="index-category" style="color: var(--accent-${group}); margin: 20px 0 10px; font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid currentColor; padding-bottom: 5px;">${categories[group]}</h4>`;
+        html += `<table class="index-table" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">`;
 
         groupChapters.forEach(ch => {
             const baseFile = ch.chapterFile || ch.id;
@@ -156,7 +155,7 @@ function generateIndexHTML() {
             html += `
                 <tr class="index-row" data-title="${(ch.shortTitle + ' ' + ch.title).toLowerCase()}">
                     <td>
-                        <a href="${link}" class="index-topic-link" data-original="${ch.shortTitle}" style="display:block;padding:10px 0;font-weight:500;font-size:1.05rem;color:var(--text-primary);text-decoration:none;">
+                        <a href="${link}" class="index-topic-link" data-original="${ch.shortTitle}" style="display: block; padding: 12px 0; font-weight: 500; font-size: 1.05rem; color: var(--text-primary); text-decoration: none; border-bottom: 1px solid rgba(128, 128, 128, 0.15); transition: color 0.2s, padding-left 0.2s, background 0.2s;">
                             ${ch.shortTitle}
                         </a>
                     </td>
@@ -167,14 +166,13 @@ function generateIndexHTML() {
         html += `</table>`;
     }
 
-    html += `<div id="noResultsMsg" style="display:none;padding:20px;text-align:center;color:var(--text-secondary);">No matching guidelines found.</div>`;
+    html += `<div id="noResultsMsg" style="display: none; padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; background: var(--glass-bg); border-radius: 16px; border: 1px dashed var(--glass-border);">No matching guidelines found.</div>`;
     html += `</div></div>`;
 
-    /* ================= SEARCH LOGIC ONLY (UI untouched) ================= */
-
+    /* ================= SEARCH LOGIC (EXACTLY AS ORIGINAL) ================= */
     setTimeout(() => {
-
         const input = document.getElementById('indexSearchInput');
+        const clearBtn = document.getElementById('indexSearchClearBtn');
         const rows = document.querySelectorAll('.index-row');
         const tables = document.querySelectorAll('.index-table');
         const headers = document.querySelectorAll('.index-category');
@@ -197,7 +195,7 @@ function generateIndexHTML() {
             query = query.toLowerCase();
             for (let i = 0; i < text.length; i++) {
                 if (qIndex < query.length && text[i].toLowerCase() === query[qIndex]) {
-                    result += `<span style="background:var(--accent-primary);color:#fff;border-radius:3px;padding:0 2px;">${text[i]}</span>`;
+                    result += `<span style="background: var(--primary-accent); color: #fff; border-radius: 3px; padding: 0 2px;">${text[i]}</span>`;
                     qIndex++;
                 } else {
                     result += text[i];
@@ -207,12 +205,12 @@ function generateIndexHTML() {
         }
 
         input.addEventListener('input', () => {
-
-            const query = input.value.trim().toLowerCase();
+            const query = input.value.trim();
+            clearBtn.style.display = query ? 'flex' : 'none';
+            const lowerQuery = query.toLowerCase();
             let visibleCount = 0;
 
             rows.forEach(row => {
-
                 const link = row.querySelector('.index-topic-link');
                 const original = link.getAttribute('data-original');
                 const title = row.getAttribute('data-title');
@@ -221,7 +219,7 @@ function generateIndexHTML() {
                     row.style.display = '';
                     link.innerHTML = original;
                     visibleCount++;
-                } else if (fuzzyMatch(title, query)) {
+                } else if (fuzzyMatch(title, lowerQuery)) {
                     row.style.display = '';
                     link.innerHTML = highlight(original, query);
                     visibleCount++;
@@ -234,16 +232,21 @@ function generateIndexHTML() {
                 const visibleRows = table.querySelectorAll('.index-row:not([style*="display: none"])');
                 if (visibleRows.length === 0) {
                     table.style.display = 'none';
-                    headers[i].style.display = 'none';
+                    if (headers[i]) headers[i].style.display = 'none';
                 } else {
                     table.style.display = '';
-                    headers[i].style.display = '';
+                    if (headers[i]) headers[i].style.display = '';
                 }
             });
 
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         });
 
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            clearBtn.style.display = 'none';
+            input.dispatchEvent(new Event('input'));
+        });
     }, 50);
 
     return html;
