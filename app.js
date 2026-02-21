@@ -50,7 +50,7 @@ let state = {
 if (!state.sections && chapterData) {
     // Create a single virtual section from the chapter's root properties
     state.sections = [{
-        id: chapterData.id,               // use the chapter's own id
+        id: chapterData.id,
         shortTitle: chapterData.shortTitle,
         summary: chapterData.summary || '',
         quiz: chapterData.quiz || [],
@@ -232,7 +232,10 @@ const render = {
         const tabs = renderSectionTabs(section.id);  
         const nav = renderSectionNavigation();  
         
+        // Always show "Back to Chapters" button on chapter pages (including index)
         const showBackButton = true;
+        
+        // Summary is already HTML from data; we need to ensure it's safe, but it's trusted.
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
         
         const html = `  
@@ -251,6 +254,7 @@ const render = {
         updateHeader(utils.escapeHTML(section.shortTitle), 'Summary', true);  
         utils.safeScrollTop();
 
+        // Initialize index search if this is the index chapter
         if (chapterData && chapterData.id === 'c-index') {
             initIndexSearch();
         }
@@ -278,8 +282,10 @@ const render = {
         const tabs = renderSectionTabs(state.activeSectionId);  
         const nav = renderSectionNavigation();  
         
+        // Escape all user‑supplied content
         const category = utils.escapeHTML(card.category || '');
         const question = utils.escapeHTML(card.question);
+        // For answer, escape first, then replace newlines with <br>
         const safeAnswer = utils.escapeHTML(card.answer || '').replace(/\n/g, '<br>');
         
         const html = `  
@@ -336,12 +342,14 @@ const render = {
         const tabs = renderSectionTabs(section.id);  
         const nav = renderSectionNavigation();  
         
+        // Only show size buttons that are <= totalQuestions
         const possibleSizes = [10, 20, 30];
         const sizeButtons = possibleSizes
             .filter(size => size <= totalQuestions)
             .map(size => `<button class="setup-btn" data-quiz-size="${size}">${size} Questions <span>→</span></button>`)
             .join('');
         
+        // Always include "All" button
         const allButton = `<button class="setup-btn challenge" data-quiz-size="${totalQuestions}">All (${totalQuestions}) <span>→</span></button>`;
         
         const buttonsHtml = sizeButtons + allButton;
@@ -373,6 +381,7 @@ const render = {
         }  
         const q = state.quizData[state.qIndex];  
         const progress = `Q ${state.qIndex+1}/${state.quizData.length}`;  
+        // Handle both string and object options
         const optionsHtml = q.options.map((opt, idx) => {
             const optText = typeof opt === 'string' ? opt : opt.t;
             return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
@@ -421,6 +430,7 @@ const render = {
 
     _renderCriticalQuestion: function() {  
         const q = state.criticalData[state.criticalIndex];  
+        // Handle both string and object options
         const optionsHtml = q.options.map((opt, idx) => {
             const optText = typeof opt === 'string' ? opt : opt.t;
             return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
@@ -518,6 +528,7 @@ const render = {
 
 // ---------- INDEX SEARCH INIT (for c-index) ----------
 function initIndexSearch() {
+    // Only run on the index page
     if (!chapterData || chapterData.id !== 'c-index') return;
     
     setTimeout(() => {
@@ -534,12 +545,14 @@ function initIndexSearch() {
                 const link = row.querySelector('a');
                 if (!link) return;
                 const originalText = link.getAttribute('data-original') || link.textContent;
+                // Store original if not already stored
                 if (!link.getAttribute('data-original')) {
                     link.setAttribute('data-original', originalText);
                 }
                 const rowText = originalText.toLowerCase();
                 if (rowText.includes(lowerText)) {
                     row.classList.remove('filtered-out');
+                    // Highlight matching text
                     if (lowerText) {
                         const regex = new RegExp('(' + lowerText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
                         link.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
@@ -553,6 +566,7 @@ function initIndexSearch() {
             });
         }
 
+        // Remove old handlers to avoid duplicates
         input.removeEventListener('input', input._handler);
         clearBtn?.removeEventListener('click', clearBtn._handler);
 
@@ -593,6 +607,7 @@ const quizEngine = {
         if (isCorrect) {  
             state.score++;  
         } else {  
+            // Extract correct answer text (could be string or object)
             const correctAnswer = typeof q.options[q.correct] === 'string' 
                 ? q.options[q.correct] 
                 : q.options[q.correct].t;
@@ -709,31 +724,37 @@ const criticalEngine = {
     }  
 };  
 
-// ---------- WATER RIPPLE EFFECT ----------  
-function createRipple(event) {  
-    const target = event.currentTarget;  
-    const rect = target.getBoundingClientRect();  
-    const x = event.clientX - rect.left;  
-    const y = event.clientY - rect.top;  
-      
-    const ripple = document.createElement('span');  
-    ripple.className = 'ripple';  
-    ripple.style.left = `${x}px`;  
-    ripple.style.top = `${y}px`;  
-    ripple.style.width = ripple.style.height = '20px';  
-    ripple.style.background = 'rgba(255, 255, 255, 0.7)';  
-      
-    target.appendChild(ripple);  
-      
-    setTimeout(() => {  
-        ripple.remove();  
-    }, 600);  
+// ---------- WATER RIPPLE EFFECT (fixed to use target) ----------  
+function createRipple(event, target) {  
+    try {
+        const rect = target.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.width = ripple.style.height = '20px';
+        ripple.style.background = 'rgba(255, 255, 255, 0.7)';
+
+        target.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    } catch (err) {
+        // Silently fail – ripple is non‑essential
+    }
 }  
 
 // ---------- COMPLETE EVENT DELEGATION ----------  
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button');  
     if (!target) return;  
+    
+    // Add ripple effect using the target (the button)
+    createRipple(e, target);
     
     const action = target.dataset.action;
     const sectionNav = target.dataset.sectionNav;
@@ -742,18 +763,16 @@ document.addEventListener('click', function(e) {
     const flashAction = target.dataset.flash;
     const optIndex = target.dataset.optIndex;
     
-    createRipple(e);
-    
+    // Handle navigation
     if (action === 'backHome') {
-        if (window.location.pathname.includes('/chapters/')) {
-            window.location.href = '../index.html';
-        } else {
-            window.location.href = 'index.html';
-        }
+        e.preventDefault(); // prevent any default button behavior
+        // Detect if we are inside the /chapters/ subfolder
+        const isSubfolder = window.location.pathname.includes('/chapters/');
+        window.location.href = isSubfolder ? '../index.html' : 'index.html';
         return;
     }
     
-    if (action === 'viewStats') {
+    if (action === 'stats') {
         render.stats();
         return;
     }
@@ -763,21 +782,27 @@ document.addEventListener('click', function(e) {
         return;
     }
     
+    // Section tab switching
     if (sectionId && target.classList.contains('section-tab')) {
+        e.preventDefault();
         switchSection(sectionId);
         return;
     }
     
+    // Section navigation (prev/next)
     if (sectionNav && sectionId) {
+        e.preventDefault();
         switchSection(sectionId);
         return;
     }
     
+    // Quiz setup
     if (quizSize) {
         quizEngine.init(parseInt(quizSize, 10));
         return;
     }
     
+    // Flashcard navigation
     if (flashAction === 'prev') {
         if (state.fIndex > 0) {
             state.fIndex--;
@@ -794,6 +819,7 @@ document.addEventListener('click', function(e) {
         return;
     }
     
+    // Quiz answer handling
     if (optIndex !== undefined && target.classList.contains('option-btn')) {
         const inQuiz = document.getElementById('quizFeedback') !== null;
         const inCritical = document.getElementById('criticalFeedback') !== null;
@@ -806,6 +832,7 @@ document.addEventListener('click', function(e) {
         return;
     }
     
+    // Next question buttons
     if (target.id === 'nextQuizBtn') {
         quizEngine.next();
         return;
@@ -817,7 +844,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ---------- POPSTATE HANDLER ----------
+// ---------- POPSTATE HANDLER (browser back/forward) ----------  
 window.addEventListener('popstate', function() {
     const sectionId = utils.getQueryParam('section');
     const view = utils.getQueryParam('view') || 'summary';
@@ -831,13 +858,15 @@ window.addEventListener('popstate', function() {
     }
 });
 
-// ---------- INITIALIZE ON PAGE LOAD ----------
+// ---------- INITIALIZE ON PAGE LOAD ----------  
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if chapter data exists
     if (isChapterMissing) {
         renderComingSoon();
         return;
     }
     
+    // Get section from URL or use first section
     const urlSection = utils.getQueryParam('section');
     const urlView = utils.getQueryParam('view') || 'summary';
     
@@ -849,16 +878,19 @@ document.addEventListener('DOMContentLoaded', function() {
             state.flashData = section.flashcards || [];
             state.criticalData = section.critical || [];
             
+            // Render appropriate view
             if (urlView === 'flashcards') render.flashcards();
             else if (urlView === 'quiz') render.quizSetup();
             else if (urlView === 'critical') render.criticalGame();
             else render.summary();
         } else {
+            // Invalid section, use first
             if (state.sections && state.sections.length > 0) {
                 switchSection(state.sections[0].id);
             }
         }
     } else {
+        // No section in URL, use first
         if (state.sections && state.sections.length > 0) {
             switchSection(state.sections[0].id);
         }
