@@ -895,6 +895,7 @@ document.addEventListener('DOMContentLoaded', function() {
             switchSection(state.sections[0].id);
         }
     }
+
 });
 
 })();
