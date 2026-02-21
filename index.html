@@ -1009,6 +1009,14 @@
         if(homeBtn) homeBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
         if(indexBtn) indexBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'chapters/c-index.html?view=summary'; });
 
+        // ---------- 🛑 FIX #3: Stop propagation on toggle clicks to prevent page reload ----------
+        document.addEventListener('click', function(e) {
+            // Check if the click originated from inside the toggle wrapper
+            if (e.target.closest('.toggle-wrapper')) {
+                e.stopPropagation();
+            }
+        }, true); // use capture phase to intercept early
+
         renderMenu();
         updateFloatButtons();
         updateAllProgress();
