@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     
+    <!-- PWA Manifest and icons -->
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
@@ -32,7 +33,7 @@
             <div class="stats-divider"></div>
             <span>🎯 <span id="statsCritical">0%</span></span>
         </div>
-        <a href="c-index.html?view=summary&section=c-index-main" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+        <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
         <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
 </header>
@@ -40,8 +41,8 @@
 <main id="mainContent"></main>
 
 <footer>
-    <div>Created by Soliman Anas · Open Source Project</div>
-    <div><a href="../about.html">Legal & Disclaimer</a> · Not for Clinical Use</div>
+    <div>Created by Soliman Anas · for study aid only</div>
+    <div><a href="../about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
 </footer>
 
 <script src="../content/c3-1.js"></script>
@@ -88,6 +89,7 @@
     })();
 </script>
 
+<!-- Service Worker Registration -->
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
