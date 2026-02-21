@@ -913,3 +913,41 @@ footer a {
         font-size: 1.3rem;
     }
 }
+
+/* ========== ADDED: Remove ugly focus outlines / tap highlights ========== */
+button,
+.icon-btn,
+.control-btn,
+.btn-action,
+.btn-flash,
+.btn-quiz,
+.btn-scenario,
+.setup-btn,
+.download-btn,
+.float-btn,
+.toggle-btn,
+.section-tab,
+.option-btn,
+#nextQuizBtn,
+#nextCriticalBtn,
+[class*="btn"] {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-focus-ring-color: transparent !important;
+    user-select: none; /* optional: prevent text selection on double‑tap */
+}
+
+/* Firefox specific: remove focus ring */
+button::-moz-focus-inner,
+.icon-btn::-moz-focus-inner,
+.control-btn::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+    outline: none;
+}
+
+/* For all focusable elements, you may also want to disable focus-visible */
+:focus-visible {
+    outline: none !important;
+}
