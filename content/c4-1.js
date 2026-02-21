@@ -14,6 +14,11 @@ window.CPG_DATA = {
                 <li>Rapidly apply an AED (if available) and deliver a shock when indicated.</li>
             </ul>
 
+            <!-- BLS Algorithm Image -->
+            <div style="text-align:center; margin:20px 0;">
+                <img src="../images/bls.png" alt="Adult BLS Algorithm" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+            </div>
+
             <h4>Inclusion Criteria</h4>
             <ul>
                 <li>Adult patients (≥13 years) presenting with cardiac arrest:
