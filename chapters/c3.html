@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DCAS CPG 2025 · Cardiovascular</title>
+    <title>DCAS CPG 2025 · Chest Pain / ACS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     
-    <!-- PWA Manifest and icons -->
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
@@ -22,7 +21,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
         <div class="header-text">
-            <h1 id="pageTitle">Cardiovascular</h1>
+            <h1 id="pageTitle">Chest Pain / ACS</h1>
             <p id="pageSubtitle">DCAS CPG 2025</p>
         </div>
     </div>
@@ -33,7 +32,7 @@
             <div class="stats-divider"></div>
             <span>🎯 <span id="statsCritical">0%</span></span>
         </div>
-        <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+        <a href="c-index.html?view=summary&section=c-index-main" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
         <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
     </div>
 </header>
@@ -41,11 +40,11 @@
 <main id="mainContent"></main>
 
 <footer>
-    <div>Created by Soliman Anas · for study aid only</div>
-    <div><a href="../about.html">About & Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
+    <div>Created by Soliman Anas · Open Source Project</div>
+    <div><a href="../about.html">Legal & Disclaimer</a> · Not for Clinical Use</div>
 </footer>
 
-<script src="../content/c3.js"></script>
+<script src="../content/c3-1.js"></script>
 <script src="../app.js"></script>
 <script>
     (function() {
@@ -89,7 +88,6 @@
     })();
 </script>
 
-<!-- Service Worker Registration -->
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
