@@ -1038,6 +1038,39 @@
     })();
 </script>
 
+    <!-- Add this just before the closing </script> in index.html -->
+<script>
+    // ---------- SCROLL POSITION MEMORY ----------
+    (function() {
+        // Save scroll position when leaving the page
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('mainScrollPos', window.scrollY);
+        });
+
+        // Restore scroll position after page is fully rendered
+        function restoreScroll() {
+            let saved = sessionStorage.getItem('mainScrollPos');
+            if (saved) {
+                // Give time for dynamic content to settle
+                setTimeout(function() {
+                    window.scrollTo(0, parseInt(saved));
+                    sessionStorage.removeItem('mainScrollPos');
+                }, 150);
+            }
+        }
+
+        // If page is loaded from bfcache (back/forward), also restore
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                restoreScroll();
+            }
+        });
+
+        // Restore after initial render
+        restoreScroll();
+    })();
+</script>
+    
 <!-- Service Worker Registration -->
 <script>
     if ('serviceWorker' in navigator) {
