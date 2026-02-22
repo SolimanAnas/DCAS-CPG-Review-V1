@@ -15,8 +15,8 @@
     <link rel="apple-touch-icon" href="../icon.png">
 
     <!-- 🔥 FORCE REMOVE ALL TAP HIGHLIGHTS AND FOCUS OUTLINES 🔥 -->
-
-<style>
+   <style>
+    /* 🔥 TAP HIGHLIGHT KILLER – PRESERVES GRADIENTS 🔥 */
     * {
         -webkit-tap-highlight-color: transparent !important;
         -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
@@ -24,7 +24,32 @@
         outline: none !important;
         box-shadow: none !important;
     }
-    /* Restore original background gradients on :active for each button type */
+    button,
+    a,
+    .icon-btn,
+    .control-btn,
+    .btn-action,
+    .btn-flash,
+    .btn-quiz,
+    .btn-scenario,
+    .setup-btn,
+    .download-btn,
+    .float-btn,
+    .toggle-btn,
+    .section-tab,
+    .option-btn,
+    #nextQuizBtn,
+    #nextCriticalBtn,
+    [class*="btn"] {
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+        -webkit-focus-ring-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+    button:active,
+    a:active,
     .icon-btn:active,
     .control-btn:active,
     .btn-action:active,
@@ -39,65 +64,28 @@
     .option-btn:active,
     #nextQuizBtn:active,
     #nextCriticalBtn:active,
-    button:active {
-        background: inherit !important; /* fallback */
+    [class*="btn"]:active {
+        background-color: transparent !important;  /* kills grey background */
         outline: none !important;
         box-shadow: none !important;
         -webkit-tap-highlight-color: transparent !important;
-    }
-    /* Specific gradient overrides (copy your original button gradients) */
-    .icon-btn:active {
-        background: rgba(255, 255, 255, 0.2) !important;
-    }
-    .control-btn:active {
-        background: var(--btn-grad-sum) !important;
-    }
-    .btn-summary:active {
-        background: var(--btn-grad-sum) !important;
-    }
-    .btn-flash:active {
-        background: var(--btn-grad-flash) !important;
-    }
-    .btn-quiz:active {
-        background: var(--btn-grad-quiz) !important;
-    }
-    .btn-scenario:active {
-        background: var(--btn-grad-scen) !important;
-    }
-    .setup-btn:active {
-        background: white !important; /* from your .setup-btn normal */
-    }
-    .download-btn:active {
-        background: var(--primary-accent) !important;
-    }
-    .float-btn:active {
-        background: var(--toggle-active) !important;
-    }
-    .toggle-btn:active {
-        background: var(--primary-accent) !important;
-    }
-    .section-tab:active {
-        background: #0056b3 !important;
-    }
-    .option-btn:active {
-        background: #f0f0f0 !important; /* from your .option-btn:active */
-    }
-    #nextQuizBtn:active, #nextCriticalBtn:active {
-        background: linear-gradient(to bottom, #00b4db, #0083b0) !important;
-    }
-    /* All other overrides remain */
-    button,
-    a,
-    [class*="btn"] {
-        outline: none !important;
-        box-shadow: none !important;
-        -webkit-tap-highlight-color: transparent !important;
-        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-        -webkit-focus-ring-color: transparent !important;
-        touch-action: manipulation !important;
     }
     button:focus,
     a:focus,
+    .icon-btn:focus,
+    .control-btn:focus,
+    .btn-action:focus,
+    .btn-flash:focus,
+    .btn-quiz:focus,
+    .btn-scenario:focus,
+    .setup-btn:focus,
+    .download-btn:focus,
+    .float-btn:focus,
+    .toggle-btn:focus,
+    .section-tab:focus,
+    .option-btn:focus,
+    #nextQuizBtn:focus,
+    #nextCriticalBtn:focus,
     [class*="btn"]:focus {
         outline: none !important;
         box-shadow: none !important;
@@ -112,7 +100,8 @@
         outline: none !important;
         box-shadow: none !important;
     }
-</style>
+</style> 
+
 </head>
 <body>
 
