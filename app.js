@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (with flat chapter support) ========== */
+/* ========== app.js – DCAS CPG 2025 (with view switcher) ========== */
 (function(){
 "use strict";
 
@@ -160,6 +160,31 @@ function renderSectionTabs(activeId) {
     `;  
 }  
 
+// ---------- NEW: RENDER VIEW SWITCHER TABS (Summary, Flashcards, Quiz, Critical) ----------
+function renderViewTabs(currentView) {
+    const views = [
+        { id: 'summary', label: 'Summary', icon: '📘' },
+        { id: 'flashcards', label: 'Flashcards', icon: '⚡' },
+        { id: 'quiz', label: 'Quiz', icon: '📝' },
+        { id: 'critical', label: 'Scenario', icon: '🚑' }
+    ];
+    return `
+        <div class="view-tabs" style="display: flex; gap: 8px; margin: 10px 0 15px; flex-wrap: wrap; justify-content: center;">
+            ${views.map(v => {
+                const isActive = currentView === v.id;
+                return `<button class="view-tab ${isActive ? 'active-view' : ''}" 
+                        data-view="${v.id}" 
+                        style="flex:1; min-width:80px; padding:10px; border-radius:30px; border:none; font-weight:600; 
+                               background: ${isActive ? 'var(--primary-accent)' : 'rgba(255,255,255,0.2)'}; 
+                               color: ${isActive ? 'white' : 'var(--text-primary)'}; 
+                               cursor:pointer; transition:0.2s;">
+                        ${v.icon} ${v.label}
+                    </button>`;
+            }).join('')}
+        </div>
+    `;
+}
+
 // ---------- SECTION NAVIGATION BUTTONS (Previous / Next) ----------  
 function renderSectionNavigation() {  
     if (!state.sections || state.sections.length <= 1) return '';  
@@ -230,6 +255,7 @@ const render = {
             return;  
         }  
         const tabs = renderSectionTabs(section.id);  
+        const viewTabs = renderViewTabs('summary');  
         const nav = renderSectionNavigation();  
         
         // Always show "Back to Chapters" button on chapter pages (including index)
@@ -241,6 +267,7 @@ const render = {
         const html = `  
             <div class="section active">  
                 ${tabs}  
+                ${viewTabs}  
                 ${summaryContent}  
                 ${nav}  
                 ${showBackButton ? `
@@ -280,6 +307,7 @@ const render = {
         if (!state.flashData.length) return;  
         const card = state.flashData[state.fIndex];  
         const tabs = renderSectionTabs(state.activeSectionId);  
+        const viewTabs = renderViewTabs('flashcards');  
         const nav = renderSectionNavigation();  
         
         // Escape all user‑supplied content
@@ -290,6 +318,7 @@ const render = {
         
         const html = `  
             ${tabs}  
+            ${viewTabs}  
             <div class="fc-progress">Card ${state.fIndex+1} of ${state.flashData.length}</div>  
             <div class="scene" id="cardScene">  
                 <div class="card" id="flashcard">  
@@ -340,6 +369,7 @@ const render = {
         }  
         const totalQuestions = section.quiz.length;
         const tabs = renderSectionTabs(section.id);  
+        const viewTabs = renderViewTabs('quiz');  
         const nav = renderSectionNavigation();  
         
         // Only show size buttons that are <= totalQuestions
@@ -356,6 +386,7 @@ const render = {
         
         const html = `  
             ${tabs}  
+            ${viewTabs}  
             <div class="quiz-setup-container">  
                 <h2 style="color:var(--primary-accent);">Quiz: ${utils.escapeHTML(section.shortTitle)}</h2>  
                 <p style="color:var(--text-secondary);">Select number of questions</p>  
@@ -387,9 +418,11 @@ const render = {
             return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
         }).join('');  
         const tabs = renderSectionTabs(state.activeSectionId);  
+        const viewTabs = renderViewTabs('quiz');  
         const nav = renderSectionNavigation();  
         const html = `  
             ${tabs}  
+            ${viewTabs}  
             <div class="quiz-container">  
                 <div style="display:flex; justify-content:space-between; margin-bottom:15px;">  
                     <span class="fc-progress">${progress}</span>  
@@ -436,9 +469,11 @@ const render = {
             return `<button class="option-btn" data-opt-index="${idx}">${utils.escapeHTML(optText)}</button>`;
         }).join('');  
         const tabs = renderSectionTabs(state.activeSectionId);  
+        const viewTabs = renderViewTabs('critical');  
         const nav = renderSectionNavigation();  
         const html = `  
             ${tabs}  
+            ${viewTabs}  
             <div class="critical-card">  
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">  
                     <span class="fc-progress">Scenario ${state.criticalIndex+1}/${state.criticalData.length}</span>  
@@ -757,6 +792,7 @@ document.addEventListener('click', function(e) {
     createRipple(e, target);
     
     const action = target.dataset.action;
+    const view = target.dataset.view;
     const sectionNav = target.dataset.sectionNav;
     const sectionId = target.dataset.sectionId;
     const quizSize = target.dataset.quizSize;
@@ -769,6 +805,17 @@ document.addEventListener('click', function(e) {
         // Detect if we are inside the /chapters/ subfolder
         const isSubfolder = window.location.pathname.includes('/chapters/');
         window.location.href = isSubfolder ? '../index.html' : 'index.html';
+        return;
+    }
+    
+    if (view) {
+        e.preventDefault();
+        // Switch to the selected view while keeping the same section
+        const currentSectionId = state.activeSectionId;
+        if (currentSectionId) {
+            utils.setQueryParam('view', view);
+            switchSection(currentSectionId, false); // false to avoid double pushState
+        }
         return;
     }
     
