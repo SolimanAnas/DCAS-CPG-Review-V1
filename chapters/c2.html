@@ -14,93 +14,81 @@
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
 
-    <!-- 🔥 FORCE REMOVE ALL TAP HIGHLIGHTS AND FOCUS OUTLINES 🔥 -->
-   <style>
-    /* 🔥 TAP HIGHLIGHT KILLER – PRESERVES GRADIENTS 🔥 */
-    * {
-        -webkit-tap-highlight-color: transparent !important;
-        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-        -webkit-focus-ring-color: transparent !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    button,
-    a,
-    .icon-btn,
-    .control-btn,
-    .btn-action,
-    .btn-flash,
-    .btn-quiz,
-    .btn-scenario,
-    .setup-btn,
-    .download-btn,
-    .float-btn,
-    .toggle-btn,
-    .section-tab,
-    .option-btn,
-    #nextQuizBtn,
-    #nextCriticalBtn,
-    [class*="btn"] {
-        outline: none !important;
-        box-shadow: none !important;
-        -webkit-tap-highlight-color: transparent !important;
-        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-        -webkit-focus-ring-color: transparent !important;
-        touch-action: manipulation !important;
-    }
-    button:active,
-    a:active,
-    .icon-btn:active,
-    .control-btn:active,
-    .btn-action:active,
-    .btn-flash:active,
-    .btn-quiz:active,
-    .btn-scenario:active,
-    .setup-btn:active,
-    .download-btn:active,
-    .float-btn:active,
-    .toggle-btn:active,
-    .section-tab:active,
-    .option-btn:active,
-    #nextQuizBtn:active,
-    #nextCriticalBtn:active,
-    [class*="btn"]:active {
-        background-color: transparent !important;  /* kills grey background */
-        outline: none !important;
-        box-shadow: none !important;
-        -webkit-tap-highlight-color: transparent !important;
-    }
-    button:focus,
-    a:focus,
-    .icon-btn:focus,
-    .control-btn:focus,
-    .btn-action:focus,
-    .btn-flash:focus,
-    .btn-quiz:focus,
-    .btn-scenario:focus,
-    .setup-btn:focus,
-    .download-btn:focus,
-    .float-btn:focus,
-    .toggle-btn:focus,
-    .section-tab:focus,
-    .option-btn:focus,
-    #nextQuizBtn:focus,
-    #nextCriticalBtn:focus,
-    [class*="btn"]:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    button::-moz-focus-inner,
-    a::-moz-focus-inner,
-    [class*="btn"]::-moz-focus-inner {
-        border: 0 !important;
-        padding: 0 !important;
-    }
-    :focus-visible {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-</style> 
+   /* 🔥 ULTRA AGGRESSIVE – REMOVE ALL NATIVE BUTTON STYLING 🔥 */
+button,
+a,
+[class*="btn"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background: transparent !important; /* fallback – your gradients will reapply below */
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+/* Re‑apply your original background gradients */
+.icon-btn,
+.control-btn,
+.btn-action,
+.btn-flash,
+.btn-quiz,
+.btn-scenario,
+.setup-btn,
+.download-btn,
+.float-btn,
+.toggle-btn,
+.section-tab,
+.option-btn,
+#nextQuizBtn,
+#nextCriticalBtn {
+    background: var(--btn-grad-sum) !important; /* adjust as needed – you may need to reapply each class individually */
+}
+.icon-btn {
+    background: rgba(255,255,255,0.2) !important;
+}
+.control-btn {
+    background: var(--btn-grad-sum) !important;
+}
+.btn-summary {
+    background: var(--btn-grad-sum) !important;
+}
+.btn-flash {
+    background: var(--btn-grad-flash) !important;
+}
+.btn-quiz {
+    background: var(--btn-grad-quiz) !important;
+}
+.btn-scenario {
+    background: var(--btn-grad-scen) !important;
+}
+.setup-btn {
+    background: white !important;
+}
+.download-btn {
+    background: var(--primary-accent) !important;
+}
+.float-btn {
+    background: rgba(61,100,115,0.7) !important;
+}
+.toggle-btn {
+    background: rgba(255,255,255,0.08) !important;
+}
+.section-tab {
+    background: rgba(255,255,255,0.2) !important;
+}
+.option-btn {
+    background: rgba(255,255,255,0.8) !important;
+}
+#nextQuizBtn, #nextCriticalBtn {
+    background: linear-gradient(to bottom, #00b4db, #0083b0) !important;
+}
+/* Hide any browser‑generated pseudo‑elements */
+*::before,
+*::after {
+    display: none !important;
+}
 
 </head>
 <body>
