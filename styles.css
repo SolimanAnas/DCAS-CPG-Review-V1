@@ -31,7 +31,7 @@
     --border-flash: #dbeafe; --text-flash: #1e40af;
     --border-quiz: #dcfce7; --text-quiz: #166534;
     --border-scen: #fee2e2; --text-scen: #991b1b;
-    --primary-accent: #0056b3; /* added */
+    --primary-accent: #0056b3;
 }
 
 /* Light theme */
@@ -849,19 +849,18 @@ main {
 }
 
 /* ---------- FOOTER ---------- */
-/* ---------- FOOTER ---------- */
 footer {
     text-align: center;
     padding: 30px 20px;
     color: var(--text-secondary);
     font-size: 0.8rem;
-    background: rgba(0, 0, 0, 0.3);        /* slightly darker */
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(5px);
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     margin-top: auto;
     width: 100%;
     box-sizing: border-box;
-    box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15); /* stronger glow */
+    box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
 }
 
 footer div:first-child {
@@ -914,61 +913,19 @@ footer a {
     }
 }
 
-/* ========== ADDED: Remove ugly focus outlines / tap highlights ========== */
-button,
-.icon-btn,
-.control-btn,
-.btn-action,
-.btn-flash,
-.btn-quiz,
-.btn-scenario,
-.setup-btn,
-.download-btn,
-.float-btn,
-.toggle-btn,
-.section-tab,
-.option-btn,
-#nextQuizBtn,
-#nextCriticalBtn,
-[class*="btn"] {
-    outline: none !important;
-    box-shadow: none !important;
-    -webkit-tap-highlight-color: transparent !important;
-    -webkit-focus-ring-color: transparent !important;
-    user-select: none; /* optional: prevent text selection on double‑tap */
-}
-
-/* Firefox specific: remove focus ring */
-button::-moz-focus-inner,
-.icon-btn::-moz-focus-inner,
-.control-btn::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-    outline: none;
-}
-
-/* For all focusable elements, you may also want to disable focus-visible */
-:focus-visible {
-    outline: none !important;
-}
-/* ===== GLOBAL RESET: Remove tap highlights and focus outlines ===== */
-/* Remove tap highlight on mobile browsers */
+/* ========== 🔥 ULTRA AGGRESSIVE RESET – KILLS ALL TAP HIGHLIGHTS ========== */
+/* This final block strips every possible native tap effect and outline, while preserving your button gradients. */
 * {
     -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
     -webkit-focus-ring-color: transparent !important;
     outline: none !important;
+    box-shadow: none !important;
 }
 
-/* Target all interactive elements specifically */
+/* Force all interactive elements to have no default styling */
 button,
-.button,
-[role="button"],
 a,
-a:visited,
-input,
-select,
-textarea,
-[tabindex],
 .icon-btn,
 .control-btn,
 .btn-action,
@@ -984,34 +941,66 @@ textarea,
 #nextQuizBtn,
 #nextCriticalBtn,
 [class*="btn"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
     outline: none !important;
     box-shadow: none !important;
     -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
     -webkit-focus-ring-color: transparent !important;
-    user-select: none; /* optional: prevent text selection on double-tap */
+    touch-action: manipulation !important;
 }
 
-/* Remove Firefox inner focus ring */
+/* Kill any active background overlay (preserves your gradient backgrounds) */
+button:active,
+a:active,
+.icon-btn:active,
+.control-btn:active,
+.btn-action:active,
+.btn-flash:active,
+.btn-quiz:active,
+.btn-scenario:active,
+.setup-btn:active,
+.download-btn:active,
+.float-btn:active,
+.toggle-btn:active,
+.section-tab:active,
+.option-btn:active,
+#nextQuizBtn:active,
+#nextCriticalBtn:active,
+[class*="btn"]:active {
+    background-color: transparent !important;
+    opacity: 1 !important;
+    filter: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Remove any pseudo‑element overlays */
+button:active::before,
+button:active::after,
+a:active::before,
+a:active::after,
+[class*="btn"]:active::before,
+[class*="btn"]:active::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Focus states */
+button:focus,
+a:focus,
+[class*="btn"]:focus,
+:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Firefox inner focus ring */
 button::-moz-focus-inner,
-[role="button"]::-moz-focus-inner,
 a::-moz-focus-inner,
-.icon-btn::-moz-focus-inner,
-.control-btn::-moz-focus-inner,
 [class*="btn"]::-moz-focus-inner {
     border: 0 !important;
     padding: 0 !important;
-    outline: none !important;
-}
-
-/* Disable focus-visible completely (use with caution) */
-:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* Also disable any default focus styles on active/pressed states */
-:active,
-:focus {
-    outline: none !important;
-    box-shadow: none !important;
 }
