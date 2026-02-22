@@ -1004,3 +1004,66 @@ a::-moz-focus-inner,
     border: 0 !important;
     padding: 0 !important;
 }
+
+
+/* ========== VIEW SWITCHER TABS (Summary, Flashcards, Quiz, Scenario) ========== */
+.view-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 20px;
+    flex-wrap: nowrap;          /* prevent wrapping by default */
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-radius: 50px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.view-tab {
+    flex: 1 1 0;                /* equal width, allows shrinking */
+    min-width: 0;                /* allow content to shrink below content width */
+    padding: 12px 8px;
+    border-radius: 40px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;    /* if screen too small, show ellipsis */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.view-tab.active-view {
+    background: var(--primary-accent);
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3);
+}
+
+.view-tab:not(.active-view):hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* On very small screens, allow wrapping but keep it elegant */
+@media (max-width: 480px) {
+    .view-tabs {
+        flex-wrap: wrap;
+        border-radius: 30px;
+        padding: 4px;
+    }
+    .view-tab {
+        flex: 1 1 calc(50% - 8px);  /* two per row */
+        white-space: normal;         /* allow text to wrap */
+        font-size: 0.85rem;
+        padding: 10px 4px;
+    }
+}
