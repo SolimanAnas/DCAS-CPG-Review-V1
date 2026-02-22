@@ -14,82 +14,84 @@
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
 
-   /* 🔥 ULTRA AGGRESSIVE – REMOVE ALL NATIVE BUTTON STYLING 🔥 */
-button,
-a,
-[class*="btn"] {
-    -webkit-appearance: none !important;
-    appearance: none !important;
-    background: transparent !important; /* fallback – your gradients will reapply below */
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font: inherit !important;
-    color: inherit !important;
-    text-decoration: none !important;
-}
-/* Re‑apply your original background gradients */
-.icon-btn,
-.control-btn,
-.btn-action,
-.btn-flash,
-.btn-quiz,
-.btn-scenario,
-.setup-btn,
-.download-btn,
-.float-btn,
-.toggle-btn,
-.section-tab,
-.option-btn,
-#nextQuizBtn,
-#nextCriticalBtn {
-    background: var(--btn-grad-sum) !important; /* adjust as needed – you may need to reapply each class individually */
-}
-.icon-btn {
-    background: rgba(255,255,255,0.2) !important;
-}
-.control-btn {
-    background: var(--btn-grad-sum) !important;
-}
-.btn-summary {
-    background: var(--btn-grad-sum) !important;
-}
-.btn-flash {
-    background: var(--btn-grad-flash) !important;
-}
-.btn-quiz {
-    background: var(--btn-grad-quiz) !important;
-}
-.btn-scenario {
-    background: var(--btn-grad-scen) !important;
-}
-.setup-btn {
-    background: white !important;
-}
-.download-btn {
-    background: var(--primary-accent) !important;
-}
-.float-btn {
-    background: rgba(61,100,115,0.7) !important;
-}
-.toggle-btn {
-    background: rgba(255,255,255,0.08) !important;
-}
-.section-tab {
-    background: rgba(255,255,255,0.2) !important;
-}
-.option-btn {
-    background: rgba(255,255,255,0.8) !important;
-}
-#nextQuizBtn, #nextCriticalBtn {
-    background: linear-gradient(to bottom, #00b4db, #0083b0) !important;
-}
-/* Hide any browser‑generated pseudo‑elements */
-*::before,
-*::after {
-    display: none !important;
-}
-
+    <!-- 🔥 ULTRA AGGRESSIVE – REMOVE ALL NATIVE BUTTON STYLING 🔥 -->
+    <style>
+        button,
+        a,
+        [class*="btn"] {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            background: transparent !important; /* fallback – your gradients will reapply below */
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font: inherit !important;
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+        /* Re‑apply your original background gradients */
+        .icon-btn,
+        .control-btn,
+        .btn-action,
+        .btn-flash,
+        .btn-quiz,
+        .btn-scenario,
+        .setup-btn,
+        .download-btn,
+        .float-btn,
+        .toggle-btn,
+        .section-tab,
+        .option-btn,
+        #nextQuizBtn,
+        #nextCriticalBtn {
+            background: var(--btn-grad-sum) !important; /* fallback, will be overridden below */
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .control-btn {
+            background: var(--btn-grad-sum) !important;
+        }
+        .btn-summary {
+            background: var(--btn-grad-sum) !important;
+        }
+        .btn-flash {
+            background: var(--btn-grad-flash) !important;
+        }
+        .btn-quiz {
+            background: var(--btn-grad-quiz) !important;
+        }
+        .btn-scenario {
+            background: var(--btn-grad-scen) !important;
+        }
+        .setup-btn {
+            background: white !important;
+        }
+        .download-btn {
+            background: var(--primary-accent) !important;
+        }
+        .float-btn {
+            background: rgba(61,100,115,0.7) !important;
+        }
+        .toggle-btn {
+            background: rgba(255,255,255,0.08) !important;
+        }
+        .section-tab {
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .option-btn {
+            background: rgba(255,255,255,0.8) !important;
+        }
+        #nextQuizBtn, #nextCriticalBtn {
+            background: linear-gradient(to bottom, #00b4db, #0083b0) !important;
+        }
+        /* Hide any browser‑generated pseudo‑elements */
+        *::before,
+        *::after {
+            display: none !important;
+            content: none !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -177,4 +179,4 @@ a,
     }
 </script>
 </body>
-</html>
+</html> 
