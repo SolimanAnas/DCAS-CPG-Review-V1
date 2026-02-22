@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (with summary actions, smart nav, smooth back, header cleanup) ========== */
+/* ========== app.js – DCAS CPG 2025 (with mobile UX improvements) ========== */
 (function(){
 "use strict";
 
@@ -107,7 +107,7 @@ function updateHeader(title, subtitle = '', showBack = true) {
     if (dom.pageSubtitle) dom.pageSubtitle.innerText = subtitle || '';  
     if (dom.homeBtn) dom.homeBtn.style.display = showBack ? 'block' : 'none';  
 
-    // 🆕 Hide stats badge on chapter pages (when chapterData exists)
+    // Hide stats badge on chapter pages
     const statsBadge = document.getElementById('liveStatsBadge');
     if (statsBadge) {
         statsBadge.style.display = chapterData ? 'none' : 'flex';
@@ -173,12 +173,11 @@ function renderViewTabs(currentView) {
         { id: 'critical', label: 'Scenario', icon: '🚑' }
     ];
     return `
-        <div class="view-tabs" style="display: flex; gap: 8px; margin: 10px 0 15px; flex-wrap: nowrap; justify-content: center; background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border-radius: 50px; padding: 6px; border: 1px solid rgba(255,255,255,0.1);">
+        <div class="view-tabs">
             ${views.map(v => {
                 const isActive = currentView === v.id;
                 return `<button class="view-tab ${isActive ? 'active-view' : ''}" 
-                        data-view="${v.id}" 
-                        style="flex:1; min-width:0; padding:10px; border-radius:40px; border:none; font-weight:600; background: ${isActive ? 'var(--primary-accent)' : 'transparent'}; color: ${isActive ? 'white' : 'var(--text-primary)'}; cursor:pointer; transition:0.2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        data-view="${v.id}">
                         ${v.icon} ${v.label}
                     </button>`;
             }).join('')}
@@ -186,7 +185,7 @@ function renderViewTabs(currentView) {
     `;
 }
 
-// ---------- SECTION NAVIGATION BUTTONS (Previous / Next) with Smart Finish ----------  
+// ---------- SLIM SECTION NAVIGATION (Previous / Next) ----------  
 function renderSectionNavigation() {  
     if (!state.sections || state.sections.length <= 1) return '';  
     const currentIdx = utils.getSectionIndex(state.activeSectionId);  
@@ -195,24 +194,20 @@ function renderSectionNavigation() {
     const isLastSection = currentIdx === state.sections.length - 1;  
 
     return `  
-        <div class="section-nav-row" style="display: flex; gap: 10px; margin-top: 15px;">  
+        <div class="section-nav-slim">  
             ${prevSection ?   
-                `<button class="section-nav-btn" data-section-nav="prev" data-section-id="${prevSection.id}" 
-                         style="flex:1; background:#e2e8f0; color:#1e293b; border:1px solid #94a3b8; border-radius:40px; padding:10px;">
-                    ◀ Previous (${utils.escapeHTML(prevSection.shortTitle)})
+                `<button class="section-nav-btn" data-section-nav="prev" data-section-id="${prevSection.id}">  
+                    ◀ ${utils.escapeHTML(prevSection.shortTitle)}  
                 </button>` :   
-                `<button class="section-nav-btn" disabled style="flex:1; opacity:0.4;">◀ Previous</button>`  
+                `<button disabled>◀</button>`  
             }  
             ${nextSection ?   
-                `<button class="section-nav-btn" data-section-nav="next" data-section-id="${nextSection.id}"
-                         style="flex:1; background:#e2e8f0; color:#1e293b; border:1px solid #94a3b8; border-radius:40px; padding:10px;">
-                    Next: ${utils.escapeHTML(nextSection.shortTitle)} ▶
+                `<button class="section-nav-btn" data-section-nav="next" data-section-id="${nextSection.id}">  
+                    ${utils.escapeHTML(nextSection.shortTitle)} ▶  
                 </button>` :   
                 (isLastSection ? 
-                    `<button class="section-nav-btn" data-action="backHome" style="flex:1; background:var(--primary-accent); color:white; border:none; border-radius:40px; padding:10px;">
-                        ✅ Finish Chapter
-                    </button>` : 
-                    `<button class="section-nav-btn" disabled style="flex:1; opacity:0.4;">Next ▶</button>`)
+                    `<button class="finish-chapter" data-action="backHome">✅ Finish</button>` : 
+                    `<button disabled>▶</button>`)
             }  
         </div>  
     `;  
@@ -267,14 +262,6 @@ const render = {
         const nav = renderSectionNavigation();  
         const isIndex = chapterData && chapterData.id === 'c-index';  
 
-        // 🆕 Summary actions (Flashcards & Quiz buttons)
-        const summaryActions = `
-            <div style="display: flex; gap: 12px; justify-content: center; margin: 20px 0;">
-                <button class="control-btn" data-view="flashcards" style="background: var(--btn-grad-flash); color: var(--text-flash); border: 1px solid var(--border-flash);">⚡ Flashcards</button>
-                <button class="control-btn" data-view="quiz" style="background: var(--btn-grad-quiz); color: var(--text-quiz); border: 1px solid var(--border-quiz);">📝 Quiz</button>
-            </div>
-        `;
-
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
         
         const html = `  
@@ -282,13 +269,8 @@ const render = {
                 ${tabs}  
                 ${viewTabs}  
                 ${summaryContent}  
-                ${summaryActions}  
                 ${nav}  
-                ${!isIndex ? `
-                    <div class="nav-row" style="margin-top:20px;">  
-                        <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-                    </div>
-                ` : ''}  
+                ${!isIndex ? `<div class="back-home-ghost"><button data-action="backHome">← Home</button></div>` : ''}  
             </div>  
         `;  
         dom.main.innerHTML = html;  
@@ -351,9 +333,7 @@ const render = {
                 <button class="control-btn" data-flash="next">Next ▶</button>  
             </div>  
             ${nav}  
-            <div class="nav-row" style="margin-top:10px;">  
-                <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
-            </div>  
+            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
         dom.main.innerHTML = html;  
         const cardEl = document.getElementById('flashcard');  
@@ -402,9 +382,7 @@ const render = {
                     ${buttonsHtml}
                 </div>  
                 ${nav}  
-                <div class="nav-row">  
-                    <button class="control-btn" data-action="backHome">Cancel</button>  
-                </div>  
+                <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
             </div>  
         `;  
         dom.main.innerHTML = html;  
@@ -446,6 +424,7 @@ const render = {
                 <button class="control-btn" id="nextQuizBtn" style="width:100%; margin-top:25px; display:none;">Next Question</button>  
             </div>  
             ${nav}  
+            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
         dom.main.innerHTML = html;  
         utils.safeScrollTop();  
@@ -497,6 +476,7 @@ const render = {
                 <button class="control-btn" id="nextCriticalBtn" style="width:100%; margin-top:25px; display:none;">Next Scenario</button>  
             </div>  
             ${nav}  
+            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
         dom.main.innerHTML = html;  
         utils.safeScrollTop();  
@@ -625,7 +605,7 @@ function initIndexSearch() {
     }, 200);
 }
 
-// ---------- QUIZ ENGINE (unchanged) ----------  
+// ---------- QUIZ ENGINE ----------  
 const quizEngine = {  
     init: function(size) {  
         if (isChapterMissing) { renderComingSoon(); return; }  
@@ -708,7 +688,7 @@ const quizEngine = {
     }  
 };  
 
-// ---------- CRITICAL ENGINE (unchanged) ----------  
+// ---------- CRITICAL ENGINE ----------  
 const criticalEngine = {  
     handleAnswer: function(selectedIdx, btn) {  
         if (isChapterMissing) { renderComingSoon(); return; }  
@@ -802,7 +782,7 @@ document.addEventListener('click', function(e) {
     // Handle navigation
     if (action === 'backHome') {
         e.preventDefault();
-        // 🆕 Smooth back: use history.back() with fallback to index
+        // Use history.back() with fallback to index
         if (window.history.length > 1) {
             window.history.back();
         } else {
