@@ -31,7 +31,7 @@
     --border-flash: #dbeafe; --text-flash: #1e40af;
     --border-quiz: #dcfce7; --text-quiz: #166534;
     --border-scen: #fee2e2; --text-scen: #991b1b;
-    --primary-accent: #0056b3;
+    --primary-accent: #0056b3; /* added */
 }
 
 /* Light theme */
@@ -913,8 +913,105 @@ footer a {
     }
 }
 
+/* ========== ADDED: Remove ugly focus outlines / tap highlights ========== */
+button,
+.icon-btn,
+.control-btn,
+.btn-action,
+.btn-flash,
+.btn-quiz,
+.btn-scenario,
+.setup-btn,
+.download-btn,
+.float-btn,
+.toggle-btn,
+.section-tab,
+.option-btn,
+#nextQuizBtn,
+#nextCriticalBtn,
+[class*="btn"] {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-focus-ring-color: transparent !important;
+    user-select: none;
+}
+
+/* Firefox specific: remove focus ring */
+button::-moz-focus-inner,
+.icon-btn::-moz-focus-inner,
+.control-btn::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+    outline: none;
+}
+
+/* For all focusable elements, you may also want to disable focus-visible */
+:focus-visible {
+    outline: none !important;
+}
+
+/* ===== GLOBAL RESET: Remove tap highlights and focus outlines ===== */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-focus-ring-color: transparent !important;
+    outline: none !important;
+}
+
+button,
+.button,
+[role="button"],
+a,
+a:visited,
+input,
+select,
+textarea,
+[tabindex],
+.icon-btn,
+.control-btn,
+.btn-action,
+.btn-flash,
+.btn-quiz,
+.btn-scenario,
+.setup-btn,
+.download-btn,
+.float-btn,
+.toggle-btn,
+.section-tab,
+.option-btn,
+#nextQuizBtn,
+#nextCriticalBtn,
+[class*="btn"] {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-focus-ring-color: transparent !important;
+    user-select: none;
+}
+
+button::-moz-focus-inner,
+[role="button"]::-moz-focus-inner,
+a::-moz-focus-inner,
+.icon-btn::-moz-focus-inner,
+.control-btn::-moz-focus-inner,
+[class*="btn"]::-moz-focus-inner {
+    border: 0 !important;
+    padding: 0 !important;
+    outline: none !important;
+}
+
+:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+:active,
+:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 /* ========== 🔥 ULTRA AGGRESSIVE RESET – KILLS ALL TAP HIGHLIGHTS ========== */
-/* This final block strips every possible native tap effect and outline, while preserving your button gradients. */
 * {
     -webkit-tap-highlight-color: transparent !important;
     -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
@@ -923,7 +1020,6 @@ footer a {
     box-shadow: none !important;
 }
 
-/* Force all interactive elements to have no default styling */
 button,
 a,
 .icon-btn,
@@ -951,7 +1047,6 @@ a,
     touch-action: manipulation !important;
 }
 
-/* Kill any active background overlay (preserves your gradient backgrounds) */
 button:active,
 a:active,
 .icon-btn:active,
@@ -977,7 +1072,6 @@ a:active,
     -webkit-tap-highlight-color: transparent !important;
 }
 
-/* Remove any pseudo‑element overlays */
 button:active::before,
 button:active::after,
 a:active::before,
@@ -988,7 +1082,6 @@ a:active::after,
     content: none !important;
 }
 
-/* Focus states */
 button:focus,
 a:focus,
 [class*="btn"]:focus,
@@ -997,7 +1090,6 @@ a:focus,
     box-shadow: none !important;
 }
 
-/* Firefox inner focus ring */
 button::-moz-focus-inner,
 a::-moz-focus-inner,
 [class*="btn"]::-moz-focus-inner {
@@ -1005,26 +1097,112 @@ a::-moz-focus-inner,
     padding: 0 !important;
 }
 
+/* ========== MOBILE UX IMPROVEMENTS ========== */
 
-/* ========== VIEW SWITCHER TABS (Summary, Flashcards, Quiz, Scenario) ========== */
+/* Slim section navigation (Previous/Next) */
+.section-nav-slim {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0 10px;
+    justify-content: space-between;
+}
+.section-nav-slim button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text-secondary);
+    border-radius: 30px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.section-nav-slim button:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    border-color: rgba(255,255,255,0.3);
+}
+.section-nav-slim button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.section-nav-slim .finish-chapter {
+    background: var(--primary-accent);
+    color: white;
+    border: none;
+}
+.section-nav-slim .finish-chapter:hover {
+    background: #003d7a;
+}
+
+/* Ghost text link for back home */
+.back-home-ghost {
+    text-align: center;
+    margin: 20px 0 10px;
+}
+.back-home-ghost a,
+.back-home-ghost button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: 0.2s;
+    cursor: pointer;
+    padding: 6px 12px;
+}
+.back-home-ghost a:hover,
+.back-home-ghost button:hover {
+    opacity: 1;
+    color: var(--primary-accent);
+}
+
+/* Reduce header icon visual weight */
+.header-right .icon-btn {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.header-right .icon-btn:hover {
+    opacity: 1;
+}
+
+/* Optional: make non‑active mode tabs more subtle */
+.view-tabs .view-tab:not(.active-view) {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+}
+.view-tabs .view-tab.active-view {
+    background: var(--primary-accent);
+    color: white;
+    border: 1px solid transparent;
+}
+
+/* View tabs container (ensure it uses our new styles) */
 .view-tabs {
     display: flex;
     gap: 8px;
-    margin: 10px 0 20px;
-    flex-wrap: nowrap;          /* prevent wrapping by default */
+    margin: 10px 0 15px;
+    flex-wrap: nowrap;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255,255,255,0.05);
     backdrop-filter: blur(8px);
     border-radius: 50px;
     padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .view-tab {
-    flex: 1 1 0;                /* equal width, allows shrinking */
-    min-width: 0;                /* allow content to shrink below content width */
-    padding: 12px 8px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px;
     border-radius: 40px;
     border: none;
     font-weight: 600;
@@ -1035,25 +1213,14 @@ a::-moz-focus-inner,
     transition: all 0.2s ease;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;    /* if screen too small, show ellipsis */
+    text-overflow: ellipsis;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
 }
 
-.view-tab.active-view {
-    background: var(--primary-accent);
-    color: white;
-    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3);
-}
-
-.view-tab:not(.active-view):hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-}
-
-/* On very small screens, allow wrapping but keep it elegant */
+/* Responsive adjustments for view tabs on small screens */
 @media (max-width: 480px) {
     .view-tabs {
         flex-wrap: wrap;
@@ -1061,8 +1228,8 @@ a::-moz-focus-inner,
         padding: 4px;
     }
     .view-tab {
-        flex: 1 1 calc(50% - 8px);  /* two per row */
-        white-space: normal;         /* allow text to wrap */
+        flex: 1 1 calc(50% - 8px);
+        white-space: normal;
         font-size: 0.85rem;
         padding: 10px 4px;
     }
