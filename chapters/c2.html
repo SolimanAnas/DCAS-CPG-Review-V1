@@ -13,6 +13,50 @@
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
+
+    <!-- 🔥 FORCE REMOVE ALL TAP HIGHLIGHTS AND FOCUS OUTLINES 🔥 -->
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-focus-ring-color: transparent !important;
+            outline: none !important;
+        }
+        button,
+        a,
+        .icon-btn,
+        .control-btn,
+        .btn-action,
+        .btn-flash,
+        .btn-quiz,
+        .btn-scenario,
+        .setup-btn,
+        .download-btn,
+        .float-btn,
+        .toggle-btn,
+        .section-tab,
+        .option-btn,
+        #nextQuizBtn,
+        #nextCriticalBtn,
+        [class*="btn"] {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-focus-ring-color: transparent !important;
+        }
+        button::-moz-focus-inner,
+        a::-moz-focus-inner,
+        [class*="btn"]::-moz-focus-inner {
+            border: 0 !important;
+            padding: 0 !important;
+            outline: none !important;
+        }
+        :focus,
+        :active,
+        :focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    </style>
 </head>
 <body>
 
