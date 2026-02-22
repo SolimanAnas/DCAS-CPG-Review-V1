@@ -15,48 +15,99 @@
     <link rel="apple-touch-icon" href="../icon.png">
 
     <!-- 🔥 FORCE REMOVE ALL TAP HIGHLIGHTS AND FOCUS OUTLINES 🔥 -->
+
     <style>
-        * {
-            -webkit-tap-highlight-color: transparent !important;
-            -webkit-focus-ring-color: transparent !important;
-            outline: none !important;
-        }
-        button,
-        a,
-        .icon-btn,
-        .control-btn,
-        .btn-action,
-        .btn-flash,
-        .btn-quiz,
-        .btn-scenario,
-        .setup-btn,
-        .download-btn,
-        .float-btn,
-        .toggle-btn,
-        .section-tab,
-        .option-btn,
-        #nextQuizBtn,
-        #nextCriticalBtn,
-        [class*="btn"] {
-            outline: none !important;
-            box-shadow: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-            -webkit-focus-ring-color: transparent !important;
-        }
-        button::-moz-focus-inner,
-        a::-moz-focus-inner,
-        [class*="btn"]::-moz-focus-inner {
-            border: 0 !important;
-            padding: 0 !important;
-            outline: none !important;
-        }
-        :focus,
-        :active,
-        :focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
-        }
+    * {
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+        -webkit-focus-ring-color: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    button,
+    a,
+    .icon-btn,
+    .control-btn,
+    .btn-action,
+    .btn-flash,
+    .btn-quiz,
+    .btn-scenario,
+    .setup-btn,
+    .download-btn,
+    .float-btn,
+    .toggle-btn,
+    .section-tab,
+    .option-btn,
+    #nextQuizBtn,
+    #nextCriticalBtn,
+    [class*="btn"] {
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+        -webkit-focus-ring-color: transparent !important;
+        background-color: transparent !important; /* kill any default active bg */
+        color: inherit !important;                /* prevent color flash */
+        touch-action: manipulation !important;    /* improve tap precision */
+    }
+    button:active,
+    a:active,
+    .icon-btn:active,
+    .control-btn:active,
+    .btn-action:active,
+    .btn-flash:active,
+    .btn-quiz:active,
+    .btn-scenario:active,
+    .setup-btn:active,
+    .download-btn:active,
+    .float-btn:active,
+    .toggle-btn:active,
+    .section-tab:active,
+    .option-btn:active,
+    #nextQuizBtn:active,
+    #nextCriticalBtn:active,
+    [class*="btn"]:active {
+        background-color: transparent !important;
+        color: inherit !important;
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    button:focus,
+    a:focus,
+    .icon-btn:focus,
+    .control-btn:focus,
+    .btn-action:focus,
+    .btn-flash:focus,
+    .btn-quiz:focus,
+    .btn-scenario:focus,
+    .setup-btn:focus,
+    .download-btn:focus,
+    .float-btn:focus,
+    .toggle-btn:focus,
+    .section-tab:focus,
+    .option-btn:focus,
+    #nextQuizBtn:focus,
+    #nextCriticalBtn:focus,
+    [class*="btn"]:focus {
+        background-color: transparent !important;
+        color: inherit !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    button::-moz-focus-inner,
+    a::-moz-focus-inner,
+    [class*="btn"]::-moz-focus-inner {
+        border: 0 !important;
+        padding: 0 !important;
+    }
+    :focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
     </style>
+
 </head>
 <body>
 
