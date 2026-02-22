@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (with mobile UX improvements) ========== */
+/* ========== app.js – DCAS CPG 2025 (with mobile UX improvements + scroll progress) ========== */
 (function(){
 "use strict";
 
@@ -213,6 +213,21 @@ function renderSectionNavigation() {
     `;  
 }  
 
+// ---------- SCROLL PROGRESS BAR ----------
+function initScrollProgress() {
+    const progressBar = document.querySelector('.progress-bar-scroll');
+    if (!progressBar) return;
+    function updateProgress() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
+    }
+    window.addEventListener('scroll', updateProgress);
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+}
+
 // ---------- SWITCH SECTION ----------  
 function switchSection(sectionId, updateUrl = true) {  
     const section = utils.getSection(sectionId);  
@@ -265,6 +280,7 @@ const render = {
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
         
         const html = `  
+            <div class="progress-container-scroll"><div class="progress-bar-scroll"></div></div>
             <div class="section active">  
                 ${tabs}  
                 ${viewTabs}  
@@ -276,6 +292,8 @@ const render = {
         dom.main.innerHTML = html;  
         updateHeader(utils.escapeHTML(section.shortTitle), 'Summary', true);  
         utils.safeScrollTop();
+
+        initScrollProgress();
 
         if (chapterData && chapterData.id === 'c-index') {
             initIndexSearch();
@@ -782,13 +800,7 @@ document.addEventListener('click', function(e) {
     // Handle navigation
     if (action === 'backHome') {
         e.preventDefault();
-        // Use history.back() with fallback to index
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            const isSubfolder = window.location.pathname.includes('/chapters/');
-            window.location.href = isSubfolder ? '../index.html' : 'index.html';
-        }
+        window.history.back();
         return;
     }
     
@@ -874,7 +886,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ---------- POPSTATE HANDLER (unchanged) ----------  
+// ---------- POPSTATE HANDLER ----------  
 window.addEventListener('popstate', function() {
     const sectionId = utils.getQueryParam('section');
     const view = utils.getQueryParam('view') || 'summary';
@@ -885,6 +897,18 @@ window.addEventListener('popstate', function() {
         render.stats();
     } else {
         window.location.reload();
+    }
+});
+
+// ---------- OVERRIDE HEADER BACK BUTTON (capture phase) ----------
+document.addEventListener('DOMContentLoaded', function() {
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.history.back();
+        }, { capture: true }); // runs before any other click handler
     }
 });
 
