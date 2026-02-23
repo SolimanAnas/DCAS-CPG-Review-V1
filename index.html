@@ -155,45 +155,8 @@
             padding-top: 12px;
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            margin-top: auto;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
-        }
-        footer div:first-child {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        footer div:last-child {
-            opacity: 0.9;
-            font-size: 0.7rem;
-        }
-        footer a {
-            color: inherit;
-            text-decoration: underline;
-        }
-        [data-theme="dark"] footer {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        [data-theme="forest"] footer {
-            color: #edf4e7;
-            background: rgba(30, 75, 62, 0.8);
-        }
-        [data-theme="light"] footer {
-            color: #1a2a3a;
-        }
-        [data-theme="sepia"] footer {
-            color: #4a3c2c;
-        }
+        /* Footer – controlled by styles.css; theme overrides applied there */
+        footer a { color: inherit; text-decoration: underline; }
 
         /* Button container */
         .menu-sub-options {
