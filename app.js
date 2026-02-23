@@ -283,12 +283,13 @@ const render = {
 
         const summaryContent = section.summary || '<div class="sum-card">No summary available.</div>';
         
+        // Move viewTabs after summary content, before nav
         const html = `  
             <div class="progress-container-scroll"><div class="progress-bar-scroll"></div></div>
             <div class="section active">  
                 ${tabs}  
-                ${viewTabs}  
                 ${summaryContent}  
+                ${viewTabs}  
                 ${nav}  
                 ${!isIndex ? `<div class="back-home-ghost"><button data-action="backHome">← Home</button></div>` : ''}  
             </div>  
@@ -331,9 +332,9 @@ const render = {
         const question = utils.escapeHTML(card.question);
         const safeAnswer = utils.escapeHTML(card.answer || '').replace(/\n/g, '<br>');
         
+        // Move viewTabs after the main flashcard content, before nav
         const html = `  
             ${tabs}  
-            ${viewTabs}  
             <div class="fc-progress">Card ${state.fIndex+1} of ${state.flashData.length}</div>  
             <div class="scene" id="cardScene">  
                 <div class="card" id="flashcard">  
@@ -354,6 +355,7 @@ const render = {
                 <button class="control-btn" data-flash="prev">◀ Previous</button>  
                 <button class="control-btn" data-flash="next">Next ▶</button>  
             </div>  
+            ${viewTabs}  
             ${nav}  
             <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
@@ -394,18 +396,19 @@ const render = {
         const allButton = `<button class="setup-btn challenge" data-quiz-size="${totalQuestions}">All (${totalQuestions}) <span>→</span></button>`;
         const buttonsHtml = sizeButtons + allButton;
         
+        // Move viewTabs after the quiz setup container, before nav
         const html = `  
             ${tabs}  
-            ${viewTabs}  
             <div class="quiz-setup-container">  
                 <h2 style="color:var(--primary-accent);">Quiz: ${utils.escapeHTML(section.shortTitle)}</h2>  
                 <p style="color:var(--text-secondary);">Select number of questions</p>  
                 <div class="setup-grid">  
                     ${buttonsHtml}
                 </div>  
-                ${nav}  
-                <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
             </div>  
+            ${viewTabs}  
+            ${nav}  
+            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
         dom.main.innerHTML = html;  
         updateHeader('Quiz Setup', utils.escapeHTML(section.shortTitle), true);  
@@ -427,9 +430,10 @@ const render = {
         const tabs = renderSectionTabs(state.activeSectionId);  
         const viewTabs = renderViewTabs('quiz');  
         const nav = renderSectionNavigation();  
+        
+        // Move viewTabs after the quiz container, before nav
         const html = `  
             ${tabs}  
-            ${viewTabs}  
             <div class="quiz-container">  
                 <div style="display:flex; justify-content:space-between; margin-bottom:15px;">  
                     <span class="fc-progress">${progress}</span>  
@@ -445,6 +449,7 @@ const render = {
                 <div class="quiz-feedback" id="quizFeedback" style="display:none;"></div>  
                 <button class="control-btn" id="nextQuizBtn" style="width:100%; margin-top:25px; display:none;">Next Question</button>  
             </div>  
+            ${viewTabs}  
             ${nav}  
             <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
@@ -478,9 +483,10 @@ const render = {
         const tabs = renderSectionTabs(state.activeSectionId);  
         const viewTabs = renderViewTabs('critical');  
         const nav = renderSectionNavigation();  
+        
+        // Move viewTabs after the critical card, before nav
         const html = `  
             ${tabs}  
-            ${viewTabs}  
             <div class="critical-card">  
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">  
                     <span class="fc-progress">Scenario ${state.criticalIndex+1}/${state.criticalData.length}</span>  
@@ -497,6 +503,7 @@ const render = {
                 <div class="critical-feedback" id="criticalFeedback" style="display:none;"></div>  
                 <button class="control-btn" id="nextCriticalBtn" style="width:100%; margin-top:25px; display:none;">Next Scenario</button>  
             </div>  
+            ${viewTabs}  
             ${nav}  
             <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
         `;  
