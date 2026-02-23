@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (with mobile UX improvements + scroll progress) ========== */
+/* ========== app.js – DCAS CPG 2025 (final mobile UX) ========== */
 (function(){
 "use strict";
 
@@ -213,15 +213,18 @@ function renderSectionNavigation() {
     `;  
 }  
 
-// ---------- SCROLL PROGRESS BAR ----------
+// ---------- SCROLL PROGRESS BAR (excludes footer) ----------
 function initScrollProgress() {
     const progressBar = document.querySelector('.progress-bar-scroll');
     if (!progressBar) return;
+    const footer = document.querySelector('footer');
+    const footerHeight = footer ? footer.offsetHeight : 0;
+    
     function updateProgress() {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight - footerHeight;
         const scrolled = (winScroll / height) * 100;
-        progressBar.style.width = scrolled + '%';
+        progressBar.style.width = Math.min(scrolled, 100) + '%';
     }
     window.addEventListener('scroll', updateProgress);
     window.addEventListener('resize', updateProgress);
@@ -273,7 +276,8 @@ const render = {
             return;  
         }  
         const tabs = renderSectionTabs(section.id);  
-        const viewTabs = renderViewTabs('summary');  
+        const isSpecialPage = chapterData && (chapterData.id === 'c-index' || chapterData.id === 'c0');
+        const viewTabs = !isSpecialPage ? renderViewTabs('summary') : '';  
         const nav = renderSectionNavigation();  
         const isIndex = chapterData && chapterData.id === 'c-index';  
 
@@ -782,6 +786,29 @@ function createRipple(event, target) {
     }
 }  
 
+// ---------- SCROLL‑HIDE HEADER ----------
+let lastScrollY = window.scrollY;
+const header = document.querySelector('header');
+let ticking = false;
+
+window.addEventListener('scroll', () => {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            const currentY = window.scrollY;
+            if (currentY > lastScrollY && currentY > 100) {
+                // Scrolling down & past 100px
+                header?.classList.add('header-hidden');
+            } else if (currentY < lastScrollY) {
+                // Scrolling up
+                header?.classList.remove('header-hidden');
+            }
+            lastScrollY = currentY;
+            ticking = false;
+        });
+        ticking = true;
+    }
+});
+
 // ---------- COMPLETE EVENT DELEGATION ----------  
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button');  
@@ -900,7 +927,7 @@ window.addEventListener('popstate', function() {
     }
 });
 
-// ---------- OVERRIDE HEADER BACK BUTTON (capture phase) ----------
+// ---------- OVERRIDE HEADER HOME BUTTON (capture phase) ----------
 document.addEventListener('DOMContentLoaded', function() {
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) {
