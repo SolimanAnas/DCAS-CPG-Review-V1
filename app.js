@@ -143,7 +143,7 @@ function renderComingSoon() {
             message = 'This CPG chapter is under construction.';
             icon = '🚧';
     }
-    const html = `<div class="coming-soon-card" style="text-align:center; background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 60px; padding: 40px 20px; box-shadow: var(--glass-shadow);">   <div style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; background: linear-gradient(145deg, #0a3b4e, #1e6f8f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 15px; line-height: 1.2; font-family: Georgia, serif;">${icon} ${title}</div>   <div style="font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.5rem, 5vw, 2.2rem); font-style: italic; font-weight: 600; color: #0a3b4e; text-shadow: 0 2px 5px rgba(255,255,255,0.7); border-top: 3px solid rgba(0,86,179,0.3); border-bottom: 3px solid rgba(0,86,179,0.3); display: inline-block; padding: 10px 30px; margin-top: 10px; letter-spacing: 2px;">${subtitle}</div>   <div style="font-size: clamp(1rem, 4vw, 1.4rem); font-weight: 500; color: #1a3a4a; background: rgba(255,255,255,0.5); padding: 12px 20px; border-radius: 50px; display: inline-block; margin-top: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">   ${message}   </div>   <div style="margin-top: 40px;">   <button class="control-btn" data-action="backHome" style="padding: 12px 30px; border-radius: 40px; font-weight: 700; font-size: clamp(0.9rem, 4vw, 1.1rem); color: white; background: linear-gradient(to bottom, #00b4db, #0083b0); box-shadow: 0 8px 20px rgba(0, 131, 176, 0.5); border: none; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;">← Back to Chapters</button>   </div>   </div>`;
+    const html = `<div class="coming-soon-card" style="text-align:center; background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 60px; padding: 40px 20px; box-shadow: var(--glass-shadow);">   <div style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; background: linear-gradient(145deg, #0a3b4e, #1e6f8f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 15px; line-height: 1.2; font-family: Georgia, serif;">${icon} ${title}</div>   <div style="font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.5rem, 5vw, 2.2rem); font-style: italic; font-weight: 600; color: #0a3b4e; text-shadow: 0 2px 5px rgba(255,255,255,0.7); border-top: 3px solid rgba(0,86,179,0.3); border-bottom: 3px solid rgba(0,86,179,0.3); display: inline-block; padding: 10px 30px; margin-top: 10px; letter-spacing: 2px;">${subtitle}</div>   <div style="font-size: clamp(1rem, 4vw, 1.4rem); font-weight: 500; color: #1a3a4a; background: rgba(255,255,255,0.5); padding: 12px 20px; border-radius: 50px; display: inline-block; margin-top: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">   ${message}   </div>   <div style="margin-top: 40px;">   <button class="control-btn" data-action="backHome" style="padding: 12px 30px; border-radius: 40px; font-weight: 700; font-size: clamp(0.9rem, 4vw, 1.1rem); color: white; background: linear-gradient(to bottom, #00b4db, #0083b0); box-shadow: 0 8px 20px rgba(0, 131, 176, 0.5); border: none; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;">🏠 Home</button>   </div>   </div>`;
     dom.main.innerHTML = html;
     updateHeader(title, subtitle, true);
     utils.safeScrollTop();
@@ -285,7 +285,7 @@ const render = {
                 ${tabs}  
                 ${summaryContent}  
                 ${nav}  
-                ${!isIndex ? `<div class="back-home-ghost"><button data-action="backHome">← Home</button></div>` : ''}  
+                ${!isIndex ? `<div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>` : ''}  
             </div>  
             ${!isSpecialPage ? renderBottomNav('summary') : ''}  
         `;  
@@ -348,7 +348,7 @@ const render = {
                 <button class="control-btn" data-flash="next">Next ▶</button>  
             </div>  
             ${nav}  
-            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
+            <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('flashcards')}  
         `;  
         dom.main.innerHTML = html;  
@@ -397,7 +397,7 @@ const render = {
                 </div>  
             </div>  
             ${nav}  
-            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
+            <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('quiz')}  
         `;  
         dom.main.innerHTML = html;  
@@ -437,7 +437,7 @@ const render = {
                 <button class="control-btn" id="nextQuizBtn" style="width:100%; margin-top:25px; display:none;">Next Question</button>  
             </div>  
             ${nav}  
-            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
+            <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('quiz')}  
         `;  
         dom.main.innerHTML = html;  
@@ -488,7 +488,7 @@ const render = {
                 <button class="control-btn" id="nextCriticalBtn" style="width:100%; margin-top:25px; display:none;">Next Scenario</button>  
             </div>  
             ${nav}  
-            <div class="back-home-ghost"><button data-action="backHome">← Home</button></div>  
+            <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('critical')}  
         `;  
         dom.main.innerHTML = html;  
@@ -532,7 +532,7 @@ const render = {
                 ${chapStatsHtml || '<p style="margin-top:10px;">No chapter data yet.</p>'}  
                 <div class="encouragement">💡 Keep up the great work!</div>  
                 <div class="nav-row">  
-                    <button class="control-btn" data-action="backHome">← Back to Chapters</button>  
+                    <button class="control-btn" data-action="backHome">🏠 Home</button>  
                 </div>  
             </div>  
         `;  
@@ -553,7 +553,7 @@ const render = {
                 <div class="mistake-rationale">📘 ${utils.escapeHTML(m.rationale)}</div>  
             </div>  
         `).join('');  
-        const html = `<div class="sum-card"><h3>📝 Mistakes Review</h3>${items}<div class="nav-row"><button class="control-btn" data-action="backHome">← Back</button></div></div>`;  
+        const html = `<div class="sum-card"><h3>📝 Mistakes Review</h3>${items}<div class="nav-row"><button class="control-btn" data-action="backHome">🏠 Home</button></div></div>`;  
         dom.main.innerHTML = html;  
         updateHeader('Mistakes', '', true);  
         utils.safeScrollTop();  
@@ -691,7 +691,7 @@ const quizEngine = {
                     <p style="color:var(--text-secondary);">${msg}</p>  
                     ${reviewBtn}  
                     <div class="nav-row">  
-                        <button class="control-btn" data-action="backHome">← Home</button>  
+                        <button class="control-btn" data-action="backHome">🏠 Home</button>  
                     </div>  
                 </div>  
             `;  
@@ -743,7 +743,7 @@ const criticalEngine = {
                     <div style="font-size:3rem; font-weight:bold; color:var(--primary-accent); margin:20px 0;">${accuracy}%</div>  
                     <p>Correct: ${state.criticalScore}/${state.criticalData.length}</p>  
                     <div class="nav-row">  
-                        <button class="control-btn" data-action="backHome">← Home</button>  
+                        <button class="control-btn" data-action="backHome">🏠 Home</button>  
                     </div>  
                 </div>  
             `;  
