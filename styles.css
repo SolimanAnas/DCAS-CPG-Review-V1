@@ -87,19 +87,34 @@
 }
 
 /* ---------- GLOBAL ---------- */
-body {
-    font-family: 'Inter', sans-serif;
+
+/* FIX: White scroll glitch on Android Chrome.
+   background-attachment:fixed on <body> causes repaint flashes during scroll.
+   Solution: paint the gradient on <html> so it's always behind everything,
+   then let body be transparent so the html background shows through. */
+html {
     background: var(--bg-gradient);
     background-attachment: fixed;
+    min-height: 100%;
+    transition: background 0.5s ease;
+    margin: 0;      /* ensure no default browser margin */
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: transparent; /* let html background show – prevents white flash */
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: background 0.5s ease;
-    padding-bottom: 0; /* removed – moved to main to keep footer flush at bottom */
+    transition: color 0.3s ease;
+    margin: 0;          /* kill any default browser body margin */
+    padding: 0;
+    padding-bottom: 0;
     user-select: none;
     -webkit-user-select: none;
-    overflow-x: hidden; /* prevent horizontal scroll */
+    overflow-x: hidden;
     width: 100%;
 }
 
@@ -116,12 +131,15 @@ header {
     height: var(--header-height);
     position: sticky;
     top: 0;
+    left: 0;        /* force full-width on Android Chrome – prevents right-side gap */
+    right: 0;
     z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease;
     transform: translateY(0);
     width: 100%;
     box-sizing: border-box;
+    isolation: isolate; /* own compositing layer = no border gap on GPU scroll */
 }
 header.header-hidden {
     transform: translateY(-100%);
@@ -193,13 +211,14 @@ header.header-hidden {
 /* ---------- MAIN LAYOUT ---------- */
 main {
     flex: 1;
-    padding: 24px 20px;
-    padding-bottom: 110px; /* space for sticky bottom nav – footer stays flush */
+    padding: 30px 20px;              /* 30px top = 24px + 6px for progress bar clearance */
+    padding-bottom: 110px;
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    scroll-padding-top: calc(var(--header-height) + 12px);
 }
 
 /* ---------- SECTION TABS ---------- */
@@ -725,8 +744,12 @@ footer {
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     width: 100%;
     box-sizing: border-box;
-    /* NO margin-top: auto – body flex handles this via main flex:1 */
     flex-shrink: 0;
+    /* Prevent any right-side gap – same fix as header */
+    position: relative;
+    left: 0;
+    right: 0;
+    isolation: isolate;
 }
 
 /* Dark theme – brighten text so it's readable on dark bg */
@@ -792,10 +815,6 @@ footer a { color: inherit; text-decoration: underline; }
         display: block;
         box-sizing: border-box;
     }
-    /* Prevent header icon buttons from overflowing on tiny screens */
-    .header-right { gap: 6px; }
-    .icon-btn { width: 36px; height: 36px; font-size: 1rem; }
-    .stats-badge { display: none; } /* hide on very small screens to free space */
     /* Nav row stacks on tiny screens */
     .nav-row {
         flex-direction: column;
@@ -805,6 +824,30 @@ footer a { color: inherit; text-decoration: underline; }
         width: 100%;
         min-width: unset;
     }
+}
+
+/* ── Very small screens: reduce header clutter ── */
+@media (max-width: 400px) {
+    /* Tighten header spacing */
+    header { padding: 0 10px; }
+    .header-left { gap: 8px; }
+    .header-right { gap: 6px; }
+    .icon-btn { width: 34px; height: 34px; font-size: 1rem; border-radius: 10px; }
+
+    /* Hide About button – accessible via drawer */
+    #headerAboutBtn { display: none !important; }
+
+    /* Collapse stats badge to icon-only */
+    .stats-badge .stats-divider,
+    .stats-badge span:last-child { display: none; }
+    .stats-badge {
+        padding: 5px 8px;
+        gap: 4px;
+        font-size: 0.7rem;
+    }
+
+    /* Keep title readable */
+    .header-text h1 { font-size: 0.9rem; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 /* ========== MOBILE UX IMPROVEMENTS ========== */
@@ -825,11 +868,15 @@ footer a { color: inherit; text-decoration: underline; }
 .progress-bar-scroll {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, var(--primary-accent), color-mix(in srgb, var(--primary-accent) 70%, white));
-    transition: width 0.2s ease;
-    border-radius: 0 2px 2px 0;
-    /* No glow – clean, professional appearance */
+    /* Bright cyan – clearly visible on all 4 themes including dark navy */
+    background: linear-gradient(90deg, #22d3ee, #67e8f9);
+    transition: width 0.25s ease;
+    border-radius: 0 3px 3px 0;
 }
+/* Theme-specific accent colors for progress bar */
+[data-theme="light"] .progress-bar-scroll   { background: linear-gradient(90deg, #0056b3, #38bdf8); }
+[data-theme="sepia"] .progress-bar-scroll   { background: linear-gradient(90deg, #8b6b4f, #c4a26b); }
+[data-theme="forest"] .progress-bar-scroll  { background: linear-gradient(90deg, #84a98c, #b7e4c7); }
 header.header-hidden ~ main .progress-container-scroll {
     top: 0 !important;
 }
@@ -896,24 +943,42 @@ header.header-hidden ~ main .progress-container-scroll {
 }
 .back-home-ghost a,
 .back-home-ghost button {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: var(--text-primary);
-    font-size: 0.9rem;
+    /* Clearly visible Home button on all themes */
+    background: rgba(255, 255, 255, 0.18);
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     text-decoration: none;
-    opacity: 0.9;
-    transition: 0.2s;
     cursor: pointer;
-    padding: 8px 20px;
+    padding: 12px 32px;
     border-radius: 40px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    display: inline-block;
+}
+[data-theme="light"] .back-home-ghost button,
+[data-theme="sepia"] .back-home-ghost button {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.25);
+    color: var(--text-primary);
+    text-shadow: none;
 }
 .back-home-ghost a:hover,
 .back-home-ghost button:hover {
-    opacity: 1;
-    background: rgba(255,255,255,0.2);
-    color: var(--primary-accent);
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+}
+[data-theme="light"] .back-home-ghost button:hover,
+[data-theme="sepia"] .back-home-ghost button:hover {
+    background: rgba(0, 0, 0, 0.14);
     border-color: var(--primary-accent);
+    color: var(--primary-accent);
+    transform: translateY(-1px);
 }
 
 /* Reduce header icon visual weight */
