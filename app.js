@@ -854,7 +854,8 @@ document.addEventListener('click', function(e) {
     // Handle navigation
     if (action === 'backHome') {
         e.preventDefault();
-        window.history.back();
+        const isInSubfolder = window.location.pathname.includes('/chapters/');
+        window.location.href = isInSubfolder ? '../index.html' : 'index.html';
         return;
     }
     
@@ -961,7 +962,9 @@ document.addEventListener('DOMContentLoaded', function() {
         homeBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            window.history.back();
+            // Navigate to actual home – detect if inside a /chapters/ subfolder
+            const isInSubfolder = window.location.pathname.includes('/chapters/');
+            window.location.href = isInSubfolder ? '../index.html' : 'index.html';
         }, { capture: true });
     }
 });
