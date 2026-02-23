@@ -798,6 +798,44 @@ window.addEventListener('scroll', () => {
     }
 });
 
+   // ---------- BOTTOM NAV VISIBILITY (appears after 50% scroll) ----------
+function initBottomNav() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (!bottomNav) return;
+    
+    function checkScroll() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        
+        if (scrolled > 50) {
+            bottomNav.classList.add('visible');
+        } else {
+            bottomNav.classList.remove('visible');
+        }
+    }
+    
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('resize', checkScroll);
+    checkScroll(); // initial check
+}
+
+// Call it after every render that adds a bottom nav
+// We can hook into the render functions, but easiest is to call it once after DOMContentLoaded,
+// and also after each render that replaces the nav.
+// We'll modify the render functions to call initBottomNav again.
+// But for simplicity, we'll add a global check that runs after each render.
+
+// We'll override the render functions to re‑init the nav after they finish.
+// However, to keep it simple, we can add a MutationObserver that watches for added bottom-nav.
+// That's robust and doesn't require changing every render function.
+
+const observer = new MutationObserver(() => {
+    if (document.querySelector('.bottom-nav')) {
+        initBottomNav();
+    }
+});
+observer.observe(document.body, { childList: true, subtree: true }); 
 // ---------- COMPLETE EVENT DELEGATION ----------  
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button, .nav-pill');  
