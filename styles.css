@@ -114,6 +114,12 @@ header {
     top: 0;
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    transform: translateY(0);
+}
+
+header.header-hidden {
+    transform: translateY(-100%);
 }
 
 .header-left {
@@ -862,6 +868,7 @@ footer {
     box-sizing: border-box;
     box-shadow: 0 -5px 20px rgba(255, 255, 255, 0.15);
 }
+
 /* Forest theme footer override */
 [data-theme="forest"] footer {
     background: rgba(30, 75, 62, 0.8) !important;
@@ -1137,18 +1144,18 @@ a::-moz-focus-inner,
     opacity: 1;
 }
 
-/* View tabs with better contrast */
+/* View tabs with better contrast and less curved outer container */
 .view-tabs {
     display: flex;
     gap: 8px;
     margin: 10px 0 15px;
     flex-wrap: nowrap;
     justify-content: center;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.1);
     backdrop-filter: blur(8px);
-    border-radius: 50px;
+    border-radius: 30px;           /* less pill‑like */
     padding: 6px;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
@@ -1156,7 +1163,7 @@ a::-moz-focus-inner,
     flex: 1 1 0;
     min-width: 0;
     padding: 10px;
-    border-radius: 40px;
+    border-radius: 30px;           /* matches outer radius */
     border: none;
     font-weight: 600;
     font-size: 0.95rem;
@@ -1173,18 +1180,23 @@ a::-moz-focus-inner,
     gap: 6px;
     border: 1px solid transparent;
 }
+
+/* Inactive tabs – much more visible */
 .view-tab:not(.active-view) {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.2);
     color: var(--text-secondary);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    opacity: 0.9;
 }
+
 .view-tab.active-view {
     background: var(--primary-accent);
     color: white;
     border: 1px solid transparent;
 }
+
 .view-tab:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.3);
     color: var(--text-primary);
 }
 
