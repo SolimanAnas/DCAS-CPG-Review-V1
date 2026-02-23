@@ -1050,7 +1050,7 @@ a::-moz-focus-inner,
 
 /* ========== MOBILE UX IMPROVEMENTS ========== */
 
-/* Scroll progress bar */
+/* Scroll progress bar – moves with header and glows */
 .progress-container-scroll {
     position: fixed;
     top: var(--header-height);
@@ -1059,30 +1059,40 @@ a::-moz-focus-inner,
     height: 4px;
     background: rgba(255,255,255,0.1);
     z-index: 999;
+    transition: top 0.3s ease;
+    box-shadow: 0 0 10px var(--primary-accent);
 }
+
 .progress-bar-scroll {
     height: 100%;
     width: 0%;
     background: var(--primary-accent);
     transition: width 0.1s ease;
+    box-shadow: 0 0 15px var(--primary-accent);
 }
 
-/* Slim section navigation (Previous/Next) */
+/* When header is hidden, progress bar moves to top */
+header.header-hidden ~ main .progress-container-scroll {
+    top: 0 !important;
+}
+
+/* Slim section navigation (Previous/Next) – bolder */
 .section-nav-slim {
     display: flex;
     gap: 8px;
     margin: 15px 0 10px;
     justify-content: space-between;
 }
+
 .section-nav-slim button {
     flex: 1;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text-secondary);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--text-primary);
     border-radius: 30px;
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
     backdrop-filter: blur(5px);
     cursor: pointer;
     transition: all 0.2s;
@@ -1090,20 +1100,25 @@ a::-moz-focus-inner,
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .section-nav-slim button:hover {
-    background: rgba(255,255,255,0.1);
-    color: var(--text-primary);
-    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.3);
+    color: white;
+    border-color: rgba(255,255,255,0.5);
 }
+
 .section-nav-slim button:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
 .section-nav-slim .finish-chapter {
     background: var(--primary-accent);
     color: white;
     border: none;
+    font-weight: 700;
 }
+
 .section-nav-slim .finish-chapter:hover {
     background: #003d7a;
 }
@@ -1113,6 +1128,7 @@ a::-moz-focus-inner,
     text-align: center;
     margin: 20px 0 10px;
 }
+
 .back-home-ghost a,
 .back-home-ghost button {
     background: rgba(255,255,255,0.1);
@@ -1127,6 +1143,7 @@ a::-moz-focus-inner,
     border-radius: 40px;
     backdrop-filter: blur(5px);
 }
+
 .back-home-ghost a:hover,
 .back-home-ghost button:hover {
     opacity: 1;
@@ -1140,6 +1157,7 @@ a::-moz-focus-inner,
     opacity: 0.8;
     transition: opacity 0.2s;
 }
+
 .header-right .icon-btn:hover {
     opacity: 1;
 }
@@ -1148,12 +1166,12 @@ a::-moz-focus-inner,
 .view-tabs {
     display: flex;
     gap: 8px;
-    margin: 10px 0 15px;
+    margin: 15px 0 10px;
     flex-wrap: nowrap;
     justify-content: center;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(8px);
-    border-radius: 30px;           /* less pill‑like */
+    border-radius: 30px;
     padding: 6px;
     border: 1px solid rgba(255,255,255,0.2);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -1163,7 +1181,7 @@ a::-moz-focus-inner,
     flex: 1 1 0;
     min-width: 0;
     padding: 10px;
-    border-radius: 30px;           /* matches outer radius */
+    border-radius: 30px;
     border: none;
     font-weight: 600;
     font-size: 0.95rem;
@@ -1198,6 +1216,20 @@ a::-moz-focus-inner,
 .view-tab:hover {
     background: rgba(255,255,255,0.3);
     color: var(--text-primary);
+}
+
+/* Notification drawer – improve font size */
+.notification-drawer .toggle-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+}
+
+.drawer-stats .stat-text {
+    font-size: 0.8rem;
+}
+
+.drawer-stats .stat-num {
+    font-size: 1.4rem;
 }
 
 /* Responsive adjustments for view tabs on small screens */
