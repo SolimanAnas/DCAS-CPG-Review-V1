@@ -44,6 +44,7 @@
     --header-height: 72px;
 }
 
+
 /* ========== FONT SIZE ACCESSIBILITY ========== */
 /* Default (medium). html font-size controls all rem-based sizing */
 html[data-font-size="small"]  { font-size: 13px; }
@@ -94,10 +95,9 @@ html[data-font-size="xl"]     { font-size: 22px; }
 .font-btn[data-size="xl"]     { font-size: 1.2rem;  }
 
 
-
 /* ─── AMOLED theme – true black for OLED battery saving ─── */
 [data-theme="amoled"] {
-    --bg-gradient:      #000000;           /* pure black – OLED pixels OFF */
+    --bg-gradient:      #000000;
     --glass-bg:         rgba(255,255,255,0.06);
     --glass-border:     rgba(255,255,255,0.12);
     --glass-shadow:     0 8px 24px rgba(0,0,0,0.8);
@@ -107,7 +107,6 @@ html[data-font-size="xl"]     { font-size: 22px; }
     --toggle-bg:        #111111;
     --toggle-active:    #00d4ff;
     --primary-accent:   #00bcd4;
-    /* Keep action button gradients readable on black */
     --btn-grad-sum:     linear-gradient(180deg, #1a1200 0%, #2a1e00 100%);
     --btn-grad-flash:   linear-gradient(180deg, #001122 0%, #001a33 100%);
     --btn-grad-quiz:    linear-gradient(180deg, #001a00 0%, #002200 100%);
@@ -117,12 +116,14 @@ html[data-font-size="xl"]     { font-size: 22px; }
     --border-quiz: #002200; --text-quiz: #4ade80;
     --border-scen: #220000; --text-scen: #f87171;
 }
-/* AMOLED: html background pure black, no gradient */
+
+/* AMOLED: html background pure black */
 [data-theme="amoled"] html,
 html[data-theme="amoled"] {
     background: #000000 !important;
 }
-/* AMOLED: glassmorph cards — very dark, not transparent-white */
+
+/* AMOLED: glass cards */
 [data-theme="amoled"] .sum-card,
 [data-theme="amoled"] .quiz-container,
 [data-theme="amoled"] .quiz-setup-container,
@@ -130,33 +131,30 @@ html[data-theme="amoled"] {
     background: #0d0d0d;
     border: 1px solid rgba(255,255,255,0.08);
 }
+
 [data-theme="amoled"] header {
     background: rgba(0,0,0,0.85);
     border-bottom-color: rgba(255,255,255,0.08);
 }
+
 [data-theme="amoled"] footer {
     background: #000000;
     color: rgba(255,255,255,0.5);
     border-top-color: rgba(255,255,255,0.06);
 }
+
 [data-theme="amoled"] .bottom-nav {
     background: rgba(0,0,0,0.9);
     border-top-color: rgba(255,255,255,0.06);
 }
+
 [data-theme="amoled"] .card__face--front,
 [data-theme="amoled"] .card__face--back {
     background: #0d0d0d;
     border-color: rgba(255,255,255,0.1);
     color: #e8f4fd;
-}[data-theme="amoled"] .section-nav-slim button {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.15);
 }
-/* AMOLED menu card */
-[data-theme="amoled"] .menu-card {
-    background: #0d0d0d;
-    border-color: rgba(255,255,255,0.07);
-}
+
 
 /* Light theme */
 [data-theme="light"] {
@@ -202,10 +200,6 @@ html[data-theme="amoled"] {
 
 /* ---------- GLOBAL ---------- */
 
-/* FIX: White scroll glitch on Android Chrome.
-   background-attachment:fixed on <body> causes repaint flashes during scroll.
-   Solution: paint the gradient on <html> so it's always behind everything,
-   then let body be transparent so the html background shows through. */
 html {
     background: var(--bg-gradient);
     background-attachment: fixed;
@@ -214,7 +208,7 @@ html {
     margin: 0;
     padding: 0;
 }
-/* AMOLED: override to pure black with no attachment overhead */
+
 html[data-theme="amoled"] {
     background: #000000;
     background-attachment: scroll;
@@ -222,13 +216,13 @@ html[data-theme="amoled"] {
 
 body {
     font-family: 'Inter', sans-serif;
-    background: transparent; /* let html background show – prevents white flash */
+    background: transparent;
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     transition: color 0.3s ease;
-    margin: 0;          /* kill any default browser body margin */
+    margin: 0;
     padding: 0;
     padding-bottom: 0;
     user-select: none;
@@ -250,18 +244,19 @@ header {
     height: var(--header-height);
     position: sticky;
     top: 0;
-    left: 0;        /* force full-width on Android Chrome – prevents right-side gap */
+    left: 0;
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-    overflow: visible; /* allow progress bar to hang below */
+    overflow: visible;
     transition: transform 0.3s ease;
     transform: translateY(0);
     width: 100%;
     box-sizing: border-box;
-    isolation: isolate; /* own compositing layer = no border gap on GPU scroll */
-    margin: 0; /* ensure no extra margin */
+    isolation: isolate;
+    margin: 0;
 }
+
 header.header-hidden {
     transform: translateY(-100%);
 }
@@ -271,11 +266,13 @@ header.header-hidden {
     align-items: center;
     gap: 16px;
 }
+
 .header-right {
     display: flex;
     align-items: center;
     gap: 12px;
 }
+
 .header-text h1 {
     font-size: 1.1rem;
     font-weight: 800;
@@ -284,6 +281,7 @@ header.header-hidden {
     margin: 0;
     text-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
 .header-text p {
     font-size: 0.75rem;
     color: var(--header-text);
@@ -291,6 +289,7 @@ header.header-hidden {
     font-weight: 500;
     margin-top: 2px;
 }
+
 .icon-btn {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -305,10 +304,12 @@ header.header-hidden {
     cursor: pointer;
     transition: all 0.2s;
 }
+
 .icon-btn:active {
     transform: scale(0.95);
     background: rgba(255,255,255,0.4);
 }
+
 .stats-badge {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -322,6 +323,7 @@ header.header-hidden {
     gap: 10px;
     backdrop-filter: blur(10px);
 }
+
 .stats-divider {
     width: 1px;
     height: 14px;
@@ -329,17 +331,19 @@ header.header-hidden {
     opacity: 0.4;
 }
 
+
+
 /* ---------- MAIN LAYOUT ---------- */
 main {
     flex: 1;
-    padding: 30px 20px;              /* 30px top = 24px + 6px for progress bar clearance */
+    padding: 24px 20px;              /* reduced from 30px – progress bar now touches header */
     padding-bottom: 82px;            /* just clears the ~78px fixed bottom-nav, no dead gap */
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
-    scroll-padding-top: calc(var(--header-height) + 12px);
+    scroll-padding-top: calc(var(--header-height) + 8px);
 }
 
 /* ---------- SECTION TABS ---------- */
@@ -393,10 +397,22 @@ main {
     color: var(--text-primary);
     margin: 30px 0 15px;
 }
-.sum-card p { margin: 15px 0; line-height: 1.6; color: var(--text-secondary); }
-.sum-card ul { margin-left: 25px; margin-bottom: 20px; }
-.sum-card li { margin-bottom: 8px; color: var(--text-secondary); line-height: 1.5; }
+.sum-card p {
+    margin: 15px 0;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+.sum-card ul {
+    margin-left: 25px;
+    margin-bottom: 20px;
+}
+.sum-card li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
 .sum-card strong { color: var(--text-primary); }
+
 .highlight-box {
     background: rgba(0, 123, 255, 0.1);
     color: #004085;
@@ -406,6 +422,7 @@ main {
     margin-top: 15px;
     border-radius: 0 8px 8px 0;
 }
+
 .red-flag { border-left-color: #dc3545; }
 .red-flag h3 { color: #dc3545; border-bottom-color: #dc3545; }
 .red-flag .highlight-box { background: #fff3cd; border-left-color: #856404; }
@@ -419,12 +436,14 @@ main {
     box-shadow: var(--glass-shadow);
     animation: fadeInUp 0.6s ease forwards;
 }
+
 .setup-grid {
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-top: 20px;
 }
+
 .setup-btn {
     background: white;
     padding: 18px;
@@ -451,6 +470,10 @@ main {
     color: #b7791f;
 }
 
+
+
+
+
 /* ---------- QUIZ GAME ---------- */
 .quiz-container {
     background: var(--glass-bg);
@@ -460,12 +483,14 @@ main {
     box-shadow: var(--glass-shadow);
     animation: fadeInUp 0.6s ease forwards;
 }
+
 .quiz-options {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 15px;
 }
+
 .option-btn {
     padding: 18px;
     background: rgba(255,255,255,0.8);
@@ -479,23 +504,28 @@ main {
     transition: all 0.2s;
     cursor: pointer;
 }
+
 .option-btn:active {
     background: #f0f0f0;
     transform: scale(0.99);
 }
+
 .option-btn.correct {
     background: #d4edda;
     border-color: #c3e6cb;
     color: #155724;
     box-shadow: inset 0 0 0 2px #c3e6cb;
 }
+
 .option-btn.wrong {
     background: #f8d7da;
     border-color: #f5c6cb;
     color: #721c24;
     box-shadow: inset 0 0 0 2px #f5c6cb;
 }
-.quiz-feedback, .critical-feedback {
+
+.quiz-feedback,
+.critical-feedback {
     margin-top: 25px;
     padding: 20px;
     border-radius: 12px;
@@ -505,18 +535,16 @@ main {
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-
-
 /* ---------- FLASHCARD 3D – FIXED SIZING & OVERLAY ---------- */
 .flashcards-view {
     display: flex;
     flex-direction: column;
-    min-height: 60vh; /* ensures enough space for the card */
+    min-height: 60vh;
     width: 100%;
 }
+
 .scene {
     width: 100%;
-    /* Responsive height: adjusts to available space, never too small or too large */
     flex: 1 1 auto;
     min-height: 250px;
     max-height: 500px;
@@ -524,6 +552,7 @@ main {
     margin: 8px 0;
     touch-action: pan-y;
 }
+
 .card {
     width: 100%;
     height: 100%;
@@ -534,9 +563,11 @@ main {
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     transform: translateZ(0);
 }
+
 .card.is-flipped {
     transform: rotateY(180deg);
 }
+
 .card__face {
     position: absolute;
     width: 100%;
@@ -555,9 +586,11 @@ main {
     border: 1px solid rgba(255,255,255,0.8);
     transform: translateZ(0);
     box-sizing: border-box;
-    overflow-y: auto; /* scroll if content overflows */
+    overflow-y: auto;
 }
+
 .card__face--front { color: #004e92; }
+
 .card__face--back {
     background: linear-gradient(135deg, #005c97 0%, #363795 100%);
     color: white;
@@ -567,6 +600,7 @@ main {
     line-height: 1.5;
     white-space: pre-wrap;
 }
+
 .category-badge {
     background: #e1f5fe;
     color: #0277bd;
@@ -578,6 +612,7 @@ main {
     letter-spacing: 1px;
     margin-bottom: 20px;
 }
+
 .fc-progress {
     text-align: center;
     font-size: 1rem;
@@ -590,6 +625,10 @@ main {
     width: fit-content;
 }
 
+
+
+
+
 /* ---------- CRITICAL SCENARIOS ---------- */
 .critical-card {
     background: var(--glass-bg);
@@ -598,6 +637,7 @@ main {
     padding: 28px;
     box-shadow: var(--glass-shadow);
 }
+
 .mistake-item {
     background: #fff3cd;
     border-left: 5px solid #ffeeba;
@@ -625,6 +665,7 @@ main {
     color: var(--text-sum);
     border: 1px solid var(--border-sum);
 }
+
 .control-btn:active { transform: translateY(1px); box-shadow: none; }
 .control-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -635,6 +676,7 @@ main {
     flex-wrap: wrap;
     margin: 20px 0;
 }
+
 .nav-row button {
     background: linear-gradient(to bottom, #00b4db, #0083b0);
     border: none;
@@ -648,10 +690,12 @@ main {
     transition: transform 0.1s, box-shadow 0.1s;
     min-width: 140px;
 }
+
 .nav-row button:active {
     transform: scale(0.96);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
 .nav-row button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .section-nav-row {
@@ -660,6 +704,7 @@ main {
     gap: 10px;
     margin-top: 15px;
 }
+
 .section-nav-row button {
     background: #e2e8f0;
     color: #1e293b;
@@ -672,6 +717,7 @@ main {
     flex: 1;
     transition: background 0.2s;
 }
+
 .section-nav-row button:hover { background: #cbd5e1; }
 .section-nav-row button:disabled { opacity: 0.4; pointer-events: none; }
 
@@ -685,13 +731,20 @@ main {
     box-shadow: var(--glass-shadow);
     animation: fadeInUp 0.8s ease forwards;
 }
+
 .progress-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
 }
-.progress-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+.progress-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
 .progress-container {
     height: 12px;
     background: rgba(0,0,0,0.05);
@@ -699,17 +752,20 @@ main {
     overflow: hidden;
     margin-bottom: 24px;
 }
+
 .progress-bar {
     height: 100%;
     border-radius: 10px;
     background: linear-gradient(90deg, #3b82f6, #0056b3);
     transition: width 1s ease-out;
 }
+
 .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
+
 .stat-box {
     background: rgba(0,0,0,0.03);
     padding: 16px;
@@ -719,13 +775,20 @@ main {
     gap: 4px;
     border: 1px solid rgba(0,0,0,0.05);
 }
+
 .stat-label {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
 }
-.stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
 .encouragement {
     margin-top: 20px;
     padding: 16px;
@@ -737,8 +800,12 @@ main {
     border: 1px solid var(--border-flash);
 }
 
+
+
+
 /* ---------- MENU CARDS (for index) ---------- */
 .menu-grid { display: grid; gap: 20px; }
+
 .menu-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -753,7 +820,12 @@ main {
     transform: translateY(20px);
     transition: transform 0.2s, box-shadow 0.2s;
 }
-.menu-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); }
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+}
+
 .menu-card[data-chapter] { border-left: 6px solid transparent; }
 .menu-card[data-chapter="universal"] { border-left-color: var(--accent-universal); }
 .menu-card[data-chapter="airway"] { border-left-color: var(--accent-airway); }
@@ -774,6 +846,7 @@ main {
     align-items: flex-start;
     margin-bottom: 12px;
 }
+
 .status-badge {
     font-size: 0.7rem;
     font-weight: 700;
@@ -784,14 +857,29 @@ main {
     padding: 4px 10px;
     border-radius: 6px;
 }
-.menu-card h2 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0 0 6px 0; line-height: 1.3; }
-.menu-card p { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 20px 0; line-height: 1.5; }
 
+.menu-card h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.menu-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+}
+
+/* ---------- MENU SUB OPTIONS ---------- */
 .menu-sub-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 10px;
 }
+
 .btn-action {
     display: flex;
     align-items: center;
@@ -807,30 +895,38 @@ main {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
 .btn-action:active { transform: translateY(1px); box-shadow: none; }
+
 .btn-summary {
     background: var(--btn-grad-sum);
     color: var(--text-sum);
     border: 1px solid var(--border-sum);
 }
+
 .btn-flash {
     background: var(--btn-grad-flash);
     color: var(--text-flash);
     border: 1px solid var(--border-flash);
 }
+
 .btn-quiz {
     background: var(--btn-grad-quiz);
     color: var(--text-quiz);
     border: 1px solid var(--border-quiz);
 }
+
 .btn-scenario {
     background: var(--btn-grad-scen);
     color: var(--text-scen);
     border: 1px solid var(--border-scen);
 }
 
+
+
 /* ---------- TOGGLE (for completion) ---------- */
 .toggle-wrapper { position: relative; z-index: 5; }
+
 .toggle-label {
     display: flex;
     align-items: center;
@@ -840,7 +936,9 @@ main {
     font-weight: 600;
     color: var(--text-secondary);
 }
+
 .toggle-input { display: none; }
+
 .toggle-track {
     width: 44px;
     height: 24px;
@@ -850,6 +948,7 @@ main {
     transition: background 0.3s;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
+
 .toggle-track::after {
     content: '';
     position: absolute;
@@ -862,13 +961,14 @@ main {
     transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
 .toggle-input:checked + .toggle-track { background: var(--toggle-active); }
 .toggle-input:checked + .toggle-track::after { transform: translateX(20px); }
 
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    padding: 16px 20px 82px; /* bottom = 82px clears the ~78px fixed bottom-nav */
+    padding: 16px 20px 82px;
     color: var(--text-secondary);
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.35);
@@ -884,27 +984,31 @@ footer {
     isolation: isolate;
 }
 
-/* Dark theme – brighten text so it's readable on dark bg */
+/* Dark theme footer */
 [data-theme="dark"] footer {
     color: rgba(255, 255, 255, 0.8);
     background: rgba(0, 0, 0, 0.5);
     border-top-color: rgba(255, 255, 255, 0.1);
 }
+
 [data-theme="light"] footer {
     color: #334155;
     background: rgba(255, 255, 255, 0.4);
     border-top-color: rgba(0, 0, 0, 0.08);
 }
+
 [data-theme="sepia"] footer {
     color: #4a3c2c;
     background: rgba(180, 140, 100, 0.3);
     border-top-color: rgba(180, 140, 100, 0.4);
 }
+
 [data-theme="forest"] footer {
     background: rgba(20, 60, 45, 0.7) !important;
     color: #d4edda !important;
     border-top-color: rgba(100, 180, 130, 0.2);
 }
+
 footer div:first-child { font-weight: 500; margin-bottom: 4px; }
 footer div:last-child  { opacity: 0.85; font-size: 0.7rem; }
 footer a { color: inherit; text-decoration: underline; }
@@ -913,226 +1017,41 @@ footer a { color: inherit; text-decoration: underline; }
     to { opacity: 1; transform: translateY(0); }
 }
 
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 600px) {
     .header-text h1 { font-size: 1rem; }
     .header-text p { display: none; }
     .section-nav-row { flex-direction: column; }
     .nav-row button { padding: 10px 20px; min-width: 120px; }
-    .quiz-container, .quiz-setup-container, .critical-card, .sum-card { padding: 20px; }
+    .quiz-container,
+    .quiz-setup-container,
+    .critical-card,
+    .sum-card { padding: 20px; }
     .sum-card h3 { font-size: 1.3rem; }
 }
 
-/* ── Small screen section nav: stack vertically to prevent overlap ── */
-@media (max-width: 420px) {
-    .section-nav-slim {
-        flex-direction: column;
-        gap: 6px;
-    }
-    .section-nav-slim button {
-        width: 100%;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 0.82rem;
-        padding: 9px 12px;
-    }
-    .back-home-ghost button,
-    .back-home-ghost a {
-        width: 100%;
-        display: block;
-        box-sizing: border-box;
-    }
-    /* Nav row stacks on tiny screens */
-    .nav-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .nav-row button {
-        width: 100%;
-        min-width: unset;
-    }
-}
-
-/* ── Very small screens: reduce header clutter ── */
-@media (max-width: 400px) {
-    /* Tighten header spacing */
-    header { padding: 0 10px; }
-    .header-left { gap: 8px; }
-    .header-right { gap: 6px; }
-    .icon-btn { width: 34px; height: 34px; font-size: 1rem; border-radius: 10px; }
-
-    /* Hide About button – accessible via drawer */
-    #headerAboutBtn { display: none !important; }
-
-    /* Collapse stats badge to icon-only */
-    .stats-badge .stats-divider,
-    .stats-badge span:last-child { display: none; }
-    .stats-badge {
-        padding: 5px 8px;
-        gap: 4px;
-        font-size: 0.7rem;
-    }
-
-    /* Keep title readable */
-    .header-text h1 { font-size: 0.9rem; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-}
-
-/* ========== MOBILE UX IMPROVEMENTS ========== */
-
-/* 📊 GLOWING CHAPTER PROGRESS BAR – full width */
-.progress-container-scroll {
-    /* Lives INSIDE <header> as an absolute child — always flush with header bottom,
-       never affected by main's opacity animation */
-    position: absolute;
-    bottom: -6px;            /* hang 6px below header's bottom edge */
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    z-index: 1001;           /* above header z-index so shadow doesn't hide it */
-    pointer-events: none;
-    overflow: hidden;
-    border-radius: 0 0 3px 3px;
-}
-.progress-bar-scroll {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #22d3ee, #67e8f9);
-    transition: width 0.2s ease;
-    border-radius: 0 3px 3px 0;
-}
-/* Theme accent colors */
-[data-theme="light"] .progress-bar-scroll   { background: linear-gradient(90deg, #0056b3, #38bdf8); }
-[data-theme="sepia"] .progress-bar-scroll   { background: linear-gradient(90deg, #8b6b4f, #c4a26b); }
-[data-theme="forest"] .progress-bar-scroll  { background: linear-gradient(90deg, #84a98c, #b7e4c7); }
-[data-theme="amoled"] .progress-bar-scroll  { background: linear-gradient(90deg, #00bcd4, #00e5ff); }
-
-/* 🩺 KPI & ALERT BOXES */
-.kpi-box {
-    background: rgba(59, 130, 246, 0.15);
-    border-left: 5px solid #3b82f6;
-    padding: 18px;
-    border-radius: 4px 16px 16px 4px;
-    margin: 20px 0;
-}
-
-/* Slim section navigation (Previous/Next) – bolder */
-.section-nav-slim {
-    display: flex;
-    gap: 8px;
-    margin: 15px 0 10px;
-    justify-content: space-between;
-}
-.section-nav-slim button {
-    flex: 1;
-    background: rgba(255,255,255,0.15);
-    border: 1.5px solid rgba(255,255,255,0.35);
-    color: #ffffff;               /* always white – visible on any dark bg */
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    border-radius: 30px;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-/* Light & sepia themes – use dark text for readability */
-[data-theme="light"] .section-nav-slim button,
-[data-theme="sepia"] .section-nav-slim button {
-    background: rgba(0,0,0,0.07);
-    border-color: rgba(0,0,0,0.15);
-    color: var(--text-primary);
-    text-shadow: none;
-}
-.section-nav-slim button:hover {
-    background: rgba(255,255,255,0.28);
-    border-color: rgba(255,255,255,0.6);
-}
-.section-nav-slim button:disabled { opacity: 0.3; cursor: not-allowed; }
-.section-nav-slim .finish-chapter {
-    background: var(--primary-accent);
-    color: white;
-    border: none;
-    font-weight: 700;
-}
-.section-nav-slim .finish-chapter:hover { filter: brightness(1.1); }
-
-/* Ghost text link for back home */
-.back-home-ghost {
-    text-align: center;
-    margin: 20px 0 10px;
-}
-.back-home-ghost a,
-.back-home-ghost button {
-    /* Clearly visible Home button on all themes */
-    background: rgba(255, 255, 255, 0.18);
-    border: 1.5px solid rgba(255, 255, 255, 0.55);
-    color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    cursor: pointer;
-    padding: 12px 32px;
-    border-radius: 40px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: background 0.2s, border-color 0.2s, transform 0.1s;
-    display: inline-block;
-}
-[data-theme="light"] .back-home-ghost button,
-[data-theme="sepia"] .back-home-ghost button {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.25);
-    color: var(--text-primary);
-    text-shadow: none;
-}
-.back-home-ghost a:hover,
-.back-home-ghost button:hover {
-    background: rgba(255, 255, 255, 0.28);
-    border-color: rgba(255, 255, 255, 0.8);
-    transform: translateY(-1px);
-}
-[data-theme="light"] .back-home-ghost button:hover,
-[data-theme="sepia"] .back-home-ghost button:hover {
-    background: rgba(0, 0, 0, 0.14);
-    border-color: var(--primary-accent);
-    color: var(--primary-accent);
-    transform: translateY(-1px);
-}
-
-/* Reduce header icon visual weight */
-.header-right .icon-btn { opacity: 0.8; transition: opacity 0.2s; }
-.header-right .icon-btn:hover { opacity: 1; }
-
-/* 📱 STICKY BOTTOM NAVIGATION – redesigned */
+/* ---------- STICKY BOTTOM NAV ---------- */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(10, 20, 30, 0.3);  /* very transparent */
+    background: rgba(10, 20, 30, 0.3);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-around;
-    padding: 6px 8px 18px 8px;  /* reduced height */
+    padding: 6px 8px 18px 8px;
     z-index: 2000;
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    opacity: 0;                  /* hidden by default */
-    transform: translateY(100%); /* off-screen */
-    pointer-events: none;        /* not clickable when hidden */
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none;
 }
+
 .bottom-nav.visible {
     opacity: 1;
     transform: translateY(0);
@@ -1142,26 +1061,22 @@ footer a { color: inherit; text-decoration: underline; }
 .nav-pill {
     flex: 1;
     margin: 0 4px;
-    padding: 8px 4px;            /* smaller padding */
-    border-radius: 20px;          /* less curved */
+    padding: 8px 4px;
+    border-radius: 20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: white !important;       /* force white text */
+    color: white !important;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 0.7rem;            /* smaller font */
+    font-size: 0.7rem;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s;
     cursor: pointer;
     backdrop-filter: blur(4px);
 }
-.nav-pill i {
-    font-size: 1rem;              /* smaller icons */
-    margin-bottom: 2px;
-    display: block;
-}
+
 .nav-pill.active {
     background: var(--primary-accent);
     border-color: #60a5fa;
@@ -1169,442 +1084,25 @@ footer a { color: inherit; text-decoration: underline; }
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
     transform: translateY(-1px);
 }
-.nav-pill:not(.active):hover {
-    background: rgba(255,255,255,0.2);
-}
-
-/* ---------- View tabs (fallback) – keep but likely unused ---------- */
-.view-tabs {
-    display: flex;
-    gap: 8px;
-    margin: 15px 0 10px;
-    flex-wrap: nowrap;
-    justify-content: center;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px);
-    border-radius: 30px;
-    padding: 6px;
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-.view-tab {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 10px;
-    border-radius: 30px;
-    border: none;
-    font-weight: 600;
-    font-size: 0.95rem;
-    background: transparent;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border: 1px solid transparent;
-}
-.view-tab:not(.active-view) {
-    background: rgba(255,255,255,0.2);
-    color: var(--text-secondary);
-    border: 1px solid rgba(255,255,255,0.3);
-    opacity: 0.9;
-}
-.view-tab.active-view {
-    background: var(--primary-accent);
-    color: white;
-    border: 1px solid transparent;
-}
-.view-tab:hover {
-    background: rgba(255,255,255,0.3);
-    color: var(--text-primary);
-}
-
-/* Notification drawer – improve font size */
-.notification-drawer .toggle-label { font-size: 0.85rem; letter-spacing: 0.3px; }
-.drawer-stats .stat-text { font-size: 0.8rem; }
-.drawer-stats .stat-num { font-size: 1.4rem; }
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-    .bottom-nav { padding: 4px 6px 14px 6px; }
-    .nav-pill { font-size: 0.65rem; padding: 6px 2px; }
-    .nav-pill i { font-size: 0.9rem; }
-    .view-tabs { flex-wrap: wrap; border-radius: 30px; padding: 4px; }
-    .view-tab { flex: 1 1 calc(50% - 8px); white-space: normal; font-size: 0.85rem; padding: 10px 4px; }
-}
-
-
-/* ═══════════════════════════════════════════════════════════
-   NEW FEATURE STYLES: battery, AMOLED badge, last-visited,
-   theme-row grid, content transitions
-═══════════════════════════════════════════════════════════ */
-
-/* ── Battery Indicator ─────────────────────────────────── */
-.bat-indicator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--header-text);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 4px 8px;
-    opacity: 0.85;
-    transition: background 0.3s, color 0.3s;
-    white-space: nowrap;
-}
-.bat-indicator .bat-pct { font-variant-numeric: tabular-nums; }
-.bat-indicator.bat-low {
-    background: rgba(220,38,38,0.25);
-    border-color: rgba(220,38,38,0.5);
-    color: #fca5a5;
-    animation: bat-pulse 2s ease-in-out infinite;
-}
-.bat-indicator.bat-charging {
-    background: rgba(34,197,94,0.2);
-    border-color: rgba(34,197,94,0.4);
-    color: #86efac;
-}
-@keyframes bat-pulse {
-    0%, 100% { opacity: 0.85; }
-    50%       { opacity: 0.45; }
-}
-
-/* ── AMOLED Power-Saving Badge ─────────────────────────── */
-.amoled-badge {
-    display: none;       /* shown via JS when amoled theme active */
-    align-items: center;
-    gap: 3px;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: #00e5ff;
-    background: rgba(0,188,212,0.12);
-    border: 1px solid rgba(0,188,212,0.3);
-    border-radius: 20px;
-    padding: 3px 8px;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-/* ── Last Visited Widget ────────────────────────────────── */
-#lastVisitedSection {
-    margin-bottom: 4px;
-}
-.lv-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 0 2px;
-}
-.lv-heading {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.lv-clear {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-    cursor: pointer;
-    opacity: 0.5;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: opacity 0.2s;
-}
-.lv-clear:hover { opacity: 1; }
-.lv-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.lv-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    text-decoration: none;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: background 0.2s, transform 0.15s;
-    color: var(--text-primary);
-}
-.lv-item:active { transform: scale(0.98); background: rgba(255,255,255,0.9); }
-.lv-icon { font-size: 1.2rem; flex-shrink: 0; }
-.lv-info { flex: 1; min-width: 0; }
-.lv-title {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.lv-time {
-    font-size: 0.72rem;
-    color: var(--text-secondary);
-    margin-top: 2px;
-}
-.lv-arrow {
-    font-size: 1.3rem;
-    color: var(--primary-accent);
-    font-weight: 300;
-    flex-shrink: 0;
-}
-/* Dark / AMOLED overrides for last-visited */
-[data-theme="dark"] .lv-item,
-[data-theme="amoled"] .lv-item {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.12);
-}
-[data-theme="dark"] .lv-title,
-[data-theme="amoled"] .lv-title { color: #e8f4fd; }
-[data-theme="dark"] .lv-time,
-[data-theme="amoled"] .lv-time  { color: rgba(255,255,255,0.45); }
-[data-theme="amoled"] .lv-item  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-
-/* ── Content Fade-In Transition (CSS class, not inline opacity) ── */
-/* CRITICAL: NO transform on #mainContent — CSS transforms create a stacking context
-   that makes position:fixed children position relative to the element, not the viewport.
-   This was causing the progress bar to scroll with the content instead of staying fixed. */
-#mainContent {
-    will-change: opacity;   /* transform here would permanently break position:fixed children */
-}
-#mainContent.content-enter {
-    animation: contentFadeIn 0.22s ease forwards;
-}
-@keyframes contentFadeIn {
-    from { opacity: 0; }  /* opacity-only — no translateY */
-    to   { opacity: 1; }
-}
-
-/* ── Drawer theme/shortcut grids ────────────────────────── */
-/* Theme row: 5 columns */
-.toggles-grid.theme-row {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
-}
-/* Shortcut row: 4 columns */
-.toggles-grid.shortcut-row {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-}
-/* AMOLED toggle button accent */
-.toggle-btn.amoled-btn {
-    background: #111111;
-    border-color: rgba(0,188,212,0.3);
-    color: #00e5ff;
-    font-size: 1rem;
-}
-.toggle-btn.amoled-btn.active {
-    background: #000000;
-    border-color: #00bcd4;
-    box-shadow: 0 0 14px rgba(0,188,212,0.5);
-}
-
-/* Hide battery on very small screens to avoid header crowding */
-@media (max-width: 380px) {
-    .bat-indicator { display: none !important; }
-    .amoled-badge  { display: none !important; }
-}
-
-
-
-/* ========================================================================
-   CENTRALIZED STYLES (moved from index.html inline <style> block)
-   ======================================================================== */
-
-/* ---------- SEARCH BAR ---------- */
-.search-container {
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 40px;
-    padding: 4px 4px 4px 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: var(--glass-shadow);
-}
-.search-container span {
-    font-size: 1.2rem;
-    margin-right: 8px;
-    color: var(--text-secondary);
-}
-.search-container input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    padding: 12px 0;
-    font-size: 1rem;
-    color: var(--text-primary);
-    outline: none;
-}
-.search-container input::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.7;
-}
-.search-container button {
-    background: transparent;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-right: 4px;
-    padding: 0;
-}
-.search-container button:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
-.search-container button:active { transform: scale(0.95); }
-
-/* ---------- MENU CARDS (home page) ---------- */
-.menu-card.filtered-out { display: none !important; }
-
-.menu-card.special-card {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 16px 20px;
-    box-shadow: var(--glass-shadow);
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    border-left-width: 6px;
-    border-left-style: solid;
-}
-.menu-card.special-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); }
-.menu-card.special-card .card-header { display: none; }
-.menu-card.special-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0; line-height: 1.2; }
-.menu-card.special-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.3; }
-.menu-card.special-card[data-chapter="updates"] { border-left-color: #f39c12; }
-.menu-card.special-card[data-chapter="index"] { border-left-color: #3498db; }
-
-/* ---------- PROGRESS POPUP ---------- */
-.progress-popup {
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: var(--glass-shadow);
-    z-index: 1001;
-    min-width: 250px;
-    display: none;
-    color: var(--text-primary);
-}
-.progress-popup.show { display: block; }
-.progress-popup .popup-title { font-weight: 700; margin-bottom: 12px; color: var(--primary-accent); }
-.progress-popup .popup-item { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.progress-popup .popup-quote { margin-top: 16px; font-style: italic; color: var(--text-secondary); border-top: 1px solid var(--glass-border); padding-top: 12px; }
-
-/* ---------- BUTTON GRID (chapter cards on home) ---------- */
-.menu-sub-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 16px;
-    width: 100%;
-    box-sizing: border-box;
-}
-.btn-action {
-    width: 100%;
-    text-align: center;
-    padding: 12px 8px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
-}
-@media (max-width: 360px) { .btn-action { font-size: 0.78rem; padding: 10px 4px; } }
-
-/* ---------- OFFLINE DOWNLOAD ---------- */
-.offline-download { margin: 20px 0; text-align: center; }
-.download-btn {
-    background: var(--primary-accent);
-    color: white;
-    border: none;
-    border-radius: 40px;
-    padding: 12px 30px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.download-btn:active { transform: scale(0.98); }
-.download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-progress { width: 100%; height: 20px; border-radius: 10px; margin-top: 10px; }
-progress::-webkit-progress-bar { background-color: var(--glass-bg); border-radius: 10px; }
-progress::-webkit-progress-value { background-color: var(--primary-accent); border-radius: 10px; }
-
-/* ---------- FLOAT BUTTONS ---------- */
-.float-btn {
-    position: fixed;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(61, 100, 115, 0.7);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    transition: transform 0.2s, background 0.2s, opacity 0.2s;
-    z-index: 999;
-    backdrop-filter: blur(2px);
-    opacity: 0.8;
-}
-.float-btn:hover { transform: scale(1.1); background: var(--toggle-active); opacity: 1; }
-.float-btn:active { transform: scale(0.95); }
-.float-btn.hidden { opacity: 0; pointer-events: none; }
-#scrollToBottomBtn { bottom: 20px; right: 15px; }
-#scrollToTopBtn { bottom: 70px; right: 15px; }
 
 /* ---------- DRAWER ---------- */
 .drawer-overlay {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0,0,0,0.6);
     z-index: 2000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    backdrop-filter: blur(4px);
 }
-.drawer-overlay.active { opacity: 1; pointer-events: auto; }
+
+.drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
 
 .notification-drawer {
     position: fixed;
@@ -1627,200 +1125,46 @@ progress::-webkit-progress-value { background-color: var(--primary-accent); bord
     flex-direction: column;
     gap: 20px;
 }
+
 .notification-drawer.open { top: 0; }
 
-.toggles-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));  /* 5 cols: Dark Light Sepia Forest AMOLED */
-    gap: 8px;
-    width: 100%;
-}
-.toggle-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-.toggle-btn {
-    width: 100%;
-    aspect-ratio: 1;
-    max-width: 56px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin: 0 auto;
-}
-.toggle-btn.active {
-    background: var(--primary-accent);
-    border-color: var(--primary-accent);
-    color: white;
-    box-shadow: 0 0 15px var(--primary-accent);
-}
-/* AMOLED toggle gets special active style */
-#toggleAmoled.active {
-    background: #000;
-    border: 2px solid #ffffff;
-    box-shadow: 0 0 15px rgba(255,255,255,0.4);
-}
-.toggle-btn:active { transform: scale(0.92); }
-.toggle-label {
-    font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.85);
-    margin-top: 6px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
+/* ============================================================
+   FIXED PROGRESS BAR (TOUCHING HEADER – NON VIVID COLOR)
+   ============================================================ */
 
-.drawer-stats {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-.stat-item { display: flex; flex-direction: column; align-items: center; }
-.stat-num { font-size: 1.3rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-.stat-text { font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-
-.close-drawer-btn { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.5; margin-top: -10px; }
-
-.drawer-trigger {
+.progress-container-scroll {
     position: absolute;
-    left: 50%;
-    bottom: -35px;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 35px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 999;
-    background: rgba(255, 255, 255, 0.01);
-    border-radius: 0 0 30px 30px;
-    animation: floatDown 3s ease-in-out infinite;
-}
-.trigger-line { height: 3px; background: var(--primary-accent); border-radius: 3px; margin: 3px 0; box-shadow: 0 0 8px var(--primary-accent); }
-.trigger-line.top { width: 30px; }
-.trigger-line.bottom { width: 20px; }
-@keyframes floatDown {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(6px); }
+    bottom: 0;                 /* flush with header bottom */
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    z-index: 1001;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 0;
 }
 
-/* ========================================================================
-   CONTENT FADE TRANSITION
-   ======================================================================== */
-/* #mainContent transition handled by content-enter animation class above */
-
-/* ========================================================================
-   LAST VISITED WIDGET
-   ======================================================================== */
-.last-visited-section {
-    margin-bottom: 28px;
-}
-.last-visited-section h3 {
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-secondary);
-    margin: 0 0 10px 4px;
-}
-.last-visited-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.last-visited-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    padding: 11px 14px;
-    text-decoration: none;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    backdrop-filter: blur(8px);
-}
-.last-visited-item:hover { transform: translateX(4px); box-shadow: var(--glass-shadow); }
-.last-visited-item:active { transform: scale(0.98); }
-.lv-icon {
-    font-size: 1.3rem;
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-}
-.lv-text { flex: 1; min-width: 0; }
-.lv-title { font-size: 0.92rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lv-time { font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
-.lv-arrow { color: var(--text-secondary); font-size: 0.8rem; flex-shrink: 0; opacity: 0.6; }
-
-/* ========================================================================
-   AMOLED BATTERY INDICATOR
-   ======================================================================== */
-.battery-indicator {
-    display: none;            /* hidden by default, shown only in AMOLED mode */
-    align-items: center;
-    gap: 5px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #ffffff;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 4px 8px 4px 6px;
-    border-radius: 12px;
-}
-[data-theme="amoled"] .battery-indicator { display: flex; }
-.battery-icon {
-    position: relative;
-    width: 20px;
-    height: 11px;
-    border: 1.5px solid currentColor;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    padding: 1px;
-}
-/* Battery cap (the small nub on the right) */
-.battery-icon::after {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 5px;
-    background: currentColor;
-    border-radius: 0 1px 1px 0;
-}
-.battery-fill {
+.progress-bar-scroll {
     height: 100%;
-    border-radius: 1px;
-    background: #4ade80;   /* green default */
-    transition: width 0.5s ease, background 0.5s ease;
-    min-width: 1px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary-accent), rgba(255,255,255,0.4));
+    transition: width 0.2s ease;
 }
-.battery-fill.charging { background: #facc15; }  /* yellow when charging */
-.battery-fill.low      { background: #f87171; }  /* red when < 20% */
-.battery-pct { letter-spacing: 0.3px; line-height: 1; }
+
+/* Theme subtle overrides */
+[data-theme="light"] .progress-bar-scroll {
+    background: linear-gradient(90deg, #0056b3, #60a5fa);
+}
+
+[data-theme="sepia"] .progress-bar-scroll {
+    background: linear-gradient(90deg, #8b6b4f, #d4b483);
+}
+
+[data-theme="forest"] .progress-bar-scroll {
+    background: linear-gradient(90deg, #84a98c, #b7e4c7);
+}
+
+[data-theme="amoled"] .progress-bar-scroll {
+    background: linear-gradient(90deg, #00bcd4, #006064);
+}
