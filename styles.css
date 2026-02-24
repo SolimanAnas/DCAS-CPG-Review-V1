@@ -509,11 +509,14 @@ main {
 
 /* ---------- FLASHCARD 3D ---------- */
 .scene {
-    width: 100%;
+    width: 80%;
     perspective: 1000px;
     margin: 20px 0;
-    min-height: 55vh;
+    min-height: 340px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 } 
 
 .card {
