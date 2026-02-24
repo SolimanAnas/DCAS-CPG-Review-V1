@@ -332,6 +332,8 @@ header.header-hidden {
 /* ---------- MAIN LAYOUT ---------- */
 main {
     flex: 1;
+    display: flex;
+    flex-direction: column; 
     padding: 30px 20px;              /* 30px top = 24px + 6px for progress bar clearance */
     padding-bottom: 82px;            /* just clears the ~78px fixed bottom-nav, no dead gap */
     max-width: 800px;
@@ -508,16 +510,12 @@ main {
 /* ---------- FLASHCARD 3D ---------- */
 .scene {
     width: 100%;
-    /* Pure CSS responsive height — no JS needed.
-       100svh = small viewport height (excludes browser chrome on mobile).
-       380px accounts for everything around the card: header, tabs, counter,
-       nav buttons, section-nav, home button, paddings.
-       clamp floor=220px for tiny screens, ceil=420px for tablets. */
-    height: clamp(220px, calc(100svh - 380px), 420px);
     perspective: 1000px;
-    margin: 20px 0;
-    touch-action: pan-y;
-}
+    margin: 10px 0;
+    flex: 1;
+    min-height: 220px;
+} 
+
 .card {
     width: 100%;
     height: 100%;
