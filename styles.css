@@ -506,8 +506,7 @@ main {
     display: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-
-/* ---------- FLASHCARD 3D ---------- */
+/*FLASHCARD 3D ---------⚡😭- */
 .scene {
     width: 80%;
     perspective: 1000px;
@@ -521,7 +520,7 @@ main {
 
 .card {
     width: 100%;
-    max-width: 700px
+    max-width: 700px;
     height: 100%;
     position: relative;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
