@@ -95,6 +95,73 @@ html[data-font-size="xl"]     { font-size: 22px; }
 
 
 
+/* ─── AMOLED theme – true black for OLED battery saving ─── */
+[data-theme="amoled"] {
+    --bg-gradient:      #000000;           /* pure black – OLED pixels OFF */
+    --glass-bg:         rgba(255,255,255,0.06);
+    --glass-border:     rgba(255,255,255,0.12);
+    --glass-shadow:     0 8px 24px rgba(0,0,0,0.8);
+    --text-primary:     #e8f4fd;
+    --text-secondary:   #94a3b8;
+    --header-text:      #ffffff;
+    --toggle-bg:        #111111;
+    --toggle-active:    #00d4ff;
+    --primary-accent:   #00bcd4;
+    /* Keep action button gradients readable on black */
+    --btn-grad-sum:     linear-gradient(180deg, #1a1200 0%, #2a1e00 100%);
+    --btn-grad-flash:   linear-gradient(180deg, #001122 0%, #001a33 100%);
+    --btn-grad-quiz:    linear-gradient(180deg, #001a00 0%, #002200 100%);
+    --btn-grad-scen:    linear-gradient(180deg, #1a0000 0%, #220000 100%);
+    --border-sum: #2a1e00; --text-sum: #fcd34d;
+    --border-flash: #001a33; --text-flash: #38bdf8;
+    --border-quiz: #002200; --text-quiz: #4ade80;
+    --border-scen: #220000; --text-scen: #f87171;
+}
+/* AMOLED: html background pure black, no gradient */
+[data-theme="amoled"] html,
+html[data-theme="amoled"] {
+    background: #000000 !important;
+}
+/* AMOLED: glassmorph cards — very dark, not transparent-white */
+[data-theme="amoled"] .sum-card,
+[data-theme="amoled"] .quiz-container,
+[data-theme="amoled"] .quiz-setup-container,
+[data-theme="amoled"] .critical-card {
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+[data-theme="amoled"] header {
+    background: rgba(0,0,0,0.85);
+    border-bottom-color: rgba(255,255,255,0.08);
+}
+[data-theme="amoled"] footer {
+    background: #000000;
+    color: rgba(255,255,255,0.5);
+    border-top-color: rgba(255,255,255,0.06);
+}
+[data-theme="amoled"] .bottom-nav {
+    background: rgba(0,0,0,0.9);
+    border-top-color: rgba(255,255,255,0.06);
+}
+[data-theme="amoled"] .card__face--front,
+[data-theme="amoled"] .card__face--back {
+    background: #0d0d0d;
+    border-color: rgba(255,255,255,0.1);
+    color: #e8f4fd;
+}
+[data-theme="amoled"] .progress-bar-scroll {
+    background: linear-gradient(90deg, #00bcd4, #00e5ff);
+}
+[data-theme="amoled"] .section-nav-slim button {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.15);
+}
+/* AMOLED menu card */
+[data-theme="amoled"] .menu-card {
+    background: #0d0d0d;
+    border-color: rgba(255,255,255,0.07);
+}
+
 /* Light theme */
 [data-theme="light"] {
     --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #b8e1ff 50%, #f0f9ff 100%);
@@ -147,9 +214,14 @@ html {
     background: var(--bg-gradient);
     background-attachment: fixed;
     min-height: 100%;
-    transition: background 0.5s ease;
-    margin: 0;      /* ensure no default browser margin */
+    transition: background 0.4s ease;
+    margin: 0;
     padding: 0;
+}
+/* AMOLED: override to pure black with no attachment overhead */
+html[data-theme="amoled"] {
+    background: #000000;
+    background-attachment: scroll;
 }
 
 body {
@@ -1159,3 +1231,180 @@ header.header-hidden ~ main .progress-container-scroll {
     .view-tabs { flex-wrap: wrap; border-radius: 30px; padding: 4px; }
     .view-tab { flex: 1 1 calc(50% - 8px); white-space: normal; font-size: 0.85rem; padding: 10px 4px; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   NEW FEATURE STYLES: battery, AMOLED badge, last-visited,
+   theme-row grid, content transitions
+═══════════════════════════════════════════════════════════ */
+
+/* ── Battery Indicator ─────────────────────────────────── */
+.bat-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--header-text);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 8px;
+    opacity: 0.85;
+    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+}
+.bat-indicator .bat-pct { font-variant-numeric: tabular-nums; }
+.bat-indicator.bat-low {
+    background: rgba(220,38,38,0.25);
+    border-color: rgba(220,38,38,0.5);
+    color: #fca5a5;
+    animation: bat-pulse 2s ease-in-out infinite;
+}
+.bat-indicator.bat-charging {
+    background: rgba(34,197,94,0.2);
+    border-color: rgba(34,197,94,0.4);
+    color: #86efac;
+}
+@keyframes bat-pulse {
+    0%, 100% { opacity: 0.85; }
+    50%       { opacity: 0.45; }
+}
+
+/* ── AMOLED Power-Saving Badge ─────────────────────────── */
+.amoled-badge {
+    display: none;       /* shown via JS when amoled theme active */
+    align-items: center;
+    gap: 3px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #00e5ff;
+    background: rgba(0,188,212,0.12);
+    border: 1px solid rgba(0,188,212,0.3);
+    border-radius: 20px;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ── Last Visited Widget ────────────────────────────────── */
+#lastVisitedSection {
+    margin-bottom: 4px;
+}
+.lv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 0 2px;
+}
+.lv-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.lv-clear {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: opacity 0.2s;
+}
+.lv-clear:hover { opacity: 1; }
+.lv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.lv-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.15s;
+    color: var(--text-primary);
+}
+.lv-item:active { transform: scale(0.98); background: rgba(255,255,255,0.9); }
+.lv-icon { font-size: 1.2rem; flex-shrink: 0; }
+.lv-info { flex: 1; min-width: 0; }
+.lv-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.lv-time {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+.lv-arrow {
+    font-size: 1.3rem;
+    color: var(--primary-accent);
+    font-weight: 300;
+    flex-shrink: 0;
+}
+/* Dark / AMOLED overrides for last-visited */
+[data-theme="dark"] .lv-item,
+[data-theme="amoled"] .lv-item {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+[data-theme="dark"] .lv-title,
+[data-theme="amoled"] .lv-title { color: #e8f4fd; }
+[data-theme="dark"] .lv-time,
+[data-theme="amoled"] .lv-time  { color: rgba(255,255,255,0.45); }
+[data-theme="amoled"] .lv-item  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+
+/* ── Content Fade-In Transition ────────────────────────── */
+/* main#mainContent gets inline transition set by app.js,
+   this ensures no layout jump during the animation */
+#mainContent {
+    will-change: opacity, transform;
+}
+
+/* ── Drawer theme/shortcut grids ────────────────────────── */
+/* Theme row: 5 columns */
+.toggles-grid.theme-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+}
+/* Shortcut row: 4 columns */
+.toggles-grid.shortcut-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+/* AMOLED toggle button accent */
+.toggle-btn.amoled-btn {
+    background: #111111;
+    border-color: rgba(0,188,212,0.3);
+    color: #00e5ff;
+    font-size: 1rem;
+}
+.toggle-btn.amoled-btn.active {
+    background: #000000;
+    border-color: #00bcd4;
+    box-shadow: 0 0 14px rgba(0,188,212,0.5);
+}
+
+/* Hide battery on very small screens to avoid header crowding */
+@media (max-width: 380px) {
+    .bat-indicator { display: none !important; }
+    .amoled-badge  { display: none !important; }
+}
+
