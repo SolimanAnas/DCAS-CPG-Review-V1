@@ -44,6 +44,57 @@
     --header-height: 72px;
 }
 
+/* ========== FONT SIZE ACCESSIBILITY ========== */
+/* Default (medium). html font-size controls all rem-based sizing */
+html[data-font-size="small"]  { font-size: 13px; }
+html[data-font-size="medium"] { font-size: 16px; }  /* default */
+html[data-font-size="large"]  { font-size: 19px; }
+html[data-font-size="xl"]     { font-size: 22px; }
+
+/* Font size selector widget in drawer */
+.font-size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 0 2px;
+}
+.font-size-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 24px;
+}
+.font-size-label svg { display: inline-block; vertical-align: middle; }
+.font-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1;
+}
+.font-btn.active {
+    background: var(--primary-accent);
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 12px rgba(0, 86, 179, 0.5);
+}
+.font-btn:active { transform: scale(0.94); }
+.font-btn[data-size="small"]  { font-size: 0.72rem; }
+.font-btn[data-size="medium"] { font-size: 0.88rem; }
+.font-btn[data-size="large"]  { font-size: 1.05rem; }
+.font-btn[data-size="xl"]     { font-size: 1.2rem;  }
+
+
+
 /* Light theme */
 [data-theme="light"] {
     --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #b8e1ff 50%, #f0f9ff 100%);
@@ -735,7 +786,7 @@ main {
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    padding: 20px 20px 28px;
+    padding: 20px 20px 90px; /* 90px bottom = 28px normal + ~62px bottom-nav clearance */
     color: var(--text-secondary);
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.35);
@@ -745,7 +796,6 @@ footer {
     width: 100%;
     box-sizing: border-box;
     flex-shrink: 0;
-    /* Prevent any right-side gap – same fix as header */
     position: relative;
     left: 0;
     right: 0;
