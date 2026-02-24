@@ -494,51 +494,43 @@ function switchSection(sectionId, updateUrl = true) {
 }  
 
 // ---------- FLASHCARD SCENE SIZER ----------
-// Dynamically sizes the card to exactly fill remaining screen space.
-// Called after every flashcard render and on resize.
+// Uses scene.getBoundingClientRect().top directly — no guessing at header/padding heights.
+// Only needs to know: where does the scene START, and what's BELOW it.
 function sizeFlashcardScene() {
     const scene = document.getElementById('cardScene');
     if (!scene) return;
 
-    // Use two-rAF to ensure layout is fully settled before measuring
+    // Double-rAF: wait two frames so browser has fully laid out all siblings
     requestAnimationFrame(function() {
         requestAnimationFrame(function() {
-            const viewH = window.innerHeight;
-            const headerEl = document.querySelector('header');
-            const headerH = headerEl ? headerEl.getBoundingClientRect().height : 72;
+            const viewH   = window.innerHeight;
+            const sceneTop = scene.getBoundingClientRect().top;  // exact px from viewport top
 
-            // Sum heights of IN-FLOW siblings only (skip position:fixed/absolute — they have no layout height)
-            let siblingH = 0;
+            // Measure only the in-flow elements that come AFTER the scene
+            // (nav-row, section-nav-slim, back-home-ghost)
+            let belowH = 0;
+            let foundScene = false;
             const parent = scene.parentElement;
             if (parent) {
                 for (const el of parent.children) {
-                    if (el === scene) continue;
+                    if (!foundScene) { if (el === scene) foundScene = true; continue; }
                     const pos = window.getComputedStyle(el).position;
-                    if (pos === 'fixed' || pos === 'absolute') continue;
-                    // Include the element's outer height (getBCR doesn't include margins)
+                    if (pos === 'fixed' || pos === 'absolute') continue; // out of flow
                     const rect = el.getBoundingClientRect();
                     const st   = window.getComputedStyle(el);
-                    const mt   = parseFloat(st.marginTop)    || 0;
-                    const mb   = parseFloat(st.marginBottom) || 0;
-                    siblingH  += rect.height + mt + mb;
+                    belowH += rect.height
+                           + (parseFloat(st.marginTop)    || 0)
+                           + (parseFloat(st.marginBottom) || 0);
                 }
             }
 
-            // main element's top/bottom padding
-            const mainEl    = document.getElementById('mainContent');
-            const mainStyle = mainEl ? window.getComputedStyle(mainEl) : null;
-            const mainPT    = mainStyle ? parseFloat(mainStyle.paddingTop)    : 30;
-            const mainPB    = mainStyle ? parseFloat(mainStyle.paddingBottom) : 82;
-
-            // Fixed bottom-nav overlays content — subtract its height separately
-            // (it is NOT in flow, so it was correctly excluded from siblingH above)
-            const bottomNav  = document.querySelector('.bottom-nav');
+            // Fixed bottom-nav: only subtract if actually visible (has .visible class)
+            const bottomNav  = document.querySelector('.bottom-nav.visible');
             const bottomNavH = bottomNav ? bottomNav.getBoundingClientRect().height : 0;
 
-            const SAFETY  = 8;
-            const available = viewH - headerH - mainPT - mainPB - siblingH - bottomNavH - SAFETY;
-            const clamped   = Math.max(160, available); // no upper cap — fills screen on tablets too
-            scene.style.height = clamped + 'px';
+            const SAFETY    = 6;
+            const available = viewH - sceneTop - belowH - bottomNavH - SAFETY;
+            scene.style.height = Math.max(160, available) + 'px';
         });
     });
 }
