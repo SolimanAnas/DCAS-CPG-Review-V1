@@ -580,9 +580,7 @@
         // ---------- THEME SYSTEM ----------
         const themeBtn = document.getElementById('themeToggle');
         const html = document.documentElement;
-        const themes = ['dark', 'light', 'sepia', 'forest'];
-
-        const themes = ['dark', 'amoled', 'light', 'sepia', 'forest'];
+                const themes = ['dark', 'amoled', 'light', 'sepia', 'forest'];
         function setTheme(theme) {
             if (!themes.includes(theme)) theme = 'dark';
             html.setAttribute('data-theme', theme);
