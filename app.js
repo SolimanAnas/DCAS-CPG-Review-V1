@@ -961,53 +961,152 @@ window.addEventListener('popstate', function() {
     }
 });
 
-// ---------- OVERRIDE HEADER HOME BUTTON (capture phase) ----------
+// ════════════════════════════════════════════════════════════
+// CHAPTER PAGE BOOTSTRAP – runs on every chapter HTML page
+// Handles: theme, font-size, homeBtn, stats badge, last-visited
+//          tracking, content fade-in transition
+// ════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ── Theme cycling (🎨 button in chapter header) ──────────
+    const themeBtn  = document.getElementById('themeToggle');
+    const htmlEl    = document.documentElement;
+    const ALL_THEMES = ['dark', 'amoled', 'light', 'sepia', 'forest'];
+
+    function applyTheme(t) {
+        if (!ALL_THEMES.includes(t)) t = 'dark';
+        htmlEl.setAttribute('data-theme', t);
+        localStorage.setItem('theme', t);
+    }
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            const cur = htmlEl.getAttribute('data-theme') || 'dark';
+            const idx = ALL_THEMES.indexOf(cur);
+            applyTheme(ALL_THEMES[(idx + 1) % ALL_THEMES.length]);
+        });
+    }
+    // Apply theme immediately (also set by inline <script> in <head> to avoid flash)
+    applyTheme(localStorage.getItem('theme') || 'dark');
+
+    // ── Font size ────────────────────────────────────────────
+    const savedFont = localStorage.getItem('dcas_font_size') || 'medium';
+    htmlEl.setAttribute('data-font-size', savedFont);
+
+    // ── Home button ──────────────────────────────────────────
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) {
         homeBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            // Navigate to actual home – detect if inside a /chapters/ subfolder
-            const isInSubfolder = window.location.pathname.includes('/chapters/');
-            window.location.href = isInSubfolder ? '../index.html' : 'index.html';
+            const inSub = window.location.pathname.includes('/chapters/');
+            window.location.href = inSub ? '../index.html' : 'index.html';
         }, { capture: true });
     }
-});
 
-// ---------- INITIALIZE ON PAGE LOAD ----------  
-document.addEventListener('DOMContentLoaded', function() {
+    // ── Stats badge ──────────────────────────────────────────
+    function refreshStatsBadge() {
+        try {
+            const s = storage.load();
+            const acc = s.critical && s.critical.total
+                ? Math.round((s.critical.correct / s.critical.total) * 100) : 0;
+            const attEl = document.getElementById('statsAttempts');
+            const crtEl = document.getElementById('statsCritical');
+            if (attEl) attEl.textContent = s.totalAttempts || 0;
+            if (crtEl) crtEl.textContent = acc + '%';
+        } catch(e) {}
+    }
+    refreshStatsBadge();
+
+    // ── Last-visited tracking ────────────────────────────────
+    // Record this chapter in localStorage so index.html can show "Resume"
+    if (chapterData) {
+        try {
+            const LV_KEY = 'dcas_last_visited';
+            const title  = chapterData.shortTitle || chapterData.title || 'Chapter';
+            const entry  = {
+                title   : title,
+                url     : window.location.href,
+                path    : window.location.pathname + window.location.search,
+                ts      : Date.now()
+            };
+            // Keep a stack of last 5 visited (most recent first)
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(LV_KEY) || '[]'); } catch(e) {}
+            // Remove duplicate for this path, then unshift
+            history = history.filter(h => h.path !== entry.path);
+            history.unshift(entry);
+            if (history.length > 5) history = history.slice(0, 5);
+            localStorage.setItem(LV_KEY, JSON.stringify(history));
+        } catch(e) {}
+    }
+
+    // ── Content fade-in transition ───────────────────────────
+    // main#mainContent fades in when content is injected
+    const mainEl = document.getElementById('mainContent');
+    if (mainEl) {
+        mainEl.style.opacity = '0';
+        mainEl.style.transform = 'translateY(8px)';
+        mainEl.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+    }
+    // Patch dom.main innerHTML setter to trigger animation
+    if (dom && dom.main) {
+        const _origSetter = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+        let _firstSet = true;
+        Object.defineProperty(dom.main, 'innerHTML', {
+            set: function(val) {
+                _origSetter.set.call(this, val);
+                if (_firstSet) {
+                    _firstSet = false;
+                    // Small rAF delay so layout is ready before animating
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            this.style.opacity = '1';
+                            this.style.transform = 'translateY(0)';
+                        });
+                    });
+                } else {
+                    // Subsequent view switches: quick cross-fade
+                    this.style.opacity = '0';
+                    this.style.transform = 'translateY(6px)';
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            this.style.opacity = '1';
+                            this.style.transform = 'translateY(0)';
+                        });
+                    });
+                }
+            },
+            get: function() { return _origSetter.get.call(this); },
+            configurable: true
+        });
+    }
+
+    // ── Chapter page boot ────────────────────────────────────
     if (isChapterMissing) {
         renderComingSoon();
         return;
     }
-    
+
     const urlSection = utils.getQueryParam('section');
-    const urlView = utils.getQueryParam('view') || 'summary';
-    
+    const urlView    = utils.getQueryParam('view') || 'summary';
+
     if (urlSection && state.sections) {
         const section = utils.getSection(urlSection);
         if (section) {
             state.activeSectionId = urlSection;
-            state.activeSection = section;
-            state.flashData = section.flashcards || [];
-            state.criticalData = section.critical || [];
-            
-            if (urlView === 'flashcards') render.flashcards();
-            else if (urlView === 'quiz') render.quizSetup();
-            else if (urlView === 'critical') render.criticalGame();
-            else render.summary();
+            state.activeSection   = section;
+            state.flashData       = section.flashcards || [];
+            state.criticalData    = section.critical   || [];
+            if      (urlView === 'flashcards') render.flashcards();
+            else if (urlView === 'quiz')       render.quizSetup();
+            else if (urlView === 'critical')   render.criticalGame();
+            else                               render.summary();
         } else {
-            if (state.sections && state.sections.length > 0) {
-                switchSection(state.sections[0].id);
-            }
+            if (state.sections && state.sections.length > 0) switchSection(state.sections[0].id);
         }
     } else {
-        if (state.sections && state.sections.length > 0) {
-            switchSection(state.sections[0].id);
-        }
+        if (state.sections && state.sections.length > 0) switchSection(state.sections[0].id);
     }
-
 });
 
 })();
