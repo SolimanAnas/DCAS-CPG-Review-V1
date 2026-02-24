@@ -148,11 +148,7 @@ html[data-theme="amoled"] {
     background: #0d0d0d;
     border-color: rgba(255,255,255,0.1);
     color: #e8f4fd;
-}
-[data-theme="amoled"] .progress-bar-scroll {
-    background: linear-gradient(90deg, #00bcd4, #00e5ff);
-}
-[data-theme="amoled"] .section-nav-slim button {
+}[data-theme="amoled"] .section-nav-slim button {
     background: rgba(255,255,255,0.06);
     border-color: rgba(255,255,255,0.15);
 }
@@ -258,6 +254,7 @@ header {
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    overflow: visible; /* allow progress bar to hang below */
     transition: transform 0.3s ease;
     transform: translateY(0);
     width: 100%;
@@ -510,9 +507,10 @@ main {
 /* ---------- FLASHCARD 3D ---------- */
 .scene {
     width: 100%;
-    height: 380px;
+    /* Fills available screen space between header+tabs+controls */
+    height: clamp(240px, calc(100svh - var(--header-height) - 220px), 440px);
     perspective: 1000px;
-    margin: 20px 0;
+    margin: 10px 0;
     touch-action: pan-y;
 }
 .card {
@@ -858,7 +856,7 @@ main {
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    padding: 20px 20px 90px; /* 90px bottom = 28px normal + ~62px bottom-nav clearance */
+    padding: 18px 20px 20px; /* reduced — bottom-nav is fixed overlay, no dead space needed */
     color: var(--text-secondary);
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.35);
@@ -976,32 +974,31 @@ footer a { color: inherit; text-decoration: underline; }
 
 /* 📊 GLOWING CHAPTER PROGRESS BAR – full width */
 .progress-container-scroll {
-    position: fixed;
-    top: var(--header-height);
+    /* Lives INSIDE <header> as an absolute child — always flush with header bottom,
+       never affected by main's opacity animation */
+    position: absolute;
+    bottom: -6px;            /* hang 6px below header's bottom edge */
     left: 0;
-    width: 100%;
+    right: 0;
     height: 6px;
-    background: rgba(255,255,255,0.1);
-    z-index: 999;
-    transition: top 0.3s ease;
-    overflow: visible;
+    background: rgba(255,255,255,0.08);
+    z-index: 1001;           /* above header z-index so shadow doesn't hide it */
     pointer-events: none;
+    overflow: hidden;
+    border-radius: 0 0 3px 3px;
 }
 .progress-bar-scroll {
     height: 100%;
     width: 0%;
-    /* Bright cyan – clearly visible on all 4 themes including dark navy */
     background: linear-gradient(90deg, #22d3ee, #67e8f9);
-    transition: width 0.25s ease;
+    transition: width 0.2s ease;
     border-radius: 0 3px 3px 0;
 }
-/* Theme-specific accent colors for progress bar */
+/* Theme accent colors */
 [data-theme="light"] .progress-bar-scroll   { background: linear-gradient(90deg, #0056b3, #38bdf8); }
 [data-theme="sepia"] .progress-bar-scroll   { background: linear-gradient(90deg, #8b6b4f, #c4a26b); }
 [data-theme="forest"] .progress-bar-scroll  { background: linear-gradient(90deg, #84a98c, #b7e4c7); }
-header.header-hidden ~ main .progress-container-scroll {
-    top: 0 !important;
-}
+[data-theme="amoled"] .progress-bar-scroll  { background: linear-gradient(90deg, #00bcd4, #00e5ff); }
 
 /* 🩺 KPI & ALERT BOXES */
 .kpi-box {
@@ -1371,11 +1368,17 @@ header.header-hidden ~ main .progress-container-scroll {
 [data-theme="amoled"] .lv-time  { color: rgba(255,255,255,0.45); }
 [data-theme="amoled"] .lv-item  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
 
-/* ── Content Fade-In Transition ────────────────────────── */
-/* main#mainContent gets inline transition set by app.js,
-   this ensures no layout jump during the animation */
+/* ── Content Fade-In Transition (CSS class, not inline opacity) ── */
+/* Class toggled by app.js on every innerHTML set — progress bar in header is unaffected */
 #mainContent {
-    will-change: opacity, transform;
+    will-change: transform, opacity;
+}
+#mainContent.content-enter {
+    animation: contentFadeIn 0.22s ease forwards;
+}
+@keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to   { opacity: 1; transform: translateY(0);   }
 }
 
 /* ── Drawer theme/shortcut grids ────────────────────────── */
@@ -1821,4 +1824,3 @@ progress::-webkit-progress-value { background-color: var(--primary-accent); bord
 .battery-fill.charging { background: #facc15; }  /* yellow when charging */
 .battery-fill.low      { background: #f87171; }  /* red when < 20% */
 .battery-pct { letter-spacing: 0.3px; line-height: 1; }
-
