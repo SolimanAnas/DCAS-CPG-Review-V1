@@ -283,21 +283,24 @@
 
         .notification-drawer {
             position: fixed;
-            top: -450px;
+            top: -600px;         /* increased so large drawer fully hides offscreen */
             left: 0;
+            right: 0;            /* explicit right:0 instead of width:100% */
             width: 100%;
+            box-sizing: border-box; /* CRITICAL: padding is INSIDE the 100% width */
+            overflow: hidden;    /* prevent any child overflow */
             background: rgba(20, 30, 40, 0.4);
             backdrop-filter: blur(25px) saturate(180%);
             -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             z-index: 2001;
-            padding: 25px 20px 35px;
+            padding: 25px 16px 35px;  /* slightly tighter side padding */
             border-radius: 0 0 30px 30px;
             transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
         }
         .notification-drawer.open {
             top: 0;
@@ -305,9 +308,9 @@
 
         .toggles-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            justify-content: center;
+            grid-template-columns: repeat(4, minmax(0, 1fr)); /* minmax(0) prevents overflow */
+            gap: 10px;
+            width: 100%;
         }
         .toggle-item {
             display: flex;
@@ -316,19 +319,21 @@
             text-align: center;
         }
         .toggle-btn {
-            width: 58px;
-            height: 58px;
+            width: 100%;          /* fill grid cell, don't use fixed px */
+            aspect-ratio: 1;      /* stay circular without fixed height */
+            max-width: 60px;
             border-radius: 50%;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.08);
             color: white;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 0 auto;       /* center within the grid cell */
         }
         .toggle-btn.active {
             background: var(--primary-accent);
@@ -466,6 +471,17 @@
             <button class="toggle-btn" id="qsReload">🔄</button>
             <div class="toggle-label">Reload</div>
         </div>
+    </div>
+
+    <!-- Font Size Accessibility -->
+    <div class="font-size-row">
+        <span class="font-size-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><text x="2" y="18" font-size="14" fill="currentColor" stroke="none" font-weight="700">Aa</text></svg>
+        </span>
+        <button class="font-btn" data-size="small"  id="fontSmall" title="Small text">A</button>
+        <button class="font-btn" data-size="medium" id="fontMedium" title="Normal text">A</button>
+        <button class="font-btn" data-size="large"  id="fontLarge" title="Large text">A</button>
+        <button class="font-btn" data-size="xl"     id="fontXL"    title="Extra large text">A</button>
     </div>
 
     <!-- Mini stats -->
@@ -619,6 +635,31 @@
         });
         document.getElementById('qsReload').addEventListener('click', () => {
             window.location.reload();
+        });
+
+        // ---------- FONT SIZE ACCESSIBILITY ----------
+        const FONT_SIZES = ['small', 'medium', 'large', 'xl'];
+        const FONT_BTN_IDS = { small: 'fontSmall', medium: 'fontMedium', large: 'fontLarge', xl: 'fontXL' };
+
+        function setFontSize(size) {
+            if (!FONT_SIZES.includes(size)) size = 'medium';
+            document.documentElement.setAttribute('data-font-size', size);
+            localStorage.setItem('dcas_font_size', size);
+            // Update active state on buttons
+            FONT_SIZES.forEach(s => {
+                const btn = document.getElementById(FONT_BTN_IDS[s]);
+                if (btn) btn.classList.toggle('active', s === size);
+            });
+        }
+
+        // Apply saved font size on load
+        const savedFontSize = localStorage.getItem('dcas_font_size') || 'medium';
+        setFontSize(savedFontSize);
+
+        // Bind buttons
+        FONT_SIZES.forEach(size => {
+            const btn = document.getElementById(FONT_BTN_IDS[size]);
+            if (btn) btn.addEventListener('click', () => { setFontSize(size); });
         });
 
         // ---------- PROGRESS POPUP ----------
