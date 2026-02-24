@@ -435,19 +435,26 @@ function renderSectionNavigation() {
 
 // ---------- SCROLL PROGRESS BAR (excludes footer) ----------
 function initScrollProgress() {
-    const progressBar = document.querySelector('.progress-bar-scroll');
+    // Target the bar in the header (immune to main opacity transitions)
+    const progressBar = document.querySelector('#pageProgressBar .progress-bar-scroll')
+                     || document.querySelector('.progress-bar-scroll');
     if (!progressBar) return;
-    const footer = document.querySelector('footer');
-    const footerHeight = footer ? footer.offsetHeight : 0;
-    
+
     function updateProgress() {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight - footerHeight;
-        const scrolled = (winScroll / height) * 100;
-        progressBar.style.width = Math.min(scrolled, 100) + '%';
+        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        const totalH    = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        if (totalH <= 0) { progressBar.style.width = '100%'; return; }
+        progressBar.style.width = Math.min((winScroll / totalH) * 100, 100) + '%';
     }
-    window.addEventListener('scroll', updateProgress);
-    window.addEventListener('resize', updateProgress);
+    // Remove any prior listener before re-attaching (section switches call this again)
+    if (initScrollProgress._cleanup) initScrollProgress._cleanup();
+    const onScroll = updateProgress;
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateProgress, { passive: true });
+    initScrollProgress._cleanup = () => {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', updateProgress);
+    };
     updateProgress();
 }
 
@@ -486,6 +493,42 @@ function switchSection(sectionId, updateUrl = true) {
     return true;  
 }  
 
+// ---------- FLASHCARD SCENE SIZER ----------
+// Measures all actual sibling elements so the card never overflows on any device/screen size.
+function sizeFlashcardScene() {
+    const scene = document.getElementById('cardScene');
+    if (!scene) return;
+
+    const viewH = window.innerHeight;
+    const headerEl = document.querySelector('header');
+    const headerH = headerEl ? headerEl.getBoundingClientRect().height : 72;
+
+    // Sum up the height of every sibling inside main (tabs, counter, nav-row, section-nav, home btn, bottom-nav)
+    let siblingH = 0;
+    const parent = scene.parentElement;
+    if (parent) {
+        for (const el of parent.children) {
+            if (el === scene) continue;
+            siblingH += el.getBoundingClientRect().height;
+        }
+    }
+
+    // main element's computed padding
+    const mainEl = document.getElementById('mainContent');
+    const mainStyle = mainEl ? window.getComputedStyle(mainEl) : null;
+    const mainPT = mainStyle ? parseFloat(mainStyle.paddingTop)    : 30;
+    const mainPB = mainStyle ? parseFloat(mainStyle.paddingBottom)  : 82;
+
+    // Fixed bottom-nav if currently visible
+    const bottomNav = document.querySelector('.bottom-nav.visible');
+    const bottomNavH = bottomNav ? bottomNav.getBoundingClientRect().height : 0;
+
+    const SAFETY = 12; // px breathing room so nothing is pixel-tight
+    const available = viewH - headerH - siblingH - mainPT - mainPB - bottomNavH - SAFETY;
+    const clamped = Math.max(180, Math.min(available, 420));
+    scene.style.height = clamped + 'px';
+}
+
 // ---------- RENDER FUNCTIONS ----------  
 const render = {  
     summary: function() {  
@@ -502,7 +545,6 @@ const render = {
         const isIndex = chapterData && chapterData.id === 'c-index';  
 
         const html = `  
-            <div class="progress-container-scroll"><div class="progress-bar-scroll"></div></div>  
             <div class="section active">  
                 ${tabs}  
                 ${summaryContent}  
@@ -581,7 +623,13 @@ const render = {
                 if (e.target.closest('.control-btn')) return;  
                 cardEl.classList.toggle('is-flipped');  
             }, { passive: true });  
-        }  
+        }
+        // Measure actual sibling heights and set scene height to exactly fit the screen
+        requestAnimationFrame(function() { sizeFlashcardScene(); });
+        if (render._fcResizeCleanup) render._fcResizeCleanup();
+        const _fcResize = function() { sizeFlashcardScene(); };
+        window.addEventListener('resize', _fcResize);
+        render._fcResizeCleanup = function() { window.removeEventListener('resize', _fcResize); };
         utils.safeScrollTop();  
     },  
 
@@ -1256,43 +1304,20 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) {}
     }
 
-    // ── Content fade-in transition ───────────────────────────
-    // main#mainContent fades in when content is injected
+    // ── Content fade-in transition (CSS class toggle — no opacity on main) ──
+    // Uses a CSS animation class so the progress bar (now in header) is unaffected
     const mainEl = document.getElementById('mainContent');
-    if (mainEl) {
-        mainEl.style.opacity = '0';
-        mainEl.style.transform = 'translateY(8px)';
-        mainEl.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
-    }
-    // Patch dom.main innerHTML setter to trigger animation
-    if (dom && dom.main) {
-        const _origSetter = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-        let _firstSet = true;
+    if (mainEl && dom && dom.main) {
+        const _origDesc = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
         Object.defineProperty(dom.main, 'innerHTML', {
             set: function(val) {
-                _origSetter.set.call(this, val);
-                if (_firstSet) {
-                    _firstSet = false;
-                    // Small rAF delay so layout is ready before animating
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            this.style.opacity = '1';
-                            this.style.transform = 'translateY(0)';
-                        });
-                    });
-                } else {
-                    // Subsequent view switches: quick cross-fade
-                    this.style.opacity = '0';
-                    this.style.transform = 'translateY(6px)';
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            this.style.opacity = '1';
-                            this.style.transform = 'translateY(0)';
-                        });
-                    });
-                }
+                _origDesc.set.call(this, val);
+                // Trigger CSS animation via class without touching opacity on main
+                this.classList.remove('content-enter');
+                void this.offsetWidth; // force reflow
+                this.classList.add('content-enter');
             },
-            get: function() { return _origSetter.get.call(this); },
+            get: function() { return _origDesc.get.call(this); },
             configurable: true
         });
     }
