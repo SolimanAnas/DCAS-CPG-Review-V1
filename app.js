@@ -18,10 +18,226 @@ const storage = (function() {
     return { load, save };  
 })();  
 
-// ---------- FONT SIZE (apply saved preference on every chapter page) ----------
+
+// ---------- CONTENT FADE TRANSITION ----------
+function fadeInContent(callback) {
+    const main = document.getElementById('mainContent');
+    if (!main) { if (callback) callback(); return; }
+    main.classList.remove('content-visible');
+    main.classList.add('content-entering');
+    // Force reflow
+    void main.offsetHeight;
+    if (callback) callback();
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            main.classList.remove('content-entering');
+            main.classList.add('content-visible');
+        });
+    });
+}
+
+// ---------- EARLY INIT: theme + font-size applied BEFORE render to prevent flash ----------
 (function() {
-    const size = localStorage.getItem('dcas_font_size') || 'medium';
-    document.documentElement.setAttribute('data-font-size', size);
+    const html = document.documentElement;
+    // Theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    // Font size
+    const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
+    html.setAttribute('data-font-size', savedSize);
+
+// ============================================================
+// LAST VISITED – records chapter visits to localStorage
+// max 5 items, most recent first
+// ============================================================
+const LAST_VISITED_KEY = 'dcas_last_visited';
+
+function recordLastVisited() {
+    if (!chapterData) return;
+    // Build a clean item
+    const item = {
+        id:        chapterData.id,
+        title:     chapterData.shortTitle || chapterData.title || 'Chapter',
+        url:       window.location.href,
+        timestamp: Date.now()
+    };
+    try {
+        let list = JSON.parse(localStorage.getItem(LAST_VISITED_KEY) || '[]');
+        // Remove duplicate if same id already in list
+        list = list.filter(i => i.id !== item.id);
+        list.unshift(item);          // add to front
+        list = list.slice(0, 5);     // keep max 5
+        localStorage.setItem(LAST_VISITED_KEY, JSON.stringify(list));
+    } catch(e) {}
+}
+
+function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1)   return 'Just now';
+    if (mins < 60)  return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24)   return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
+
+// ============================================================
+// BATTERY INDICATOR (AMOLED mode only)
+// ============================================================
+function initBatteryIndicator() {
+    const indicator = document.getElementById('batteryIndicator');
+    if (!indicator) return;
+    if (!('getBattery' in navigator)) return;
+
+    navigator.getBattery().then(battery => {
+        function updateBattery() {
+            const pct = Math.round(battery.level * 100);
+            const fill = indicator.querySelector('.battery-fill');
+            const pctEl = indicator.querySelector('.battery-pct');
+            if (fill) {
+                fill.style.width = pct + '%';
+                fill.className = 'battery-fill' +
+                    (battery.charging ? ' charging' : pct < 20 ? ' low' : '');
+            }
+            if (pctEl) pctEl.textContent = pct + '%';
+        }
+        battery.addEventListener('levelchange', updateBattery);
+        battery.addEventListener('chargingchange', updateBattery);
+        updateBattery();
+    }).catch(() => {});
+}
+
+// ============================================================
+// initChapterPage()
+// Called by every chapter HTML after CPG_DATA and app.js load.
+// Replaces all the duplicated inline scripts in every chapter file.
+// ============================================================
+function initChapterPage() {
+    const html   = document.documentElement;
+    const themes = ['dark', 'light', 'sepia', 'forest', 'amoled'];
+
+    // --- Apply saved theme & font size immediately ---
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
+    html.setAttribute('data-font-size', savedSize);
+
+    // --- Inject header ---
+    const headerEl = document.querySelector('header');
+    if (headerEl && chapterData) {
+        const title    = chapterData.shortTitle || chapterData.title || 'DCAS CPG';
+        const subtitle = 'DCAS CPG 2025';
+        headerEl.innerHTML = `
+            <div class="header-left">
+                <button class="icon-btn" id="homeBtn" title="Home" aria-label="Home">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/>
+                        <path d="M9 21V12h6v9"/>
+                    </svg>
+                </button>
+                <div class="header-text">
+                    <h1 id="pageTitle">${title}</h1>
+                    <p id="pageSubtitle">${subtitle}</p>
+                </div>
+            </div>
+            <div class="header-right" id="headerRight">
+                <div class="battery-indicator" id="batteryIndicator">
+                    <span class="battery-icon"><span class="battery-fill"></span></span>
+                    <span class="battery-pct">--%</span>
+                </div>
+                <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
+                <div class="stats-badge" id="liveStatsBadge">
+                    <span>📊 <span id="statsAttempts">0</span></span>
+                    <div class="stats-divider"></div>
+                    <span>🎯 <span id="statsCritical">0%</span></span>
+                </div>
+                <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+                <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
+            </div>
+        `;
+    }
+
+    // --- Inject footer ---
+    const footerEl = document.querySelector('footer');
+    if (footerEl) {
+        footerEl.innerHTML = `
+            <div>Created by Soliman Anas · for study aid only</div>
+            <div><a href="../about.html">About &amp; Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
+        `;
+    }
+
+    // --- Theme toggle ---
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme') || 'dark';
+            const idx = themes.indexOf(current);
+            const next = themes[(idx + 1) % themes.length];
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            // Refresh battery indicator visibility
+            initBatteryIndicator();
+        });
+    }
+
+    // --- Home button ---
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+    }
+
+    // --- Stats badge ---
+    function loadStats() {
+        try {
+            const data  = localStorage.getItem('dcas_cpg_stats');
+            const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
+            const critAcc = stats.critical && stats.critical.total
+                ? Math.round((stats.critical.correct / stats.critical.total) * 100)
+                : 0;
+            const attEl  = document.getElementById('statsAttempts');
+            const critEl = document.getElementById('statsCritical');
+            if (attEl)  attEl.textContent  = stats.totalAttempts || 0;
+            if (critEl) critEl.textContent = critAcc + '%';
+        } catch(e) {}
+    }
+    loadStats();
+
+    // --- Battery indicator ---
+    initBatteryIndicator();
+
+    // --- Record last visited ---
+    recordLastVisited();
+
+    // --- Service Worker ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('../sw.js').catch(() => {});
+        });
+    }
+
+    // --- Fade in main content once app.js renders it ---
+    // app.js DOMContentLoaded fires after this, so we hook into it
+    document.addEventListener('dcas:rendered', () => {
+        const main = document.getElementById('mainContent');
+        if (main) {
+            main.classList.add('content-entering');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                main.classList.remove('content-entering');
+                main.classList.add('content-visible');
+            }));
+        }
+    });
+}
+
+// Expose so chapter HTML shells can call it
+window.initChapterPage = initChapterPage;
+
+
 })();
 
 // ---------- CHAPTER DATA ----------  
@@ -1108,5 +1324,198 @@ document.addEventListener('DOMContentLoaded', function() {
         if (state.sections && state.sections.length > 0) switchSection(state.sections[0].id);
     }
 });
+
+
+// ============================================================
+// LAST VISITED – records chapter visits to localStorage
+// max 5 items, most recent first
+// ============================================================
+const LAST_VISITED_KEY = 'dcas_last_visited';
+
+function recordLastVisited() {
+    if (!chapterData) return;
+    // Build a clean item
+    const item = {
+        id:        chapterData.id,
+        title:     chapterData.shortTitle || chapterData.title || 'Chapter',
+        url:       window.location.href,
+        timestamp: Date.now()
+    };
+    try {
+        let list = JSON.parse(localStorage.getItem(LAST_VISITED_KEY) || '[]');
+        // Remove duplicate if same id already in list
+        list = list.filter(i => i.id !== item.id);
+        list.unshift(item);          // add to front
+        list = list.slice(0, 5);     // keep max 5
+        localStorage.setItem(LAST_VISITED_KEY, JSON.stringify(list));
+    } catch(e) {}
+}
+
+function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1)   return 'Just now';
+    if (mins < 60)  return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24)   return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
+
+// ============================================================
+// BATTERY INDICATOR (AMOLED mode only)
+// ============================================================
+function initBatteryIndicator() {
+    const indicator = document.getElementById('batteryIndicator');
+    if (!indicator) return;
+    if (!('getBattery' in navigator)) return;
+
+    navigator.getBattery().then(battery => {
+        function updateBattery() {
+            const pct = Math.round(battery.level * 100);
+            const fill = indicator.querySelector('.battery-fill');
+            const pctEl = indicator.querySelector('.battery-pct');
+            if (fill) {
+                fill.style.width = pct + '%';
+                fill.className = 'battery-fill' +
+                    (battery.charging ? ' charging' : pct < 20 ? ' low' : '');
+            }
+            if (pctEl) pctEl.textContent = pct + '%';
+        }
+        battery.addEventListener('levelchange', updateBattery);
+        battery.addEventListener('chargingchange', updateBattery);
+        updateBattery();
+    }).catch(() => {});
+}
+
+// ============================================================
+// initChapterPage()
+// Called by every chapter HTML after CPG_DATA and app.js load.
+// Replaces all the duplicated inline scripts in every chapter file.
+// ============================================================
+function initChapterPage() {
+    const html   = document.documentElement;
+    const themes = ['dark', 'light', 'sepia', 'forest', 'amoled'];
+
+    // --- Apply saved theme & font size immediately ---
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
+    html.setAttribute('data-font-size', savedSize);
+
+    // --- Inject header ---
+    const headerEl = document.querySelector('header');
+    if (headerEl && chapterData) {
+        const title    = chapterData.shortTitle || chapterData.title || 'DCAS CPG';
+        const subtitle = 'DCAS CPG 2025';
+        headerEl.innerHTML = `
+            <div class="header-left">
+                <button class="icon-btn" id="homeBtn" title="Home" aria-label="Home">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/>
+                        <path d="M9 21V12h6v9"/>
+                    </svg>
+                </button>
+                <div class="header-text">
+                    <h1 id="pageTitle">${title}</h1>
+                    <p id="pageSubtitle">${subtitle}</p>
+                </div>
+            </div>
+            <div class="header-right" id="headerRight">
+                <div class="battery-indicator" id="batteryIndicator">
+                    <span class="battery-icon"><span class="battery-fill"></span></span>
+                    <span class="battery-pct">--%</span>
+                </div>
+                <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
+                <div class="stats-badge" id="liveStatsBadge">
+                    <span>📊 <span id="statsAttempts">0</span></span>
+                    <div class="stats-divider"></div>
+                    <span>🎯 <span id="statsCritical">0%</span></span>
+                </div>
+                <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
+                <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
+            </div>
+        `;
+    }
+
+    // --- Inject footer ---
+    const footerEl = document.querySelector('footer');
+    if (footerEl) {
+        footerEl.innerHTML = `
+            <div>Created by Soliman Anas · for study aid only</div>
+            <div><a href="../about.html">About &amp; Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
+        `;
+    }
+
+    // --- Theme toggle ---
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme') || 'dark';
+            const idx = themes.indexOf(current);
+            const next = themes[(idx + 1) % themes.length];
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            // Refresh battery indicator visibility
+            initBatteryIndicator();
+        });
+    }
+
+    // --- Home button ---
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+    }
+
+    // --- Stats badge ---
+    function loadStats() {
+        try {
+            const data  = localStorage.getItem('dcas_cpg_stats');
+            const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
+            const critAcc = stats.critical && stats.critical.total
+                ? Math.round((stats.critical.correct / stats.critical.total) * 100)
+                : 0;
+            const attEl  = document.getElementById('statsAttempts');
+            const critEl = document.getElementById('statsCritical');
+            if (attEl)  attEl.textContent  = stats.totalAttempts || 0;
+            if (critEl) critEl.textContent = critAcc + '%';
+        } catch(e) {}
+    }
+    loadStats();
+
+    // --- Battery indicator ---
+    initBatteryIndicator();
+
+    // --- Record last visited ---
+    recordLastVisited();
+
+    // --- Service Worker ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('../sw.js').catch(() => {});
+        });
+    }
+
+    // --- Fade in main content once app.js renders it ---
+    // app.js DOMContentLoaded fires after this, so we hook into it
+    document.addEventListener('dcas:rendered', () => {
+        const main = document.getElementById('mainContent');
+        if (main) {
+            main.classList.add('content-entering');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                main.classList.remove('content-entering');
+                main.classList.add('content-visible');
+            }));
+        }
+    });
+}
+
+// Expose so chapter HTML shells can call it
+window.initChapterPage = initChapterPage;
+
 
 })();
