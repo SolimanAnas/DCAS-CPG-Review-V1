@@ -508,14 +508,14 @@ main {
 /* ---------- FLASHCARD 3D ---------- */
 .scene {
     width: 100%;
-    /* Height set dynamically by sizeFlashcardScene() in app.js after render.
-       JS measures all in-flow sibling elements and sets exact px height.
-       These values are only the pre-paint fallback. */
-    height: 300px;
-    min-height: 160px;
-    /* NO max-height — JS clamps correctly for every screen size including tablets */
+    /* Pure CSS responsive height — no JS needed.
+       100svh = small viewport height (excludes browser chrome on mobile).
+       380px accounts for everything around the card: header, tabs, counter,
+       nav buttons, section-nav, home button, paddings.
+       clamp floor=220px for tiny screens, ceil=420px for tablets. */
+    height: clamp(220px, calc(100svh - 380px), 420px);
     perspective: 1000px;
-    margin: 8px 0;
+    margin: 20px 0;
     touch-action: pan-y;
 }
 .card {
