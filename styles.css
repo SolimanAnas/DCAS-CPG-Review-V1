@@ -509,20 +509,16 @@ main {
 /*FLASHCARD 3D ---------⚡😭- */
 
 .scene {
-    width: 80%;
+    width: 100%;
+    height: 380px;
     perspective: 1000px;
     margin: 20px 0;
-    height: 340px; /* FIX 1: Changed min-height to an explicit height so the card can inherit it */
-    /* REMOVED overflow: hidden; because it breaks 3D flip animations */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-} 
+    touch-action: pan-y;
+}
 
 .card {
     width: 100%;
-    max-width: 700px; /* (Your newly fixed semicolon!) */
-    height: 100%; /* Now this will successfully grab the 340px from .scene */
+    height: 100%;
     position: relative;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-style: preserve-3d;
