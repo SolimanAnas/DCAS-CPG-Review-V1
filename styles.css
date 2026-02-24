@@ -332,7 +332,7 @@ header.header-hidden {
 main {
     flex: 1;
     padding: 30px 20px;              /* 30px top = 24px + 6px for progress bar clearance */
-    padding-bottom: 110px;
+    padding-bottom: 82px;            /* just clears the ~78px fixed bottom-nav, no dead gap */
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
@@ -507,10 +507,11 @@ main {
 /* ---------- FLASHCARD 3D ---------- */
 .scene {
     width: 100%;
-    /* Fills available screen space between header+tabs+controls */
-    height: clamp(240px, calc(100svh - var(--header-height) - 220px), 440px);
+    /* Responsive: viewport minus header(72) + section-tabs(66) + counter(50) +
+       nav-buttons(56) + section-nav(56) + bottom-nav(80) + paddings(30) ≈ 410px total chrome */
+    height: clamp(200px, calc(100dvh - 410px), 420px);
     perspective: 1000px;
-    margin: 10px 0;
+    margin: 8px 0;
     touch-action: pan-y;
 }
 .card {
@@ -856,7 +857,7 @@ main {
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    padding: 18px 20px 20px; /* reduced — bottom-nav is fixed overlay, no dead space needed */
+    padding: 16px 20px 82px; /* bottom = 82px clears the ~78px fixed bottom-nav */
     color: var(--text-secondary);
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.35);
@@ -895,9 +896,6 @@ footer {
 }
 footer div:first-child { font-weight: 500; margin-bottom: 4px; }
 footer div:last-child  { opacity: 0.85; font-size: 0.7rem; }
-footer a { color: inherit; text-decoration: underline; }
-footer div:first-child { font-weight: 500; margin-bottom: 4px; }
-footer div:last-child { opacity: 0.9; font-size: 0.7rem; }
 footer a { color: inherit; text-decoration: underline; }
 
 @keyframes fadeInUp {
@@ -1369,16 +1367,18 @@ footer a { color: inherit; text-decoration: underline; }
 [data-theme="amoled"] .lv-item  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
 
 /* ── Content Fade-In Transition (CSS class, not inline opacity) ── */
-/* Class toggled by app.js on every innerHTML set — progress bar in header is unaffected */
+/* CRITICAL: NO transform on #mainContent — CSS transforms create a stacking context
+   that makes position:fixed children position relative to the element, not the viewport.
+   This was causing the progress bar to scroll with the content instead of staying fixed. */
 #mainContent {
-    will-change: transform, opacity;
+    will-change: opacity;   /* transform here would permanently break position:fixed children */
 }
 #mainContent.content-enter {
     animation: contentFadeIn 0.22s ease forwards;
 }
 @keyframes contentFadeIn {
-    from { opacity: 0; transform: translateY(7px); }
-    to   { opacity: 1; transform: translateY(0);   }
+    from { opacity: 0; }  /* opacity-only — no translateY */
+    to   { opacity: 1; }
 }
 
 /* ── Drawer theme/shortcut grids ────────────────────────── */
@@ -1712,18 +1712,7 @@ progress::-webkit-progress-value { background-color: var(--primary-accent); bord
 /* ========================================================================
    CONTENT FADE TRANSITION
    ======================================================================== */
-#mainContent {
-    /* Initial state for fade-in animation */
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-#mainContent.content-entering {
-    opacity: 0;
-    transform: translateY(8px);
-}
-#mainContent.content-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+/* #mainContent transition handled by content-enter animation class above */
 
 /* ========================================================================
    LAST VISITED WIDGET
@@ -1824,3 +1813,4 @@ progress::-webkit-progress-value { background-color: var(--primary-accent); bord
 .battery-fill.charging { background: #facc15; }  /* yellow when charging */
 .battery-fill.low      { background: #f87171; }  /* red when < 20% */
 .battery-pct { letter-spacing: 0.3px; line-height: 1; }
+
