@@ -18,6 +18,12 @@ const storage = (function() {
     return { load, save };  
 })();  
 
+// ---------- FONT SIZE (apply saved preference on every chapter page) ----------
+(function() {
+    const size = localStorage.getItem('dcas_font_size') || 'medium';
+    document.documentElement.setAttribute('data-font-size', size);
+})();
+
 // ---------- CHAPTER DATA ----------  
 const chapterData = window.CPG_DATA;  
 const isChapterMissing = !chapterData;  
