@@ -506,13 +506,14 @@ main {
     display: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-/*FLASHCARD 3D ---------⚡😭😭😭😭😭😭- */
+/*FLASHCARD 3D ---------⚡😭- */
+
 .scene {
-    width: 100%;
+    width: 80%;
     perspective: 1000px;
     margin: 20px 0;
-    min-height: 340px;
-    overflow: hidden;
+    height: 340px; /* FIX 1: Changed min-height to an explicit height so the card can inherit it */
+    /* REMOVED overflow: hidden; because it breaks 3D flip animations */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -520,8 +521,8 @@ main {
 
 .card {
     width: 100%;
-    max-width: 700px;
-    height: 100%;
+    max-width: 700px; /* (Your newly fixed semicolon!) */
+    height: 100%; /* Now this will successfully grab the 340px from .scene */
     position: relative;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-style: preserve-3d;
@@ -529,6 +530,8 @@ main {
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     transform: translateZ(0);
 }
+
+
 .card.is-flipped {
     transform: rotateY(180deg);
 }
