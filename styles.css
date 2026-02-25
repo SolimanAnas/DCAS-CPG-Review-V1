@@ -506,15 +506,17 @@ main {
     display: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-/*FLASHCARD 3D ---------⚡😭- */
+/*FLASHCARD 3D ---------⚡😭😭😭😭😭- */
 
 .scene {
-    width: 100%;
-    height: 320px;
+    width: 85%; /* Reduces width to leave breathing room on the sides */
+    max-width: 500px; /* Prevents it from stretching too far on tablets */
+    height: 260px; /* Reduced from 320px to stop overlapping the buttons */
     perspective: 1000px;
-    margin: 10px 10;
+    margin: 20px auto; /* 'auto' perfectly centers the card horizontally */
     touch-action: pan-y;
 }
+
 
 .card {
     width: 100%;
