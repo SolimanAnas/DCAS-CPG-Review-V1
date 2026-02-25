@@ -1498,6 +1498,24 @@ function initChapterPage() {
         });
     }
 
+
+
+const bottomNav = document.querySelector('.bottom-nav');
+const footer = document.querySelector('footer');
+
+function handleFooterOverlap() {
+    const footerRect = footer.getBoundingClientRect();
+    const navHeight = bottomNav.offsetHeight;
+
+    if (footerRect.top <= window.innerHeight - navHeight) {
+        bottomNav.classList.add('above-footer');
+    } else {
+        bottomNav.classList.remove('above-footer');
+    }
+}
+
+window.addEventListener('scroll', handleFooterOverlap);
+window.addEventListener('resize', handleFooterOverlap); 
     // --- Fade in main content once app.js renders it ---
     // app.js DOMContentLoaded fires after this, so we hook into it
     document.addEventListener('dcas:rendered', () => {
