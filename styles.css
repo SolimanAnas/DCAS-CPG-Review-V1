@@ -991,34 +991,6 @@ footer a { color: inherit; text-decoration: underline; }
 
 /* ========== MOBILE UX IMPROVEMENTS ========== */
 
-/* 📊 CHAPTER PROGRESS BAR – fixed, always flush under the sticky header */
-.progress-container-scroll {
-    /* position:fixed is safe now that header has no default transform.
-       When header hides (transform:translateY(-100%) applied), this element
-       is a child of header so it moves off-screen with it. */
-    position: fixed;
-    top: var(--header-height);   /* flush with header bottom = 72px */
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    z-index: 1001;
-    pointer-events: none;
-    overflow: hidden;
-}
-.progress-bar-scroll {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #22d3ee, #67e8f9);
-    transition: width 0.2s ease;
-    border-radius: 0 3px 3px 0;
-}
-/* Theme accent colors */
-[data-theme="light"] .progress-bar-scroll   { background: linear-gradient(90deg, #0056b3, #38bdf8); }
-[data-theme="sepia"] .progress-bar-scroll   { background: linear-gradient(90deg, #8b6b4f, #c4a26b); }
-[data-theme="forest"] .progress-bar-scroll  { background: linear-gradient(90deg, #84a98c, #b7e4c7); }
-[data-theme="amoled"] .progress-bar-scroll  { background: linear-gradient(90deg, #00bcd4, #00e5ff); }
-
 /* 🩺 KPI & ALERT BOXES */
 .kpi-box {
     background: rgba(59, 130, 246, 0.15);
@@ -1436,6 +1408,33 @@ footer a { color: inherit; text-decoration: underline; }
     .amoled-badge  { display: none !important; }
 }
 
+/* ======================================================
+   GLOBAL SCROLL PROGRESS BAR
+   ====================================================== */
+
+#pageProgressBar {
+    position: fixed;
+    top: 0;               /* JS controls actual position */
+    left: 0;
+    width: 100%;
+    height: 4px;
+    z-index: 9998;
+    pointer-events: none;
+    transition: top 0.25s ease;
+}
+
+#pageProgressBar .progress-bar-scroll {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #22d3ee, #67e8f9);
+    transition: width 0.15s ease;
+}
+
+/* Theme variations */
+[data-theme="light"]  #pageProgressBar .progress-bar-scroll { background: linear-gradient(90deg, #0056b3, #38bdf8); }
+[data-theme="sepia"]  #pageProgressBar .progress-bar-scroll { background: linear-gradient(90deg, #8b6b4f, #c4a26b); }
+[data-theme="forest"] #pageProgressBar .progress-bar-scroll { background: linear-gradient(90deg, #84a98c, #b7e4c7); }
+[data-theme="amoled"] #pageProgressBar .progress-bar-scroll { background: linear-gradient(90deg, #00bcd4, #00e5ff); }
 
 
 /* ========================================================================
