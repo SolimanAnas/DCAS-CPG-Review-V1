@@ -1184,7 +1184,7 @@ footer a { color: inherit; text-decoration: underline; }
 }
 
 .bottom-nav.above-footer {
-    transform: translateY(-110%);
+    bottom: 80px;
 }
 
 /* ---------- View tabs (fallback) – keep but likely unused ---------- */
