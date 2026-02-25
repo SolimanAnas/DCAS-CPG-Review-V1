@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (with sticky bottom nav) ========== */
+/* ========== app.js – DCAS CPG 2025 (The Cleanest Version 😅) ========== */
 (function(){
 "use strict";
 
@@ -18,24 +18,6 @@ const storage = (function() {
     return { load, save };  
 })();  
 
-
-// ---------- CONTENT FADE TRANSITION ----------
-function fadeInContent(callback) {
-    const main = document.getElementById('mainContent');
-    if (!main) { if (callback) callback(); return; }
-    main.classList.remove('content-visible');
-    main.classList.add('content-entering');
-    // Force reflow
-    void main.offsetHeight;
-    if (callback) callback();
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            main.classList.remove('content-entering');
-            main.classList.add('content-visible');
-        });
-    });
-}
-
 // ---------- EARLY INIT: theme + font-size applied BEFORE render to prevent flash ----------
 (function() {
     const html = document.documentElement;
@@ -45,6 +27,7 @@ function fadeInContent(callback) {
     // Font size
     const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
     html.setAttribute('data-font-size', savedSize);
+})();
 
 // ============================================================
 // LAST VISITED – records chapter visits to localStorage
@@ -54,7 +37,6 @@ const LAST_VISITED_KEY = 'dcas_last_visited';
 
 function recordLastVisited() {
     if (!chapterData) return;
-    // Build a clean item
     const item = {
         id:        chapterData.id,
         title:     chapterData.shortTitle || chapterData.title || 'Chapter',
@@ -63,10 +45,9 @@ function recordLastVisited() {
     };
     try {
         let list = JSON.parse(localStorage.getItem(LAST_VISITED_KEY) || '[]');
-        // Remove duplicate if same id already in list
         list = list.filter(i => i.id !== item.id);
-        list.unshift(item);          // add to front
-        list = list.slice(0, 5);     // keep max 5
+        list.unshift(item);
+        list = list.slice(0, 5);
         localStorage.setItem(LAST_VISITED_KEY, JSON.stringify(list));
     } catch(e) {}
 }
@@ -111,19 +92,16 @@ function initBatteryIndicator() {
 // ============================================================
 // initChapterPage()
 // Called by every chapter HTML after CPG_DATA and app.js load.
-// Replaces all the duplicated inline scripts in every chapter file.
 // ============================================================
 function initChapterPage() {
     const html   = document.documentElement;
     const themes = ['dark', 'light', 'sepia', 'forest', 'amoled'];
 
-    // --- Apply saved theme & font size immediately ---
     const savedTheme = localStorage.getItem('theme') || 'dark';
     html.setAttribute('data-theme', savedTheme);
     const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
     html.setAttribute('data-font-size', savedSize);
 
-    // --- Inject header ---
     const headerEl = document.querySelector('header');
     if (headerEl && chapterData) {
         const title    = chapterData.shortTitle || chapterData.title || 'DCAS CPG';
@@ -160,7 +138,6 @@ function initChapterPage() {
         `;
     }
 
-    // --- Inject footer ---
     const footerEl = document.querySelector('footer');
     if (footerEl) {
         footerEl.innerHTML = `
@@ -169,7 +146,6 @@ function initChapterPage() {
         `;
     }
 
-    // --- Theme toggle ---
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
@@ -178,12 +154,10 @@ function initChapterPage() {
             const next = themes[(idx + 1) % themes.length];
             html.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
-            // Refresh battery indicator visibility
             initBatteryIndicator();
         });
     }
 
-    // --- Home button ---
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) {
         homeBtn.addEventListener('click', () => {
@@ -191,7 +165,6 @@ function initChapterPage() {
         });
     }
 
-    // --- Stats badge ---
     function loadStats() {
         try {
             const data  = localStorage.getItem('dcas_cpg_stats');
@@ -207,21 +180,15 @@ function initChapterPage() {
     }
     loadStats();
 
-    // --- Battery indicator ---
     initBatteryIndicator();
-
-    // --- Record last visited ---
     recordLastVisited();
 
-    // --- Service Worker ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('../sw.js').catch(() => {});
         });
     }
 
-    // --- Fade in main content once app.js renders it ---
-    // app.js DOMContentLoaded fires after this, so we hook into it
     document.addEventListener('dcas:rendered', () => {
         const main = document.getElementById('mainContent');
         if (main) {
@@ -234,11 +201,7 @@ function initChapterPage() {
     });
 }
 
-// Expose so chapter HTML shells can call it
 window.initChapterPage = initChapterPage;
-
-
-})();
 
 // ---------- CHAPTER DATA ----------  
 const chapterData = window.CPG_DATA;  
@@ -329,7 +292,6 @@ function updateHeader(title, subtitle = '', showBack = true) {
     if (dom.pageSubtitle) dom.pageSubtitle.innerText = subtitle || '';  
     if (dom.homeBtn) dom.homeBtn.style.display = showBack ? 'block' : 'none';  
 
-    // Hide stats badge on chapter pages
     const statsBadge = document.getElementById('liveStatsBadge');
     if (statsBadge) {
         statsBadge.style.display = chapterData ? 'none' : 'flex';
@@ -366,7 +328,7 @@ function renderComingSoon() {
             icon = '🚧';
     }
     const html = `<div class="coming-soon-card" style="text-align:center; background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 60px; padding: 40px 20px; box-shadow: var(--glass-shadow);">   <div style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; background: linear-gradient(145deg, #0a3b4e, #1e6f8f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 15px; line-height: 1.2; font-family: Georgia, serif;">${icon} ${title}</div>   <div style="font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.5rem, 5vw, 2.2rem); font-style: italic; font-weight: 600; color: #0a3b4e; text-shadow: 0 2px 5px rgba(255,255,255,0.7); border-top: 3px solid rgba(0,86,179,0.3); border-bottom: 3px solid rgba(0,86,179,0.3); display: inline-block; padding: 10px 30px; margin-top: 10px; letter-spacing: 2px;">${subtitle}</div>   <div style="font-size: clamp(1rem, 4vw, 1.4rem); font-weight: 500; color: #1a3a4a; background: rgba(255,255,255,0.5); padding: 12px 20px; border-radius: 50px; display: inline-block; margin-top: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">   ${message}   </div>   <div style="margin-top: 40px;">   <button class="control-btn" data-action="backHome" style="padding: 12px 30px; border-radius: 40px; font-weight: 700; font-size: clamp(0.9rem, 4vw, 1.1rem); color: white; background: linear-gradient(to bottom, #00b4db, #0083b0); box-shadow: 0 8px 20px rgba(0, 131, 176, 0.5); border: none; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;">🏠 Home</button>   </div>   </div>`;
-    dom.main.innerHTML = html;
+    setMainContent(html);
     updateHeader(title, subtitle, true);
     utils.safeScrollTop();
 }
@@ -386,7 +348,7 @@ function renderSectionTabs(activeId) {
     `;  
 }  
 
-// ---------- 📱 STICKY BOTTOM NAVIGATION (replaces view tabs) ----------
+// ---------- 📱 STICKY BOTTOM NAVIGATION ----------
 function renderBottomNav(currentView) {
     const views = [
         { id: 'summary', label: 'Summary', icon: '📘' },
@@ -405,7 +367,7 @@ function renderBottomNav(currentView) {
     `;
 }
 
-// ---------- SLIM SECTION NAVIGATION (Previous / Next) ----------  
+// ---------- SLIM SECTION NAVIGATION ----------  
 function renderSectionNavigation() {  
     if (!state.sections || state.sections.length <= 1) return '';  
     const currentIdx = utils.getSectionIndex(state.activeSectionId);  
@@ -433,29 +395,106 @@ function renderSectionNavigation() {
     `;  
 }  
 
-// ---------- SCROLL PROGRESS BAR (excludes footer) ----------
-function initScrollProgress() {
-    // Target the bar in the header (immune to main opacity transitions)
+// ============================================================
+// SCROLL‑RELATED FUNCTIONS (unified controller)
+// ============================================================
+let lastScrollY = 0;
+let ticking = false;
+let header;                 // will be set in DOMContentLoaded
+let progressBarWrapper;     // will be set in DOMContentLoaded
+let bottomNav;              // may be re‑queried each time
+let footer;                 // may be re‑queried each time
+
+function updateHeaderVisibility() {
+    if (!header) return;
+    const currentY = window.scrollY;
+    if (currentY > lastScrollY && currentY > 100) {
+        header.classList.add('header-hidden');
+    } else if (currentY < lastScrollY) {
+        header.classList.remove('header-hidden');
+    }
+    lastScrollY = currentY;
+}
+
+function updateProgressBarPosition() {
+    if (!header || !progressBarWrapper) return;
+    if (header.classList.contains('header-hidden')) {
+        progressBarWrapper.style.transform = 'translateY(0)';
+    } else {
+        progressBarWrapper.style.transform = `translateY(${header.offsetHeight}px)`;
+    }
+}
+
+function updateBottomNavVisibility() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+    if (scrolled > 50) {
+        nav.classList.add('visible');
+    } else {
+        nav.classList.remove('visible');
+    }
+}
+
+function updateFooterNavPosition() {
+    const nav = document.querySelector('.bottom-nav');
+    const ft = document.querySelector('footer');
+    if (!nav || !ft) return;
+    const footerRect = ft.getBoundingClientRect();
+    const overlap = window.innerHeight - footerRect.top;
+    nav.style.bottom = overlap > 0 ? overlap + 'px' : '0px';
+}
+
+function updateScrollProgress() {
     const progressBar = document.querySelector('#pageProgressBar .progress-bar-scroll')
                      || document.querySelector('.progress-bar-scroll');
     if (!progressBar) return;
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const totalH    = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (totalH <= 0) { progressBar.style.width = '100%'; return; }
+    progressBar.style.width = Math.min((winScroll / totalH) * 100, 100) + '%';
+}
 
-    function updateProgress() {
-        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-        const totalH    = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        if (totalH <= 0) { progressBar.style.width = '100%'; return; }
-        progressBar.style.width = Math.min((winScroll / totalH) * 100, 100) + '%';
+// One scroll handler to rule them all
+function handleScroll() {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            updateHeaderVisibility();
+            updateProgressBarPosition();
+            updateBottomNavVisibility();
+            updateFooterNavPosition();
+            updateScrollProgress();
+            ticking = false;
+        });
+        ticking = true;
     }
-    // Remove any prior listener before re-attaching (section switches call this again)
-    if (initScrollProgress._cleanup) initScrollProgress._cleanup();
-    const onScroll = updateProgress;
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', updateProgress, { passive: true });
-    initScrollProgress._cleanup = () => {
-        window.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', updateProgress);
-    };
-    updateProgress();
+}
+
+// ---------- INITIALISE SCROLL DEPENDENCIES ----------
+function initBottomNav() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    if (nav.dataset.visibilityInit) return;
+    nav.dataset.visibilityInit = 'true';
+    // initial check will be done by handleScroll on first call
+}
+
+function initFooterAwareNav() {
+    const nav = document.querySelector('.bottom-nav');
+    const ft = document.querySelector('footer');
+    if (!nav || !ft) return;
+    if (nav.dataset.footerInit) return;
+    nav.dataset.footerInit = 'true';
+    // initial positioning will be done by handleScroll
+}
+
+function initScrollProgress() {
+    const progressBar = document.querySelector('#pageProgressBar .progress-bar-scroll')
+                     || document.querySelector('.progress-bar-scroll');
+    if (!progressBar) return;
+    // just ensure it exists, the update will be called on scroll and resize
 }
 
 // ---------- SWITCH SECTION ----------  
@@ -466,7 +505,6 @@ function switchSection(sectionId, updateUrl = true) {
     state.activeSectionId = sectionId;  
     state.activeSection = section;  
       
-    // Reset per-section state  
     state.quizData = [];  
     state.mistakes = [];  
     state.qIndex = 0;  
@@ -489,11 +527,36 @@ function switchSection(sectionId, updateUrl = true) {
     else if (currentView === 'quiz') render.quizSetup();  
     else if (currentView === 'critical') render.criticalGame();  
     else render.summary();  
+
+    // Re‑initialise scroll‑dependent features after content change
+    initBottomNav();
+    initFooterAwareNav();
+    initScrollProgress();
+    // Force immediate update
+    handleScroll();
       
     return true;  
 }  
 
-// ---------- RENDER FUNCTIONS ----------  
+// ============================================================
+// SAFE CONTENT SETTER (replaces innerHTML override)
+// ============================================================
+function setMainContent(html) {
+    dom.main.innerHTML = html;
+    dom.main.classList.remove('content-enter');
+    void dom.main.offsetWidth;               // force reflow
+    dom.main.classList.add('content-enter');
+    // Ensure scroll features are re‑initialised
+    initBottomNav();
+    initFooterAwareNav();
+    initScrollProgress();
+    // Force immediate scroll update (e.g. progress bar position)
+    handleScroll();
+}
+
+// ============================================================
+// RENDER FUNCTIONS (now use setMainContent)
+// ============================================================
 const render = {  
     summary: function() {  
         if (isChapterMissing) { renderComingSoon(); return; }  
@@ -517,10 +580,9 @@ const render = {
             </div>  
             ${!isSpecialPage ? renderBottomNav('summary') : ''}  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         updateHeader(utils.escapeHTML(section.shortTitle), 'Summary', true);  
         utils.safeScrollTop();  
-        initScrollProgress();  
 
         if (chapterData && chapterData.id === 'c-index') {  
             initIndexSearch();  
@@ -535,7 +597,7 @@ const render = {
             return;  
         }  
         if (!state.flashData.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No flashcards available.</div>';  
+            setMainContent('<div class="sum-card">No flashcards available.</div>');  
             return;  
         }  
         state.fIndex = 0;  
@@ -579,7 +641,7 @@ const render = {
             <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('flashcards')}  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         const cardEl = document.getElementById('flashcard');  
         const scene = document.getElementById('cardScene');  
         if (scene) {  
@@ -599,7 +661,7 @@ const render = {
             return;  
         }  
         if (!section.quiz || !section.quiz.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No quiz questions available.</div>';  
+            setMainContent('<div class="sum-card">No quiz questions available.</div>');  
             return;  
         }  
         const totalQuestions = section.quiz.length;
@@ -628,7 +690,7 @@ const render = {
             <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('quiz')}  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         updateHeader('Quiz Setup', utils.escapeHTML(section.shortTitle), true);  
         utils.safeScrollTop();  
     },  
@@ -668,7 +730,7 @@ const render = {
             <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('quiz')}  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         utils.safeScrollTop();  
     },  
 
@@ -680,7 +742,7 @@ const render = {
             return;  
         }  
         if (!state.criticalData || !state.criticalData.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No critical scenarios available.</div>';  
+            setMainContent('<div class="sum-card">No critical scenarios available.</div>');  
             return;  
         }  
         state.criticalIndex = 0;  
@@ -719,7 +781,7 @@ const render = {
             <div class="back-home-ghost"><button data-action="backHome">🏠 Home</button></div>  
             ${renderBottomNav('critical')}  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         utils.safeScrollTop();  
     },  
 
@@ -736,16 +798,18 @@ const render = {
                 </div>  
             `;  
         }  
+        const totalChapters = window.CHAPTERS ? Object.keys(window.CHAPTERS).length : 1;  
+        const overallPct = Math.round((Object.keys(s.chapters).length / totalChapters) * 100);  
         const critAcc = s.critical.total ? Math.round((s.critical.correct / s.critical.total) * 100) : 0;  
         const html = `  
             <div class="stats-card">  
                 <h2 style="color:var(--primary-accent);">📊 Your Performance</h2>  
                 <div class="progress-header">  
                     <span class="progress-title">Overall Progress</span>  
-                    <span style="font-weight:700;">${Math.round((Object.keys(s.chapters).length / (Object.keys(CHAPTERS||{}).length || 1)) * 100)}%</span>  
+                    <span style="font-weight:700;">${overallPct}%</span>  
                 </div>  
                 <div class="progress-container">  
-                    <div class="progress-bar" style="width: ${Math.round((Object.keys(s.chapters).length / (Object.keys(CHAPTERS||{}).length || 1)) * 100)}%;"></div>  
+                    <div class="progress-bar" style="width: ${overallPct}%;"></div>  
                 </div>  
                 <div class="stats-grid">  
                     <div class="stat-box">  
@@ -764,14 +828,14 @@ const render = {
                 </div>  
             </div>  
         `;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         updateHeader('Statistics', '', true);  
         utils.safeScrollTop();  
     },  
 
     reviewMistakes: function() {  
         if (!state.mistakes.length) {  
-            dom.main.innerHTML = '<div class="sum-card">No mistakes to review.</div>';  
+            setMainContent('<div class="sum-card">No mistakes to review.</div>');  
             return;  
         }  
         let items = state.mistakes.map(m => `  
@@ -782,13 +846,13 @@ const render = {
             </div>  
         `).join('');  
         const html = `<div class="sum-card"><h3>📝 Mistakes Review</h3>${items}<div class="nav-row"><button class="control-btn" data-action="backHome">🏠 Home</button></div></div>`;  
-        dom.main.innerHTML = html;  
+        setMainContent(html);  
         updateHeader('Mistakes', '', true);  
         utils.safeScrollTop();  
     }  
 };  
 
-// ---------- INDEX SEARCH INIT (unchanged) ----------
+// ---------- INDEX SEARCH INIT ----------
 function initIndexSearch() {
     if (!chapterData || chapterData.id !== 'c-index') return;
     
@@ -846,7 +910,7 @@ function initIndexSearch() {
     }, 200);
 }
 
-// ---------- QUIZ ENGINE (unchanged) ----------  
+// ---------- QUIZ ENGINE ----------  
 const quizEngine = {  
     init: function(size) {  
         if (isChapterMissing) { renderComingSoon(); return; }  
@@ -923,13 +987,13 @@ const quizEngine = {
                     </div>  
                 </div>  
             `;  
-            dom.main.innerHTML = html;  
+            setMainContent(html);  
             utils.safeScrollTop();  
         }  
     }  
 };  
 
-// ---------- CRITICAL ENGINE (unchanged) ----------  
+// ---------- CRITICAL ENGINE ----------  
 const criticalEngine = {  
     handleAnswer: function(selectedIdx, btn) {  
         if (isChapterMissing) { renderComingSoon(); return; }  
@@ -975,7 +1039,7 @@ const criticalEngine = {
                     </div>  
                 </div>  
             `;  
-            dom.main.innerHTML = html;  
+            setMainContent(html);  
             utils.safeScrollTop();  
         }  
     }  
@@ -1005,67 +1069,22 @@ function createRipple(event, target) {
     }
 }  
 
-// ---------- SCROLL‑HIDE HEADER ----------
-let lastScrollY = window.scrollY;
-const header = document.querySelector('header');
-let ticking = false;
-
-window.addEventListener('scroll', () => {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            const currentY = window.scrollY;
-            if (currentY > lastScrollY && currentY > 100) {
-                header?.classList.add('header-hidden');
-            } else if (currentY < lastScrollY) {
-                header?.classList.remove('header-hidden');
+// ---------- OPTIMISED MUTATION OBSERVER (only watches #mainContent) ----------
+const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+        for (const node of m.addedNodes) {
+            if (node.nodeType === 1 && node.classList?.contains('bottom-nav')) {
+                initBottomNav();
+                initFooterAwareNav();
+                return; // stop after first match
             }
-            lastScrollY = currentY;
-            ticking = false;
-        });
-        ticking = true;
-    }
-});
-
-   // ---------- BOTTOM NAV VISIBILITY (appears after 50% scroll) ----------
-
-function initBottomNav() {
-    const bottomNav = document.querySelector('.bottom-nav');
-    if (!bottomNav) return;
-
-    function checkScrollVisibility() {
-        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-
-        if (scrolled > 50) {
-            bottomNav.classList.add('visible');
-        } else {
-            bottomNav.classList.remove('visible');
         }
     }
-
-    window.addEventListener('scroll', checkScrollVisibility, { passive: true });
-    window.addEventListener('resize', checkScrollVisibility);
-    checkScrollVisibility();
+});
+if (dom.main) {
+    observer.observe(dom.main, { childList: true, subtree: true });
 }
 
-// Call it after every render that adds a bottom nav
-// We can hook into the render functions, but easiest is to call it once after DOMContentLoaded,
-// and also after each render that replaces the nav.
-// We'll modify the render functions to call initBottomNav again.
-// But for simplicity, we'll add a global check that runs after each render.
-
-// We'll override the render functions to re‑init the nav after they finish.
-// However, to keep it simple, we can add a MutationObserver that watches for added bottom-nav.
-// That's robust and doesn't require changing every render function.
-
-const observer = new MutationObserver(() => {
-    if (document.querySelector('.bottom-nav')) {
-        initBottomNav();
-        initFooterAwareNav();
-    }
-});
-observer.observe(document.body, { childList: true, subtree: true }); 
 // ---------- COMPLETE EVENT DELEGATION ----------  
 document.addEventListener('click', function(e) {  
     const target = e.target.closest('button, .nav-pill');  
@@ -1081,7 +1100,6 @@ document.addEventListener('click', function(e) {
     const flashAction = target.dataset.flash;
     const optIndex = target.dataset.optIndex;
     
-    // Handle navigation
     if (action === 'backHome') {
         e.preventDefault();
         const isInSubfolder = window.location.pathname.includes('/chapters/');
@@ -1109,27 +1127,23 @@ document.addEventListener('click', function(e) {
         return;
     }
     
-    // Section tab switching
     if (sectionId && target.classList.contains('section-tab')) {
         e.preventDefault();
         switchSection(sectionId);
         return;
     }
     
-    // Section navigation (prev/next)
     if (sectionNav && sectionId) {
         e.preventDefault();
         switchSection(sectionId);
         return;
     }
     
-    // Quiz setup
     if (quizSize) {
         quizEngine.init(parseInt(quizSize, 10));
         return;
     }
     
-    // Flashcard navigation
     if (flashAction === 'prev') {
         if (state.fIndex > 0) {
             state.fIndex--;
@@ -1146,7 +1160,6 @@ document.addEventListener('click', function(e) {
         return;
     }
     
-    // Quiz answer handling
     if (optIndex !== undefined && target.classList.contains('option-btn')) {
         const inQuiz = document.getElementById('quizFeedback') !== null;
         const inCritical = document.getElementById('criticalFeedback') !== null;
@@ -1159,7 +1172,6 @@ document.addEventListener('click', function(e) {
         return;
     }
     
-    // Next question buttons
     if (target.id === 'nextQuizBtn') {
         quizEngine.next();
         return;
@@ -1185,57 +1197,26 @@ window.addEventListener('popstate', function() {
     }
 });
 
-
-
-// ════════════════════════════════════════════════════════════
-function initFooterAwareNav() {
-    const bottomNav = document.querySelector('.bottom-nav');
-    const footer = document.querySelector('footer');
-    if (bottomNav.dataset.footerInit) return;
-      bottomNav.dataset.footerInit = "true";
-    if (!bottomNav || !footer) return;
-
-    function adjustNavPosition() {
-        const footerRect = footer.getBoundingClientRect();
-        const overlap = window.innerHeight - footerRect.top;
-
-        if (overlap > 0) {
-            bottomNav.style.bottom = overlap + 'px';
-        } else {
-            bottomNav.style.bottom = '0px';
-        }
-    }
-
-    window.addEventListener('scroll', adjustNavPosition, { passive: true });
-    window.addEventListener('resize', adjustNavPosition);
-    adjustNavPosition();
-}
-
-
-
-
-// CHAPTER PAGE BOOTSTRAP – runs on every chapter HTML page
-// Handles: theme, font-size, homeBtn, stats badge, last-visited
-//          tracking, content fade-in transition
-// ════════════════════════════════════════════════════════════
+// ---------- BOOTSTRAP (DOMContentLoaded) ----------
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ── Progress bar: move OUT of <header> to <body> ─────────
-    // <header> has position:sticky, which creates a containing block.
-    // Any position:fixed child is then positioned relative to the header,
-    // not the viewport — so it appears BELOW the header instead of touching it.
-    // Appending to <body> makes position:fixed work correctly (viewport-relative).
-    (function() {
-        const pb = document.getElementById('pageProgressBar');
-        if (pb) {
-            document.body.appendChild(pb);
-            // Ensure header overflow:visible no longer needed for the bar
-            const hdr = document.querySelector('header');
-            if (hdr) hdr.style.overflow = 'hidden'; // can safely clip now
-        }
-    })();
+    // ── Move progress bar to body ──────────────────────────
+    const pb = document.getElementById('pageProgressBar');
+    if (pb) {
+        document.body.appendChild(pb);
+        // No need to set header overflow hidden
+    }
 
-    // ── Theme cycling (🎨 button in chapter header) ──────────
+    // ── Initialise global references for scroll controller ──
+    header = document.querySelector('header');
+    progressBarWrapper = document.getElementById('pageProgressBar');
+
+    // ── Set initial progress bar position ──────────────────
+    if (header && progressBarWrapper) {
+        progressBarWrapper.style.transform = `translateY(${header.offsetHeight}px)`;
+    }
+
+    // ── Theme cycling ───────────────────────────────────────
     const themeBtn  = document.getElementById('themeToggle');
     const htmlEl    = document.documentElement;
     const ALL_THEMES = ['dark', 'amoled', 'light', 'sepia', 'forest'];
@@ -1252,14 +1233,13 @@ document.addEventListener('DOMContentLoaded', function() {
             applyTheme(ALL_THEMES[(idx + 1) % ALL_THEMES.length]);
         });
     }
-    // Apply theme immediately (also set by inline <script> in <head> to avoid flash)
     applyTheme(localStorage.getItem('theme') || 'dark');
 
-    // ── Font size ────────────────────────────────────────────
+    // ── Font size ───────────────────────────────────────────
     const savedFont = localStorage.getItem('dcas_font_size') || 'medium';
     htmlEl.setAttribute('data-font-size', savedFont);
 
-    // ── Home button ──────────────────────────────────────────
+    // ── Home button ─────────────────────────────────────────
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) {
         homeBtn.addEventListener('click', function(e) {
@@ -1270,7 +1250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { capture: true });
     }
 
-    // ── Stats badge ──────────────────────────────────────────
+    // ── Stats badge ─────────────────────────────────────────
     function refreshStatsBadge() {
         try {
             const s = storage.load();
@@ -1284,8 +1264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     refreshStatsBadge();
 
-    // ── Last-visited tracking ────────────────────────────────
-    // Record this chapter in localStorage so index.html can show "Resume"
+    // ── Last-visited tracking ───────────────────────────────
     if (chapterData) {
         try {
             const LV_KEY = 'dcas_last_visited';
@@ -1296,10 +1275,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 path    : window.location.pathname + window.location.search,
                 ts      : Date.now()
             };
-            // Keep a stack of last 5 visited (most recent first)
             let history = [];
             try { history = JSON.parse(localStorage.getItem(LV_KEY) || '[]'); } catch(e) {}
-            // Remove duplicate for this path, then unshift
             history = history.filter(h => h.path !== entry.path);
             history.unshift(entry);
             if (history.length > 5) history = history.slice(0, 5);
@@ -1307,25 +1284,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) {}
     }
 
-    // ── Content fade-in transition (CSS class toggle — no opacity on main) ──
-    // Uses a CSS animation class so the progress bar (now in header) is unaffected
-    const mainEl = document.getElementById('mainContent');
-    if (mainEl && dom && dom.main) {
-        const _origDesc = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-        Object.defineProperty(dom.main, 'innerHTML', {
-            set: function(val) {
-                _origDesc.set.call(this, val);
-                // Trigger CSS animation via class without touching opacity on main
-                this.classList.remove('content-enter');
-                void this.offsetWidth; // force reflow
-                this.classList.add('content-enter');
-            },
-            get: function() { return _origDesc.get.call(this); },
-            configurable: true
-        });
-    }
+    // ── Attach unified scroll controller ────────────────────
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    // Initial call to set everything
+    handleScroll();
 
-    // ── Chapter page boot ────────────────────────────────────
+    // ── Chapter page boot ───────────────────────────────────
     if (isChapterMissing) {
         renderComingSoon();
         return;
@@ -1353,201 +1318,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
-// ============================================================
-// LAST VISITED – records chapter visits to localStorage
-// max 5 items, most recent first
-// ============================================================
-const LAST_VISITED_KEY = 'dcas_last_visited';
-
-function recordLastVisited() {
-    if (!chapterData) return;
-    // Build a clean item
-    const item = {
-        id:        chapterData.id,
-        title:     chapterData.shortTitle || chapterData.title || 'Chapter',
-        url:       window.location.href,
-        timestamp: Date.now()
-    };
-    try {
-        let list = JSON.parse(localStorage.getItem(LAST_VISITED_KEY) || '[]');
-        // Remove duplicate if same id already in list
-        list = list.filter(i => i.id !== item.id);
-        list.unshift(item);          // add to front
-        list = list.slice(0, 5);     // keep max 5
-        localStorage.setItem(LAST_VISITED_KEY, JSON.stringify(list));
-    } catch(e) {}
-}
-
-function timeAgo(ts) {
-    const diff = Date.now() - ts;
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1)   return 'Just now';
-    if (mins < 60)  return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24)   return `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    return `${days}d ago`;
-}
-
-// ============================================================
-// BATTERY INDICATOR (AMOLED mode only)
-// ============================================================
-function initBatteryIndicator() {
-    const indicator = document.getElementById('batteryIndicator');
-    if (!indicator) return;
-    if (!('getBattery' in navigator)) return;
-
-    navigator.getBattery().then(battery => {
-        function updateBattery() {
-            const pct = Math.round(battery.level * 100);
-            const fill = indicator.querySelector('.battery-fill');
-            const pctEl = indicator.querySelector('.battery-pct');
-            if (fill) {
-                fill.style.width = pct + '%';
-                fill.className = 'battery-fill' +
-                    (battery.charging ? ' charging' : pct < 20 ? ' low' : '');
-            }
-            if (pctEl) pctEl.textContent = pct + '%';
-        }
-        battery.addEventListener('levelchange', updateBattery);
-        battery.addEventListener('chargingchange', updateBattery);
-        updateBattery();
-    }).catch(() => {});
-}
-
-// ============================================================
-// initChapterPage()
-// Called by every chapter HTML after CPG_DATA and app.js load.
-// Replaces all the duplicated inline scripts in every chapter file.
-// ============================================================
-function initChapterPage() {
-    const html   = document.documentElement;
-    const themes = ['dark', 'light', 'sepia', 'forest', 'amoled'];
-
-    // --- Apply saved theme & font size immediately ---
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', savedTheme);
-    const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
-    html.setAttribute('data-font-size', savedSize);
-
-    // --- Inject header ---
-    const headerEl = document.querySelector('header');
-    if (headerEl && chapterData) {
-        const title    = chapterData.shortTitle || chapterData.title || 'DCAS CPG';
-        const subtitle = 'DCAS CPG 2025';
-        headerEl.innerHTML = `
-            <div class="header-left">
-                <button class="icon-btn" id="homeBtn" title="Home" aria-label="Home">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.2"
-                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/>
-                        <path d="M9 21V12h6v9"/>
-                    </svg>
-                </button>
-                <div class="header-text">
-                    <h1 id="pageTitle">${title}</h1>
-                    <p id="pageSubtitle">${subtitle}</p>
-                </div>
-            </div>
-            <div class="header-right" id="headerRight">
-                <div class="battery-indicator" id="batteryIndicator">
-                    <span class="battery-icon"><span class="battery-fill"></span></span>
-                    <span class="battery-pct">--%</span>
-                </div>
-                <button class="icon-btn" id="themeToggle" title="Switch Theme">🎨</button>
-                <div class="stats-badge" id="liveStatsBadge">
-                    <span>📊 <span id="statsAttempts">0</span></span>
-                    <div class="stats-divider"></div>
-                    <span>🎯 <span id="statsCritical">0%</span></span>
-                </div>
-                <a href="c-index.html?view=summary" class="icon-btn" id="headerIndexBtn" title="Index">📋</a>
-                <a href="../about.html" class="icon-btn" id="headerAboutBtn" title="About">ℹ️</a>
-            </div>
-        `;
-    }
-
-    // --- Inject footer ---
-    const footerEl = document.querySelector('footer');
-    if (footerEl) {
-        footerEl.innerHTML = `
-            <div>Created by Soliman Anas · for study aid only</div>
-            <div><a href="../about.html">About &amp; Disclaimer</a> · Refer to DCAS CPG and memo for procedures and protocols.</div>
-        `;
-    }
-
-    // --- Theme toggle ---
-    const themeBtn = document.getElementById('themeToggle');
-    if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            const current = html.getAttribute('data-theme') || 'dark';
-            const idx = themes.indexOf(current);
-            const next = themes[(idx + 1) % themes.length];
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            // Refresh battery indicator visibility
-            initBatteryIndicator();
-        });
-    }
-
-    // --- Home button ---
-    const homeBtn = document.getElementById('homeBtn');
-    if (homeBtn) {
-        homeBtn.addEventListener('click', () => {
-            window.location.href = '../index.html';
-        });
-    }
-
-    // --- Stats badge ---
-    function loadStats() {
-        try {
-            const data  = localStorage.getItem('dcas_cpg_stats');
-            const stats = data ? JSON.parse(data) : { totalAttempts: 0, critical: { total: 0, correct: 0 } };
-            const critAcc = stats.critical && stats.critical.total
-                ? Math.round((stats.critical.correct / stats.critical.total) * 100)
-                : 0;
-            const attEl  = document.getElementById('statsAttempts');
-            const critEl = document.getElementById('statsCritical');
-            if (attEl)  attEl.textContent  = stats.totalAttempts || 0;
-            if (critEl) critEl.textContent = critAcc + '%';
-        } catch(e) {}
-    }
-    loadStats();
-
-    // --- Battery indicator ---
-    initBatteryIndicator();
-
-    // --- Record last visited ---
-    recordLastVisited();
-
-    // --- Service Worker ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('../sw.js').catch(() => {});
-        });
-    }
-
-
-
-
-    // --- Fade in main content once app.js renders it ---
-    // app.js DOMContentLoaded fires after this, so we hook into it
-    document.addEventListener('dcas:rendered', () => {
-        const main = document.getElementById('mainContent');
-        if (main) {
-            main.classList.add('content-entering');
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                main.classList.remove('content-entering');
-                main.classList.add('content-visible');
-            }));
-        }
-    });
-}
-
-// Expose so chapter HTML shells can call it  
-window.initChapterPage = initChapterPage;  
-  
-  
-})();  
- 
+})();
