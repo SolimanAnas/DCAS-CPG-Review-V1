@@ -513,9 +513,9 @@ main {
 .scene {
     width: 100%;
     max-width: 700px;
-    height: 35vh; /* ⚡ THE FIX: Adapts height dynamically to the phone screen */
-    min-height: 220px; /* Never gets too small to read */
-    max-height: 320px; /* Never hogs the whole screen */
+    height: 55vh; /* ⚡ THE FIX: Adapts height dynamically to the phone screen */
+    min-height: 300px; /* Never gets too small to read */
+    max-height: 340px; /* Never hogs the whole screen */
     perspective: 1000px;
     margin: 15px auto; 
     touch-action: pan-y;
