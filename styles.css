@@ -510,10 +510,12 @@ main {
 
 .scene {
     width: 85%; /* Reduces width to leave breathing room on the sides */
-    max-width: 500px; /* Prevents it from stretching too far on tablets */
+    max-width: 400px; /* Prevents it from stretching too far on tablets */
     height: 260px; /* Reduced from 320px to stop overlapping the buttons */
     perspective: 1000px;
     margin: 20px auto; /* 'auto' perfectly centers the card horizontally */
+    align-items: center;
+    justify-content: center;
     touch-action: pan-y;
 }
 
