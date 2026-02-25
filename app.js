@@ -1027,25 +1027,26 @@ window.addEventListener('scroll', () => {
 });
 
    // ---------- BOTTOM NAV VISIBILITY (appears after 50% scroll) ----------
+
 function initBottomNav() {
     const bottomNav = document.querySelector('.bottom-nav');
     if (!bottomNav) return;
-    
-    function checkScroll() {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+
+    function checkScrollVisibility() {
+        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
-        
-        if (scrolled > 40) {
+
+        if (scrolled > 50) {
             bottomNav.classList.add('visible');
         } else {
             bottomNav.classList.remove('visible');
         }
     }
-    
-    window.addEventListener('scroll', checkScroll);
-    window.addEventListener('resize', checkScroll);
-    checkScroll(); // initial check
+
+    window.addEventListener('scroll', checkScrollVisibility, { passive: true });
+    window.addEventListener('resize', checkScrollVisibility);
+    checkScrollVisibility();
 }
 
 // Call it after every render that adds a bottom nav
@@ -1061,7 +1062,7 @@ function initBottomNav() {
 const observer = new MutationObserver(() => {
     if (document.querySelector('.bottom-nav')) {
         initBottomNav();
-        initFooterAvoidance();
+        initFooterAwareNav();
     }
 });
 observer.observe(document.body, { childList: true, subtree: true }); 
@@ -1184,7 +1185,35 @@ window.addEventListener('popstate', function() {
     }
 });
 
+
+
 // ════════════════════════════════════════════════════════════
+function initFooterAwareNav() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    const footer = document.querySelector('footer');
+    if (bottomNav.dataset.footerInit) return;
+      bottomNav.dataset.footerInit = "true";
+    if (!bottomNav || !footer) return;
+
+    function adjustNavPosition() {
+        const footerRect = footer.getBoundingClientRect();
+        const overlap = window.innerHeight - footerRect.top;
+
+        if (overlap > 0) {
+            bottomNav.style.bottom = overlap + 'px';
+        } else {
+            bottomNav.style.bottom = '0px';
+        }
+    }
+
+    window.addEventListener('scroll', adjustNavPosition, { passive: true });
+    window.addEventListener('resize', adjustNavPosition);
+    adjustNavPosition();
+}
+
+
+
+
 // CHAPTER PAGE BOOTSTRAP – runs on every chapter HTML page
 // Handles: theme, font-size, homeBtn, stats badge, last-visited
 //          tracking, content fade-in transition
@@ -1501,28 +1530,7 @@ function initChapterPage() {
 
 
 
-function initFooterAvoidance() {
-    function handleFooterOverlap() {
-        const bottomNav = document.querySelector('.bottom-nav');
-        const footer = document.querySelector('footer');
 
-        if (!bottomNav || !footer) return;
-
-        const footerRect = footer.getBoundingClientRect();
-        const navHeight = bottomNav.offsetHeight;
-
-        if (footerRect.top <= window.innerHeight - navHeight) {
-            bottomNav.classList.add('above-footer');
-        } else {
-            bottomNav.classList.remove('above-footer');
-        }
-    }
-
-    window.addEventListener('scroll', handleFooterOverlap);
-    window.addEventListener('resize', handleFooterOverlap);
-
-    handleFooterOverlap();
-}
     // --- Fade in main content once app.js renders it ---
     // app.js DOMContentLoaded fires after this, so we hook into it
     document.addEventListener('dcas:rendered', () => {
@@ -1537,8 +1545,9 @@ function initFooterAvoidance() {
     });
 }
 
-// Expose so chapter HTML shells can call it
-window.initChapterPage = initChapterPage;
-
-
-})();
+// Expose so chapter HTML shells can call it  
+window.initChapterPage = initChapterPage;  
+  
+  
+})();  
+ 
