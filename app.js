@@ -1036,7 +1036,7 @@ function initBottomNav() {
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         
-        if (scrolled > 50) {
+        if (scrolled > 40) {
             bottomNav.classList.add('visible');
         } else {
             bottomNav.classList.remove('visible');
@@ -1061,6 +1061,7 @@ function initBottomNav() {
 const observer = new MutationObserver(() => {
     if (document.querySelector('.bottom-nav')) {
         initBottomNav();
+        initFooterAvoidance();
     }
 });
 observer.observe(document.body, { childList: true, subtree: true }); 
@@ -1500,22 +1501,28 @@ function initChapterPage() {
 
 
 
-const bottomNav = document.querySelector('.bottom-nav');
-const footer = document.querySelector('footer');
+function initFooterAvoidance() {
+    function handleFooterOverlap() {
+        const bottomNav = document.querySelector('.bottom-nav');
+        const footer = document.querySelector('footer');
 
-function handleFooterOverlap() {
-    const footerRect = footer.getBoundingClientRect();
-    const navHeight = bottomNav.offsetHeight;
+        if (!bottomNav || !footer) return;
 
-    if (footerRect.top <= window.innerHeight - navHeight) {
-        bottomNav.classList.add('above-footer');
-    } else {
-        bottomNav.classList.remove('above-footer');
+        const footerRect = footer.getBoundingClientRect();
+        const navHeight = bottomNav.offsetHeight;
+
+        if (footerRect.top <= window.innerHeight - navHeight) {
+            bottomNav.classList.add('above-footer');
+        } else {
+            bottomNav.classList.remove('above-footer');
+        }
     }
-}
 
-window.addEventListener('scroll', handleFooterOverlap);
-window.addEventListener('resize', handleFooterOverlap); 
+    window.addEventListener('scroll', handleFooterOverlap);
+    window.addEventListener('resize', handleFooterOverlap);
+
+    handleFooterOverlap();
+}
     // --- Fade in main content once app.js renders it ---
     // app.js DOMContentLoaded fires after this, so we hook into it
     document.addEventListener('dcas:rendered', () => {
