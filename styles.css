@@ -508,17 +508,19 @@ main {
 }
 /*FLASHCARD 3D ---------⚡😭😭😭😭😭- */
 
-.scene {
-    width: 85%; /* Reduces width to leave breathing room on the sides */
-    max-width: 400px; /* Prevents it from stretching too far on tablets */
-    height: 260px; /* Reduced from 320px to stop overlapping the buttons */
-    perspective: 1000px;
-    margin: 20px auto; /* 'auto' perfectly centers the card horizontally */
-    align-items: center;
-    justify-content: center;
-    touch-action: pan-y;
-}
+/*FLASHCARD 3D ---------⚡✅ FIXED- */
 
+.scene {
+    width: 85%;
+    max-width: 400px;
+    height: 35vh; /* ⚡ THE FIX: Adapts height dynamically to the phone screen */
+    min-height: 220px; /* Never gets too small to read */
+    max-height: 320px; /* Never hogs the whole screen */
+    perspective: 1000px;
+    margin: 15px auto; 
+    touch-action: pan-y;
+    z-index: 10;
+}
 
 .card {
     width: 100%;
@@ -526,34 +528,34 @@ main {
     position: relative;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-style: preserve-3d;
-    border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    transform: translateZ(0);
+    /* Box-shadow removed here to prevent stacking overlap during flip */
 }
-
 
 .card.is-flipped {
     transform: rotateY(180deg);
 }
+
 .card__face {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    inset: 0; /* ⚡ Locks the faces perfectly inside the .card boundary */
+    box-sizing: border-box; /* ⚡ Forces padding INSIDE the boundary */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 30px;
+    padding: 20px; /* Slightly reduced for better mobile fit */
     text-align: center;
     border-radius: 24px;
     background: rgba(255,255,255,0.9);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.8);
-    transform: translateZ(0);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* ⚡ Shadow moved here */
 }
+
 .card__face--front { color: #004e92; }
+
 .card__face--back {
     background: linear-gradient(135deg, #005c97 0%, #363795 100%);
     color: white;
@@ -564,6 +566,7 @@ main {
     line-height: 1.5;
     white-space: pre-wrap;
 }
+
 .category-badge {
     background: #e1f5fe;
     color: #0277bd;
@@ -573,8 +576,9 @@ main {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
+
 .fc-progress {
     text-align: center;
     font-size: 1rem;
@@ -583,8 +587,13 @@ main {
     background: rgba(255,255,255,0.5);
     padding: 6px 12px;
     border-radius: 30px;
-    margin: 0 auto 20px;
+    margin: 0 auto 10px;
     width: fit-content;
+}
+/* Safeguard to keep buttons above the 3D card */
+.nav-row, .section-nav-slim, .back-home-ghost {
+    position: relative;
+    z-index: 20; 
 }
 
 /* ---------- CRITICAL SCENARIOS ---------- */
