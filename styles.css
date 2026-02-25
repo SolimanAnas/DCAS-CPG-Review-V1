@@ -348,9 +348,12 @@ main {
 .section-tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+
+    margin: 0 -20px 20px -20px;  /* break out of main padding */
+    padding: 0 20px 5px 20px;    /* restore internal spacing */
+
     overflow-x: auto;
-    padding-bottom: 5px;
+    scrollbar-width: none;
 }
 .section-tab {
     background: rgba(255,255,255,0.2);
@@ -874,7 +877,7 @@ main {
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    padding: 16px 20px 82px; /* bottom = 82px clears the ~78px fixed bottom-nav */
+    padding: 16px 20px; /*🤔🤔🤔🤔🤔🤔🤔🤔🤔*/
     color: var(--text-secondary);
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.35);
