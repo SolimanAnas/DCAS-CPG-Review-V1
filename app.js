@@ -1,4 +1,4 @@
-/* ========== app.js – DCAS CPG 2025 (The Cleanest Version 😅) ========== */
+/* ========== app.js – DCAS CPG 2025 (Final Clean) ========== */
 (function(){
 "use strict";
 
@@ -21,17 +21,14 @@ const storage = (function() {
 // ---------- EARLY INIT: theme + font-size applied BEFORE render to prevent flash ----------
 (function() {
     const html = document.documentElement;
-    // Theme
     const savedTheme = localStorage.getItem('theme') || 'dark';
     html.setAttribute('data-theme', savedTheme);
-    // Font size
     const savedSize = localStorage.getItem('dcas_font_size') || 'medium';
     html.setAttribute('data-font-size', savedSize);
 })();
 
 // ============================================================
-// LAST VISITED – records chapter visits to localStorage
-// max 5 items, most recent first
+// LAST VISITED – records chapter visits to localStorage (single implementation)
 // ============================================================
 const LAST_VISITED_KEY = 'dcas_last_visited';
 
@@ -400,12 +397,12 @@ function renderSectionNavigation() {
 // ============================================================
 let lastScrollY = 0;
 let ticking = false;
-let header;                 // will be set in DOMContentLoaded
-let progressBarWrapper;     // will be set in DOMContentLoaded
-let bottomNav;              // may be re‑queried each time
-let footer;                 // may be re‑queried each time
+let header;                 // will be set dynamically inside handleScroll
+let progressBarWrapper;     // set once in DOMContentLoaded, but also safe to requery
 
 function updateHeaderVisibility() {
+    // ensure header is fresh (in case it was injected after page load)
+    if (!header) header = document.querySelector('header');
     if (!header) return;
     const currentY = window.scrollY;
     if (currentY > lastScrollY && currentY > 100) {
@@ -416,12 +413,18 @@ function updateHeaderVisibility() {
     lastScrollY = currentY;
 }
 
+// 🔥 UPDATED: uses top instead of transform, and getBoundingClientRect().height
 function updateProgressBarPosition() {
-    if (!header || !progressBarWrapper) return;
-    if (header.classList.contains('header-hidden')) {
-        progressBarWrapper.style.transform = 'translateY(0)';
+    if (!progressBarWrapper) return;
+
+    const hdr = document.querySelector('header');
+    if (!hdr) return;
+
+    if (hdr.classList.contains('header-hidden')) {
+        progressBarWrapper.style.top = '0px';
     } else {
-        progressBarWrapper.style.transform = `translateY(${header.offsetHeight}px)`;
+        const realHeight = hdr.getBoundingClientRect().height;
+        progressBarWrapper.style.top = realHeight + 'px';
     }
 }
 
@@ -1200,20 +1203,25 @@ window.addEventListener('popstate', function() {
 // ---------- BOOTSTRAP (DOMContentLoaded) ----------
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ── Move progress bar to body ──────────────────────────
-    const pb = document.getElementById('pageProgressBar');
-    if (pb) {
-        document.body.appendChild(pb);
-        // No need to set header overflow hidden
+    // ── Create progress bar if missing ─────────────────────
+    if (!document.getElementById('pageProgressBar')) {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'pageProgressBar';
+        wrapper.innerHTML = '<div class="progress-bar-scroll"></div>';
+        document.body.appendChild(wrapper);
     }
 
     // ── Initialise global references for scroll controller ──
-    header = document.querySelector('header');
-    progressBarWrapper = document.getElementById('pageProgressBar');
+    progressBarWrapper = document.getElementById('pageProgressBar'); // store for later
 
     // ── Set initial progress bar position ──────────────────
-    if (header && progressBarWrapper) {
-        progressBarWrapper.style.transform = `translateY(${header.offsetHeight}px)`;
+    const initialHeader = document.querySelector('header');
+    if (initialHeader && progressBarWrapper) {
+        // slight delay to ensure header height is fully rendered (blur, fonts etc.)
+        setTimeout(() => {
+            const realHeight = initialHeader.getBoundingClientRect().height;
+            progressBarWrapper.style.top = realHeight + 'px';
+        }, 30);
     }
 
     // ── Theme cycling ───────────────────────────────────────
@@ -1264,25 +1272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     refreshStatsBadge();
 
-    // ── Last-visited tracking ───────────────────────────────
-    if (chapterData) {
-        try {
-            const LV_KEY = 'dcas_last_visited';
-            const title  = chapterData.shortTitle || chapterData.title || 'Chapter';
-            const entry  = {
-                title   : title,
-                url     : window.location.href,
-                path    : window.location.pathname + window.location.search,
-                ts      : Date.now()
-            };
-            let history = [];
-            try { history = JSON.parse(localStorage.getItem(LV_KEY) || '[]'); } catch(e) {}
-            history = history.filter(h => h.path !== entry.path);
-            history.unshift(entry);
-            if (history.length > 5) history = history.slice(0, 5);
-            localStorage.setItem(LV_KEY, JSON.stringify(history));
-        } catch(e) {}
-    }
+    // ── Last-visited tracking is already inside initChapterPage, so no duplicate needed ──
 
     // ── Attach unified scroll controller ────────────────────
     window.addEventListener('scroll', handleScroll, { passive: true });
