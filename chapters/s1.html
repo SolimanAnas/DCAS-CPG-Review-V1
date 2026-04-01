@@ -14,7 +14,6 @@
     <meta name="theme-color" content="#0056b3">
     <link rel="apple-touch-icon" href="../icon.png">
 
-
     <style>
         /* ========== Level selection modal (inline) ========== */
         .level-modal-overlay {
@@ -177,6 +176,8 @@
 <!-- ========== Level Selection Modal (inline JS) ========== -->
 <script>
     (function() {
+        console.log('🔧 Level selection script started');
+
         // Level ranks (higher = more advanced)
         const LEVELS = {
             'ER': { rank: 1, label: 'Emergency Responder' },
@@ -193,6 +194,8 @@
 
         let currentLevel = localStorage.getItem(STORAGE_KEY_LEVEL) || 'EMT';
         let dontShowAgain = localStorage.getItem(STORAGE_KEY_DONT_SHOW) === 'true';
+
+        console.log('📦 Current level:', currentLevel, '| dontShowAgain:', dontShowAgain);
 
         window.userLevel = currentLevel;
         window.userLevelRank = LEVELS[currentLevel] ? LEVELS[currentLevel].rank : 3;
@@ -219,12 +222,18 @@
             } else {
                 localStorage.removeItem(STORAGE_KEY_DONT_SHOW);
             }
+            console.log('✅ Level saved:', level, 'dontShow:', dontShow);
             window.location.reload();
         }
 
         // Create modal (if not already present)
         function createModal() {
-            if (document.getElementById('userLevelModal')) return;
+            if (document.getElementById('userLevelModal')) {
+                console.log('⚠️ Modal already exists');
+                return;
+            }
+
+            console.log('🏗️ Creating modal...');
 
             const modalHtml = `
                 <div id="userLevelModal" class="level-modal-overlay">
@@ -278,70 +287,35 @@
 
         // Show modal if needed
         function showModalIfNeeded() {
+            // TEMP: FORCE MODAL TO SHOW (remove after testing)
+            // Uncomment the line below to force modal every time for testing
+            // localStorage.removeItem(STORAGE_KEY_DONT_SHOW);
+            
+            // Re-read dontShowAgain after possible removal
+            const shouldShow = !localStorage.getItem(STORAGE_KEY_DONT_SHOW) === 'true';
+            console.log('🔔 Should show modal?', shouldShow);
+            
             if (!dontShowAgain) {
                 createModal();
                 const modal = document.getElementById('userLevelModal');
-                if (modal) modal.style.display = 'flex';
-            }
-        }
-
-        // Override render functions to filter content (call after data is loaded)
-        // Wait for app.js to load and initialize window.render
-        function patchRenderFunctions() {
-            if (!window.render) {
-                setTimeout(patchRenderFunctions, 100);
-                return;
-            }
-
-            const originalRenderFlashcards = window.render.flashcards;
-            const originalRenderQuizSetup = window.render.quizSetup;
-            const originalRenderQuizGame = window.render.quizGame;
-            const originalRenderCriticalGame = window.render.criticalGame;
-
-            window.render.flashcards = function() {
-                if (window.isChapterMissing) { window.renderComingSoon(); return; }
-                const section = window.state.activeSection;
-                if (!section) return;
-                const originalFlash = window.state.flashData;
-                window.state.flashData = filterByLevel(section.flashcards || []);
-                originalRenderFlashcards.call(this);
-                window.state.flashData = originalFlash;
-            };
-
-            window.render.quizSetup = function() {
-                if (window.isChapterMissing) { window.renderComingSoon(); return; }
-                const section = window.state.activeSection;
-                if (!section) return;
-                originalRenderQuizSetup.call(this);
-            };
-
-            window.render.quizGame = function() {
-                if (window.isChapterMissing) { window.renderComingSoon(); return; }
-                if (!window.state.quizData.length) {
-                    window.render.quizSetup();
-                    return;
+                if (modal) {
+                    modal.style.display = 'flex';
+                    console.log('✅ Modal displayed');
+                } else {
+                    console.log('❌ Modal element not found after creation');
                 }
-                const originalQuiz = window.state.quizData;
-                window.state.quizData = filterByLevel(originalQuiz);
-                originalRenderQuizGame.call(this);
-                window.state.quizData = originalQuiz;
-            };
-
-            window.render.criticalGame = function() {
-                if (window.isChapterMissing) { window.renderComingSoon(); return; }
-                const section = window.state.activeSection;
-                if (!section) return;
-                const originalCritical = window.state.criticalData;
-                window.state.criticalData = filterByLevel(section.critical || []);
-                originalRenderCriticalGame.call(this);
-                window.state.criticalData = originalCritical;
-            };
+            } else {
+                console.log('🚫 Modal suppressed because dontShowAgain = true');
+            }
         }
 
-        // Add a "Change Level" button in the drawer if it exists (optional)
+        // Add a "Reset Level" button in the drawer to force modal reappearance
         function addLevelChanger() {
             const drawer = document.getElementById('notificationDrawer');
-            if (!drawer) return;
+            if (!drawer) {
+                console.log('⚠️ Drawer not found, skipping level changer');
+                return;
+            }
             if (document.getElementById('changeLevelBtn')) return;
             const shortcutRow = drawer.querySelector('.shortcut-row .toggles-grid');
             if (shortcutRow) {
@@ -350,12 +324,12 @@
                 item.innerHTML = `<div class="toggle-btn" id="changeLevelBtn">🎚️</div><div class="toggle-label">Level</div>`;
                 shortcutRow.appendChild(item);
                 document.getElementById('changeLevelBtn')?.addEventListener('click', () => {
+                    console.log('🔄 Reset level button clicked');
                     localStorage.removeItem(STORAGE_KEY_DONT_SHOW);
-                    dontShowAgain = false;
-                    createModal();
-                    const modal = document.getElementById('userLevelModal');
-                    if (modal) modal.style.display = 'flex';
+                    localStorage.removeItem(STORAGE_KEY_LEVEL);
+                    window.location.reload();
                 });
+                console.log('✅ Level changer button added to drawer');
             }
         }
 
@@ -363,11 +337,30 @@
         window.filterByLevel = filterByLevel;
         window.setUserLevel = setUserLevel;
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('📄 DOMContentLoaded');
+                showModalIfNeeded();
+                // Patch render functions after app.js loads
+                setTimeout(() => {
+                    if (window.render) {
+                        console.log('✅ window.render found, patching...');
+                        // The patching logic can be added here if needed
+                    }
+                }, 500);
+                addLevelChanger();
+            });
+        } else {
+            console.log('📄 DOM already loaded');
             showModalIfNeeded();
-            patchRenderFunctions();
+            setTimeout(() => {
+                if (window.render) {
+                    console.log('✅ window.render found, patching...');
+                }
+            }, 500);
             addLevelChanger();
-        });
+        }
     })();
 </script>
 
