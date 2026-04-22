@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DCAS CPG | Advanced ECG Simulator</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #0B1120, #08101E);
+            min-height: 100vh;
+            color: #F1F5F9;
+            padding: 1.5rem;
+        }
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .calc-card {
+            background: rgba(18, 25, 45, 0.75); backdrop-filter: blur(12px);
+            border-radius: 1.5rem; border: 1px solid rgba(66, 153, 225, 0.25);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
+            padding: 1.5rem; max-width: 600px; margin: 0 auto;
+        }
+
+        .card-title { font-size: 1.3rem; font-weight: 700; color: #F8FAFC; margin-bottom: 1rem; display: flex; justify-content: space-between;}
+
+        /* Monitor Screen & Authentic Grid */
+        .monitor-screen {
+            background: #020617; 
+            border: 2px solid #1E293B;
+            border-radius: 12px;
+            height: 180px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9); 
+        }
+        .monitor-screen::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(239, 68, 68, 0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239, 68, 68, 0.25) 1px, transparent 1px),
+                linear-gradient(rgba(239, 68, 68, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239, 68, 68, 0.08) 1px, transparent 1px);
+            background-size: 25px 25px, 25px 25px, 5px 5px, 5px 5px; 
+            background-position: center center;
+            pointer-events: none;
+        }
+
+        /* SVG & Pro Effects */
+        .ecg-line {
+            fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+            vector-effect: non-scaling-stroke; 
+            filter: drop-shadow(0 0 3px currentColor);
+            transition: filter 0.3s ease;
+        }
+        
+        .ecg-svg {
+            position: absolute; height: 100%; width: 200%;
+            animation: scrollMonitor linear infinite;
+        }
+
+        /* Pause State for the SVG Animation */
+        .monitor-screen.paused .ecg-svg {
+            animation-play-state: paused !important;
+        }
+
+        /* Pro Effect Toggles */
+        .artifact-active .ecg-line {
+            filter: url(#highFreqNoise) drop-shadow(0 0 2px currentColor);
+            stroke-width: 1.8; 
+        }
+
+        @keyframes scrollMonitor { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Controls */
+        .pro-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .toggle-label { font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .action-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'Inter', sans-serif; transition: all 0.2s;}
+        .action-btn:hover { background: rgba(255,255,255,0.2); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
+        .stat-box { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 1rem 0.5rem; text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; margin-bottom: 0.4rem; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1.1rem; font-weight: 700; color: #38BDF8; }
+
+        select { width: 100%; background: rgba(12, 20, 30, 0.8); border: 1px solid #2D3A5E; border-radius: 12px; padding: 1rem; color: #F1F5F9; font-size: 1rem; outline: none; margin-bottom: 1.5rem; cursor: pointer;}
+        select optgroup { background: #0B1120; font-weight: bold; color: #94A3B8; }
+        select option { color: #F1F5F9; }
+
+        .info-section { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 1.2rem; }
+        .info-title { font-size: 0.85rem; color: #60A5FA; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; margin-top: 1rem; }
+        .info-title:first-child { margin-top: 0; }
+        .info-text { font-size: 0.9rem; color: #CBD5E1; line-height: 1.5; }
+        .warning-text { color: #F87171; font-weight: 600; }
+        
+        /* Badges for 12-Lead Identification */
+        .lead-badge { display: inline-block; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; font-weight: 700; margin-right: 4px; margin-bottom: 4px; margin-top: 4px;}
+        .lead-badge.reciprocal { background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #F97316; }
+    </style>
+</head>
+<body>
+
+<svg style="width:0; height:0; position:absolute;">
+    <filter id="highFreqNoise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>
+
+<div class="header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div style="background: linear-gradient(135deg, #E11D48, #BE123C); width: 40px; height: 40px; border-radius: 10px; display:flex; align-items:center; justify-content:center;">
+            <i class="fas fa-heartbeat" style="color:white; font-size: 1.2rem;"></i>
+        </div>
+        <h2 style="font-size: 1.2rem; font-weight: 700;">ECG Simulator</h2>
+    </div>
+    <a href="index.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="calc-card">
+    <div class="card-title">
+        Live Rhythm Simulator
+    </div>
+    
+    <div class="monitor-screen" id="monitorScreen">
+        <svg class="ecg-svg" id="monitorSvg" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="pro-controls">
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleNoise" onchange="toggleEffects()"> Add Artifact/Noise
+        </label>
+        <button id="pauseBtn" class="action-btn" onclick="togglePause()">
+            <i class="fas fa-pause"></i> Pause
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box"><div class="stat-label">Rate</div><div class="stat-value" id="valRate">--</div></div>
+        <div class="stat-box"><div class="stat-label">PR Interval</div><div class="stat-value" id="valPR">--</div></div>
+        <div class="stat-box"><div class="stat-label">QRS</div><div class="stat-value" id="valQRS">--</div></div>
+    </div>
+
+    <select id="rhythmSelect" onchange="updateECG()">
+        <optgroup label="Sinus Node Rhythms">
+            <option value="nsr" selected>Normal Sinus Rhythm (NSR)</option>
+            <option value="stach">Sinus Tachycardia</option>
+            <option value="sbrady">Sinus Bradycardia</option>
+        </optgroup>
+        <optgroup label="Atrial Rhythms">
+            <option value="afib">Atrial Fibrillation (AF)</option>
+            <option value="aflutter">Atrial Flutter</option>
+            <option value="svt">Paroxysmal SVT (Narrow Complex)</option>
+        </optgroup>
+        <optgroup label="Ventricular Rhythms (Lethal)">
+            <option value="vtach">Ventricular Tachycardia (Monomorphic)</option>
+            <option value="polymorphic">Polymorphic VT</option>
+            <option value="torsades">Torsades de Pointes</option>
+            <option value="coarseVf">Coarse Ventricular Fibrillation</option>
+            <option value="fineVf">Fine Ventricular Fibrillation</option>
+            <option value="asystole">Asystole</option>
+            <option value="pea">Pulseless Electrical Activity (PEA)</option>
+        </optgroup>
+        <optgroup label="AV Blocks">
+            <option value="block1">1st Degree AV Block</option>
+            <option value="block2_1">2nd Degree Type I (Wenckebach)</option>
+            <option value="block2_2">2nd Degree Type II</option>
+            <option value="block3">3rd Degree (Complete Heart Block)</option>
+        </optgroup>
+        <optgroup label="12-Lead Ischemia & STEMI">
+            <option value="stemi_inf">Inferior STEMI (RCA)</option>
+            <option value="stemi_ant">Anterior STEMI (LAD)</option>
+            <option value="stemi_sep">Septal STEMI (LAD)</option>
+            <option value="stemi_lat">Lateral STEMI (LCx)</option>
+            <option value="stemi_ext_ant">Extensive Anterior STEMI</option>
+            <option value="stdepress">ST Depression (Ischemia)</option>
+            <option value="tinvert">T-Wave Inversion</option>
+        </optgroup>
+    </select>
+
+    <div class="info-section">
+        <div class="info-title">Identification & Characteristics</div>
+        <div class="info-text" id="infoChar">--</div>
+        <div class="info-title">EMS Interventions</div>
+        <div class="info-text" id="infoInt">--</div>
+    </div>
+</div>
+
+<script>
+    // --- Extensive SVG Path Database ---
+    const paths = {
+        normal: "M0,50 L20,50 L25,45 L30,50 L40,50 L45,20 L50,80 L55,50 L65,50 L75,35 L85,50 L100,50",
+        svt: "M0,50 L10,50 L15,40 L20,50 L25,50 L30,20 L35,80 L40,50 L50,50", 
+        stemi: "M0,50 L20,50 L25,45 L30,50 L40,50 L45,20 L50,80 L53,30 L65,30 Q75,30 85,50 L100,50", 
+        stdepress: "M0,50 L20,50 L25,45 L30,50 L40,50 L45,20 L50,80 L53,65 L65,65 Q75,65 85,50 L100,50", 
+        tinvert: "M0,50 L20,50 L25,45 L30,50 L40,50 L45,20 L50,80 L55,50 L65,50 L75,65 L85,50 L100,50", 
+        vtach: "M0,50 L12,10 Q18,0 25,20 L38,90 Q44,100 50,50 L62,10 Q68,0 75,20 L88,90 Q94,100 100,50",
+        coarseVf: "M0,50 Q6,85 14,35 Q20,-10 28,70 Q35,110 43,45 Q50,20 58,85 Q65,100 75,30 Q82,-15 90,55 Q96,90 100,50",
+        fineVf: "M0,50 Q5,60 10,40 Q15,45 20,55 Q25,35 30,50 Q40,65 45,45 Q55,30 65,55 Q75,40 85,60 Q95,45 100,50",
+        asystole: "M0,50 L100,50",
+        afib: "M0,50 Q5,48 10,53 Q15,47 20,50 L25,20 L30,80 L35,50 Q45,55 55,48 Q65,52 75,50 L80,20 L85,80 L90,50 Q100,45 110,50 L115,20 L120,80 L125,50 Q135,55 145,48 Q155,52 165,50 L170,20 L175,80 L180,50 Q190,48 200,50", 
+        aflutter: "M0,50 L10,35 L20,50 L30,35 L40,50 L45,20 L50,80 L55,50 L65,35 L75,50 L85,35 L95,50 L100,20 L105,80 L110,50 L120,35 L130,50", 
+        block1: "M0,50 L20,50 L25,45 L30,50 L55,50 L60,20 L65,80 L70,50 L80,50 L90,35 L100,50 L120,50", 
+        wenckebach: "M0,50 L10,45 L15,50 L35,50 L40,20 L45,80 L50,50 L60,35 L70,50 L80,45 L85,50 L115,50 L120,20 L125,80 L130,50 L140,35 L150,50 L160,45 L165,50 L205,50 L210,20 L215,80 L220,50 L230,35 L240,50 L250,45 L255,50 L290,50", 
+        block2_2: "M0,50 L10,45 L15,50 L30,50 L35,20 L40,80 L45,50 L55,35 L65,50 L75,45 L80,50 L130,50 L140,45 L145,50 L160,50 L165,20 L170,80 L175,50 L185,35 L195,50", 
+        torsades: "M0,50 Q10,10 20,50 Q30,90 40,50 Q50,30 60,50 Q70,70 80,50 Q90,40 100,50 Q110,60 120,50 Q130,20 140,50 Q150,80 160,50 Q170,0 180,50 Q190,100 200,50 Q210,10 220,50 Q230,90 240,50 Q250,30 260,50 Q270,70 280,50 Q290,40 300,50 Q310,60 320,50 Q330,20 340,50 Q350,80 360,50 Q370,0 380,50 Q390,100 400,50" 
+    };
+
+    function generateRepeatingSVG(basePath, repeats, segmentWidth) {
+        let content = '';
+        for (let i = 0; i < repeats; i++) {
+            content += `<path class="ecg-line" d="${basePath}" transform="translate(${i * segmentWidth}, 0)" />`;
+        }
+        return content;
+    }
+
+    const ecgDB = {
+        nsr: { rate: "60-100", pr: "0.12-0.20s", qrs: "< 0.12s", speed: "8s", path: paths.normal, width: 100, color: "#22C55E", char: "Regular rhythm, P wave before every QRS.", int: "Routine care." },
+        stach: { rate: "120", pr: "0.12-0.20s", qrs: "< 0.12s", speed: "4.5s", path: paths.normal, width: 100, color: "#22C55E", char: "Fast but regular. P wave before every QRS.", int: "Treat underlying cause (pain, fever, volume loss)." },
+        sbrady: { rate: "40", pr: "0.12-0.20s", qrs: "< 0.12s", speed: "13s", path: paths.normal, width: 100, color: "#3B82F6", char: "Slow but regular.", int: "If unstable: Atropine 1mg, Pacing." },
+        
+        afib: { rate: "Variable", pr: "None", qrs: "< 0.12s", speed: "12s", path: paths.afib, width: 200, color: "#EAB308", char: "Irregularly irregular. No P waves, fibrillatory baseline.", int: "Rate control. Cardiovert if unstable." },
+        aflutter: { rate: "150 (V)", pr: "N/A", qrs: "< 0.12s", speed: "6s", path: paths.aflutter, width: 130, color: "#EAB308", char: "Regular sawtooth baseline (F waves). Often 2:1 conduction.", int: "Cardiovert if unstable." },
+        svt: { rate: "180", pr: "Hidden", qrs: "< 0.12s", speed: "3s", path: paths.svt, width: 50, color: "#EAB308", char: "Extremely fast, regular, narrow complex. No visible P waves.", int: "Vagal maneuvers, Adenosine 6mg, Synchronized Cardioversion if unstable." },
+        
+        vtach: { rate: "180", pr: "None", qrs: "> 0.12s", speed: "3s", path: paths.vtach, width: 100, color: "#F97316", char: "Wide, bizarre complexes. Rapid and regular.", int: "Pulseless: Defibrillate. Unstable with pulse: Sync Cardiovert. Stable: Amiodarone." },
+        polymorphic: { rate: "200+", pr: "None", qrs: "Variable", speed: "8s", path: paths.torsades, width: 400, color: "#F97316", char: "QRS complexes constantly change shape and axis.", int: "Immediate Defibrillation." },
+        torsades: { rate: "200+", pr: "None", qrs: "Variable", speed: "8s", path: paths.torsades, width: 400, color: "#EF4444", char: "Polymorphic VT twisting around the isoelectric line. Associated with prolonged QT.", int: "Magnesium Sulfate 1-2g IV. Defibrillate if pulseless." },
+        coarseVf: { rate: "0", pr: "None", qrs: "None", speed: "4s", path: paths.coarseVf, width: 100, color: "#EF4444", char: "<span class='warning-text'>SHOCKABLE.</span> Chaotic deflections > 3mm.", int: "Defibrillation, CPR, Epinephrine." },
+        fineVf: { rate: "0", pr: "None", qrs: "None", speed: "5s", path: paths.fineVf, width: 100, color: "#EF4444", char: "<span class='warning-text'>SHOCKABLE.</span> Low amplitude chaotic baseline < 3mm.", int: "Defibrillation, CPR, Epinephrine." },
+        asystole: { rate: "0", pr: "None", qrs: "None", speed: "10s", path: paths.asystole, width: 100, color: "#94A3B8", char: "<span class='warning-text'>NON-SHOCKABLE.</span> Flat line.", int: "CPR, Epinephrine. Rule out fine VF in multiple leads." },
+        pea: { rate: "Variable", pr: "Variable", qrs: "Variable", speed: "9s", path: paths.normal, width: 100, color: "#94A3B8", char: "Organized rhythm on monitor, but patient has NO PULSE.", int: "CPR, Epinephrine. Treat reversible causes (H's & T's)." },
+        
+        block1: { rate: "60", pr: "> 0.20s", qrs: "< 0.12s", speed: "9s", path: paths.block1, width: 120, color: "#EAB308", char: "Consistent but prolonged PR interval (>5 small boxes).", int: "Usually benign. Monitor." },
+        block2_1: { rate: "Variable", pr: "Lengthening", qrs: "Dropped", speed: "16s", path: paths.wenckebach, width: 290, color: "#F97316", char: "PR interval gets progressively longer until a QRS is dropped.", int: "Monitor. Treat only if symptomatic (Atropine/Pacing)." },
+        block2_2: { rate: "Slow", pr: "Constant", qrs: "Dropped", speed: "12s", path: paths.block2_2, width: 195, color: "#EF4444", char: "PR interval remains constant, but some P waves fail to conduct a QRS.", int: "High risk of progressing to 3rd degree. Prepare to pace." },
+        block3: { rate: "30-40", pr: "Dissociated", qrs: "Wide", speed: "15s", path: paths.block2_2 /* Approx */, width: 195, color: "#EF4444", char: "P waves and QRS complexes fire completely independently.", int: "Transcutaneous Pacing." },
+
+        // --- 12-Lead Ischemia Database ---
+        stemi_inf: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stemi, width: 100, color: "#EF4444", char: "<strong>Inferior MI (Right Coronary Artery)</strong><br><span class='lead-badge'>II</span><span class='lead-badge'>III</span><span class='lead-badge'>aVF</span><br><span class='lead-badge reciprocal'>Reciprocal: I, aVL</span>", int: "Aspirin, 12-Lead ECG. ⚠️ WITHHOLD Nitroglycerin until Right Ventricular involvement is ruled out (V4R)." },
+        stemi_ant: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stemi, width: 100, color: "#EF4444", char: "<strong>Anterior MI (LAD Artery)</strong><br><span class='lead-badge'>V3</span><span class='lead-badge'>V4</span><br><span class='lead-badge reciprocal'>Reciprocal: II, III, aVF</span>", int: "Aspirin, Nitroglycerin, 12-Lead ECG. Rapid transport to PCI." },
+        stemi_sep: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stemi, width: 100, color: "#EF4444", char: "<strong>Septal MI (LAD Artery)</strong><br><span class='lead-badge'>V1</span><span class='lead-badge'>V2</span>", int: "Aspirin, Nitroglycerin, 12-Lead ECG. Rapid transport to PCI." },
+        stemi_lat: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stemi, width: 100, color: "#EF4444", char: "<strong>Lateral MI (Circumflex Artery)</strong><br><span class='lead-badge'>I</span><span class='lead-badge'>aVL</span><span class='lead-badge'>V5</span><span class='lead-badge'>V6</span><br><span class='lead-badge reciprocal'>Reciprocal: II, III, aVF</span>", int: "Aspirin, Nitroglycerin, 12-Lead ECG. Rapid transport to PCI." },
+        stemi_ext_ant: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stemi, width: 100, color: "#EF4444", char: "<strong>Extensive Anterior MI (Proximal LAD)</strong><br><span class='lead-badge'>V1-V6</span><span class='lead-badge'>I</span><span class='lead-badge'>aVL</span>", int: "High risk of cardiogenic shock. Aspirin, Nitroglycerin (if BP stable), Rapid transport." },
+        stdepress: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.stdepress, width: 100, color: "#F97316", char: "ST segment depressed below baseline. Indicates ischemia or NSTEMI.", int: "Aspirin, 12-Lead ECG, evaluate for symptoms of ACS." },
+        tinvert: { rate: "80", pr: "0.16s", qrs: "< 0.12s", speed: "8s", path: paths.tinvert, width: 100, color: "#F97316", char: "T wave deflection is negative. Can indicate ischemia or prior infarction.", int: "Evaluate in context of 12-Lead ECG and patient presentation." }
+    };
+
+    function updateECG() {
+        const selected = document.getElementById('rhythmSelect').value;
+        const data = ecgDB[selected];
+
+        document.getElementById('valRate').innerText = data.rate + (data.rate !== "N/A" && data.rate !== "0" && !data.rate.includes("V") ? " bpm" : "");
+        document.getElementById('valPR').innerText = data.pr;
+        document.getElementById('valQRS').innerText = data.qrs;
+        document.getElementById('infoChar').innerHTML = data.char;
+        document.getElementById('infoInt').innerHTML = data.int;
+
+        const svgContainer = document.getElementById('monitorSvg');
+        const REPEATS = 20; 
+        const totalWidth = data.width * REPEATS;
+        
+        svgContainer.setAttribute('viewBox', `0 0 ${totalWidth} 100`);
+        const repeatedPaths = generateRepeatingSVG(data.path, REPEATS, data.width);
+        
+        svgContainer.innerHTML = `<g style="stroke: ${data.color}; color: ${data.color};">${repeatedPaths}</g>`;
+        svgContainer.style.animationDuration = data.speed;
+        
+        // Ensure animation plays when switching rhythms (if previously paused)
+        document.getElementById('monitorScreen').classList.remove('paused');
+        document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+        document.getElementById('pauseBtn').style.background = 'rgba(255,255,255,0.1)';
+        document.getElementById('pauseBtn').style.borderColor = 'rgba(255,255,255,0.2)';
+        document.getElementById('pauseBtn').style.color = 'white';
+    }
+
+    // Toggle Noise Effect
+    function toggleEffects() {
+        const screen = document.getElementById('monitorScreen');
+        const noise = document.getElementById('toggleNoise').checked;
+        
+        if(noise) screen.classList.add('artifact-active');
+        else screen.classList.remove('artifact-active');
+    }
+
+    // Pause/Play Animation
+    function togglePause() {
+        const screen = document.getElementById('monitorScreen');
+        const btn = document.getElementById('pauseBtn');
+        
+        screen.classList.toggle('paused');
+        
+        if (screen.classList.contains('paused')) {
+            btn.innerHTML = '<i class="fas fa-play"></i> Play';
+            btn.style.background = 'rgba(56, 189, 248, 0.2)';
+            btn.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+            btn.style.color = '#38BDF8';
+        } else {
+            btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            btn.style.background = 'rgba(255,255,255,0.1)';
+            btn.style.borderColor = 'rgba(255,255,255,0.2)';
+            btn.style.color = 'white';
+        }
+    }
+
+    updateECG();
+</script>
+
+</body>
+</html>
