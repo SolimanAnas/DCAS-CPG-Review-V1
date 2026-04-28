@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ECG Test - ECG interpretation test exams">
+    <title>ECG Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root,[data-theme="dark"]{
+            --bg:#070f1d;--panel:#0c1628;--card:#111d30;--card2:#162035;
+            --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+            --text:#dde6f0;--muted:#5a7080;--dim:#8a9bb0;
+            --blue:#3b82f6;--green:#22c55e;--red:#ef4444;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:20px;padding:20px;text-align:center
+        }
+        h1{font-size:2rem;font-weight:800}
+        p{color:var(--muted);max-width:400px;line-height:1.6}
+    </style>
+</head>
+<body>
+    <h1>ECG Test</h1>
+    <p>ECG interpretation test exams will be available here. Exams will load from src/ECG/ folder when available.</p>
+    <p style="color:var(--muted);font-size:0.85rem">Coming soon</p>
+</body>
+</html>
