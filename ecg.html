@@ -82,10 +82,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 /* RHYTHM SELECT */
 .sel-wrap{position:relative}
 .sel-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:.9rem}
-#rhythmSelect{width:100%;background:rgba(4,12,24,.85);border:1.5px solid var(--br);border-radius:14px;padding:13px 40px 13px 16px;color:var(--text);font-size:.88rem;font-family:inherit;font-weight:600;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s}
+#rhythmSelect{width:100%;background:rgba(4,12,24,.85);border:1.5px solid var(--br);border-radius:14px;padding:10px 36px 10px 14px;color:var(--text);font-size:.8rem;font-family:inherit;font-weight:600;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s}
 #rhythmSelect:focus{border-color:var(--blue)}
-#rhythmSelect optgroup{background:#0a1525;color:var(--muted);font-size:.72rem}
-#rhythmSelect option{background:#0a1525;color:var(--text)}
+#rhythmSelect optgroup{background:#0a1525;color:var(--muted);font-size:.65rem;font-weight:700;padding:4px 8px}
+#rhythmSelect option{background:#0a1525;color:var(--text);padding:6px 8px}
 
 /* CDE SECTIONS */
 .cde-sec{border-radius:20px;overflow:hidden;border:1px solid var(--br)}
@@ -132,9 +132,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 .a-num.dr{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:var(--blue)}
 .a-title{font-size:.82rem;font-weight:700;line-height:1.3}
 .a-detail{font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:var(--bg);border:1px solid var(--br);border-radius:16px;padding:20px;max-width:400px;width:100%;text-align:center}
+.modal button{margin:4px}
+
+/* TOAST */
+#toastCont{position:fixed;top:80px;right:10px;display:flex;flex-direction:column;gap:6px;z-index:998}
+.toast{background:var(--sf);border:1px solid var(--br);border-radius:8px;padding:8px 14px;font-size:.85rem;animation:sIn .2s}
+@keyframes sIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+
+<div id="toastCont"></div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
 
 <svg style="width:0;height:0;position:absolute" aria-hidden="true">
   <filter id="ecgNoise">
@@ -150,6 +166,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
     <div class="hdr-title">ECG Simulator</div>
     <div class="hdr-sub">DCAS CPG 2026 · Clinical Decision Engine</div>
   </div>
+  <button class="hdr-back" onclick="openQuiz()" title="ECG Quiz" style="margin-left:auto"><i class="fas fa-brain" style="font-size:.75rem"></i></button>
   <div class="hdr-pulse"></div>
 </header>
 
@@ -256,9 +273,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 <script>
 'use strict';
 
-/* ══════════════════════════════════════════════════════
-   ECG RHYTHM DATABASE  —  every path is 100-unit wide
-══════════════════════════════════════════════════════ */
+// Modal & Toast helpers
+function showModal(t,s,opts){
+  document.getElementById('modalBox').innerHTML = `<h3>${t}</h3><div style="margin:12px 0">${s}</div>`;
+  document.getElementById('modalBg').classList.add('on');
+}
+function closeModal(){
+  document.getElementById('modalBg').classList.remove('on');
+}
+function showToast(m,type,ms){
+  const c = document.getElementById('toastCont');
+  const x = document.createElement('div');
+  x.className = 'toast';
+  x.innerHTML = m;
+  x.style.color = type==='info'?'var(--cyan)':type==='success'?'var(--green)':'var(--red)';
+  c.appendChild(x);
+  setTimeout(()=>x.remove(),ms||2000);
+}
+
+/* ECG RHYTHM DATABASE */
 const DB = {
   nsr:{lbl:'Normal Sinus Rhythm',cat:'sinus',path:'M0,50 L14,50 Q18,43 22,50 L36,50 L38,56 L40,9 L42,61 L44,50 L56,50 Q63,38 70,50 L100,50',w:100,spd:'9s',col:'g',rate:'60–100 bpm',pr:'0.12–0.20 s',qrs:'< 0.12 s',rn:72,pri:'GREEN',pMsg:'Normal Sinus Rhythm',pSub:'Routine monitoring. No intervention required.',char:'Regular · Rate 60–100 bpm · P before every QRS · Normal P-QRS-T · Constant PR',drugs:[{i:'✅',n:'No acute medications',d:'Routine monitoring',c:''}],arrest:false,stemi:false},
   stach:{lbl:'Sinus Tachycardia',cat:'sinus',path:'M0,50 L8,50 Q11,43 14,50 L22,50 L24,56 L26,9 L28,61 L30,50 L38,50 Q43,38 48,50 L56,50',w:56,spd:'4.5s',col:'g',rate:'100–160 bpm',pr:'0.12–0.20 s',qrs:'< 0.12 s',rn:120,pri:'YELLOW',pMsg:'Sinus Tachycardia',pSub:'Treat the underlying cause — not the rate.',char:'Regular · Rate > 100 bpm · P before every QRS · Identical to NSR morphology · P may merge with T at fast rates',drugs:[{i:'🔍',n:'Identify & treat the cause',d:'Pain / Hypovolemia / Fever / Anxiety',c:'pri'},{i:'💧',n:'IV Fluid Challenge',d:'NS 250–500 mL if hypovolemia suspected',c:''},{i:'💊',n:'Analgesia if pain-driven',d:'Morphine 2.5 mg IV | Nefopam 20 mg IV',c:''}],arrest:false,stemi:false},
@@ -444,6 +477,59 @@ function toggleCal(){
     p.setAttribute('stroke','rgba(0,232,128,.45)');
     p.setAttribute('stroke-width','1.5');
     svg.firstChild?svg.insertBefore(p,svg.firstChild):svg.appendChild(p);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//    ECG QUIZ ENGINE
+// ══════════════════════════════════════════════════════
+let eq = { qs:[], idx:0, score:0, start:null };
+const EQ = { sel:null, mod:'exam' };
+
+async function openQuiz(){
+  const res = await fetch('src/ECG/ecg.json');
+  const data = await res.json();
+  eq.qs = data.questions;
+  eq.idx = 0; eq.score = 0;
+  showModal('🧠 ECG Quiz',`${eq.qs.length} questions ready.<br><br>Mode:<br><button class="btn-action" onclick="eqStart('exam')">📝 Exam</button> <button class="btn-action" onclick="eqStart('study')">📖 Study</button>`,{});
+}
+
+function eqStart(mode){
+  EQ.mod = mode;
+  eq.idx = 0; eq.score = 0;
+  eq.qs = eq.qs.sort(()=>Math.random()-.5);
+  closeModal();
+  showQuiz();
+}
+
+function showQuiz(){
+  const q = eq.qs[eq.idx];
+  const opts = q.options.map((o,i)=>`<button class="btn-action ${EQ.mod==='study'&&q.correct_answer===String.fromCharCode(65+i)?'correct':''}" onclick="eqAns(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+  const mode = EQ.mod==='exam'?'📝 Exam':'📖 Study';
+  const p = EQ.mod==='exam'?`Question ${eq.idx+1}/${eq.qs.length}`:`Score: ${eq.score}/${eq.idx}`;
+  const badge = EQ.mod==='exam'?'🟡':'🟢';
+  showModal(`${badge} ECG Quiz — ${mode}`,`<div style="text-align:left;margin:12px 0"><b>${q.text}</b></div><div style="display:flex;flex-direction:column;gap:8px">${opts}</div><div style="margin-top:16px;font-size:.8rem;opacity:.7">${p}</div>`,{});
+}
+
+function eqAns(i){
+  const q = eq.qs[eq.idx];
+  const correct = String.fromCharCode(65+i)===q.correct_answer;
+  if(correct) eq.score++;
+  if(EQ.mod==='study'){
+    showToast(correct?'✅ Correct':'❌ Wrong','info',1500);
+    setTimeout(()=>{ eq.idx++; eqCheck(); },1200);
+  }else{
+    eq.idx++; eqCheck();
+  }
+}
+
+function eqCheck(){
+  if(eq.idx<eq.qs.length){ showQuiz(); }
+  else{
+    closeModal();
+    const pct = Math.round(eq.score/eq.qs.length*100);
+    const col = pct>=70?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+    showModal('🏁 Quiz Complete',`Score: ${eq.score}/${eq.qs.length} (${pct}%)<br><br><button class="btn-action" onclick="location.reload()">Again</button>`,{});
   }
 }
 
